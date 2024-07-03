@@ -1,2 +1,0 @@
-class Kernel(object):
-    pass
