@@ -1,7 +1,0 @@
-README.md
-setup.py
-wexample_wex_core.egg-info/PKG-INFO
-wexample_wex_core.egg-info/SOURCES.txt
-wexample_wex_core.egg-info/dependency_links.txt
-wexample_wex_core.egg-info/requires.txt
-wexample_wex_core.egg-info/top_level.txt
