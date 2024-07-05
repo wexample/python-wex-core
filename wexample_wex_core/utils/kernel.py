@@ -8,6 +8,8 @@ from wexample_prompt.io_manager import IOManager
 
 
 class Kernel(BaseModel):
+    _io_manager: IOManager
+
     def __init__(self, entrypoint_path: str) -> None:
         super().__init__()
         self._sys_argv: list[str] = sys.argv.copy()
@@ -18,7 +20,7 @@ class Kernel(BaseModel):
             "root": root_path,
         }
 
-        self.io = IOManager()
+        self._io = IOManager()
 
     def call(self) -> None:
         """
