@@ -18,6 +18,8 @@ setup(
     install_requires=[
         'click',
         'pydantic',
+        'wexample-wex-addon-app',
+        'wexample-wex-addon-default',
     ],
     python_requires='>=3.6',
 )
