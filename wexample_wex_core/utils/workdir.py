@@ -3,6 +3,7 @@ from typing import Optional
 from wexample_filestate.const.enums import DiskItemType
 from wexample_filestate.const.types import StateItemConfig
 from wexample_filestate.file_state_manager import FileStateManager
+from wexample_helpers.const.types import *
 from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
 
 
