@@ -1,16 +1,13 @@
 import os
 import sys
-from typing import Dict
+from typing import Dict, Optional
 
-from pydantic import BaseModel
-
-from wexample_prompt.io_manager import IOManager
+from wexample_helpers_app.utils.abstract_kernel import AbstractKernel
 from wexample_wex_core.core.file.KernelDirectoryStructure import KernelDirectoryStructure
 
 
-class Kernel(BaseModel):
-    _io_manager: IOManager
-    _state_manager: KernelDirectoryStructure
+class Kernel(AbstractKernel):
+    directory: Optional[KernelDirectoryStructure]
 
     def __init__(self, entrypoint_path: str) -> None:
         super().__init__()
@@ -22,11 +19,9 @@ class Kernel(BaseModel):
             "root": root_path,
         }
 
-        self._state_manager = KernelDirectoryStructure.create_from_path(
+        self.directory = KernelDirectoryStructure.create_from_path(
             path=root_path,
         )
-
-        self._io = IOManager()
 
     def call(self) -> None:
         """

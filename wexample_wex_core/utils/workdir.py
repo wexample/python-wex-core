@@ -1,5 +1,3 @@
-from typing import Optional
-
 from wexample_filestate.const.enums import DiskItemType
 from wexample_filestate.const.types import StateItemConfig
 from wexample_filestate.file_state_manager import FileStateManager
