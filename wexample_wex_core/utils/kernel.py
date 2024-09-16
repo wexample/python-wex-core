@@ -14,13 +14,16 @@ class Kernel(AbstractKernel, CommandLineKernel):
     def _get_workdir_state_manager_class(self) -> Type[FileStateManager]:
         return KernelDirectoryStructure
 
-
-    def call(self) -> None:
-        """
-        Main entrypoint from bash call.
-        May never be called by an internal script.
-        """
-
-        # No arg found except process id
-        if not len(self._sys_argv) > 2:
-            return
+    def _get_core_args(self):
+        return [
+            # TODO
+            # {"arg": "fast-mode", "attr": "fast_mode", "value": True},
+            # {"arg": "quiet", "attr": "verbosity", "value": VERBOSITY_LEVEL_QUIET},
+            # {"arg": "vv", "attr": "verbosity", "value": VERBOSITY_LEVEL_MEDIUM},
+            # {"arg": "vvv", "attr": "verbosity", "value": VERBOSITY_LEVEL_MAXIMUM},
+            # {"arg": "log-indent", "attr": "io.log_indent", "cast": int},
+            # {"arg": "log-length", "attr": "io.log_length", "cast": int},
+            # {"arg": "render-mode", "attr": "default_render_mode", "cast": str},
+            # {"arg": "parent-task-id", "attr": "parent_task_id", "cast": str},
+            # {"arg": "kernel-task-id", "handler": self.handle_kernel_task_id},
+        ]
