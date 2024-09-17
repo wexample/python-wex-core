@@ -1,9 +1,9 @@
 from typing import Type, Any
 
 from wexample_filestate.file_state_manager import FileStateManager
-from wexample_helpers_app.utils.abstract_kernel import AbstractKernel
+from wexample_app.utils.abstract_kernel import AbstractKernel
 from wexample_wex_core.core.file.KernelDirectoryStructure import KernelDirectoryStructure
-from wexample_helpers_app.utils.mixins.command_line_kernel import CommandLineKernel
+from wexample_app.utils.mixins.command_line_kernel import CommandLineKernel
 
 
 class Kernel(AbstractKernel, CommandLineKernel):
