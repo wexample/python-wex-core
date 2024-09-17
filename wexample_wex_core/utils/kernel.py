@@ -16,7 +16,6 @@ class Kernel(AbstractKernel, CommandLineKernel):
 
     def _get_core_configuration_arguments(self):
         return super()._get_core_configuration_arguments().update([
-            # TODO
             # {"arg": "fast-mode", "attr": "fast_mode", "value": True},
             # {"arg": "quiet", "attr": "verbosity", "value": VERBOSITY_LEVEL_QUIET},
             # {"arg": "vv", "attr": "verbosity", "value": VERBOSITY_LEVEL_MEDIUM},
