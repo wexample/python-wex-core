@@ -1,4 +1,4 @@
-from wexample_wex_addon_app.utils.AppDirectoryStructure import AppDirectoryStructure
+from wexample_wex_addon_app.utils.app_directory_structure import AppDirectoryStructure
 
 
 class KernelDirectoryStructure(AppDirectoryStructure):
