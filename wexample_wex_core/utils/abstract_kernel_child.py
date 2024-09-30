@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.utils.kernel import Kernel
 
 
-class AbsractKernelChild(BaseModel):
+class AbstractKernelChild(BaseModel):
     kernel: "Kernel"
 
     def __init__(self, kernel: "Kernel") -> None:
