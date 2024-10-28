@@ -1,7 +1,6 @@
 from typing import Mapping
 
-from wexample_helpers.const.types import StringsList
+from wexample_helpers.const.types import StringsList, BasicInlineValue
 
-BasicInlineValue = str | int | float | bool | None
 CoreCommandArgsDict = Mapping[str, BasicInlineValue]
 CoreCommandArgsList = StringsList
