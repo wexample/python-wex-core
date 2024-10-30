@@ -7,8 +7,8 @@ from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
 
 class Workdir(FileStateManager):
 
-    def build_config(self, config: Optional[StateItemConfig] = None) -> StateItemConfig:
-        config = super().build_config(config)
+    def prepare_value(self, config: Optional[StateItemConfig] = None) -> StateItemConfig:
+        config = super().prepare_value(config)
 
         if "children" not in config:
             config["children"] = []
