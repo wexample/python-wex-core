@@ -1,7 +1,7 @@
-from wexample_wex_addon_app.utils.app_directory_structure import AppDirectoryStructure
+from wexample_app.workdir.app_workdir import AppWorkdir
 
 
-class KernelDirectoryStructure(AppDirectoryStructure):
+class KernelDirectoryStructure(AppWorkdir):
     should_exist: bool = True
 
 
