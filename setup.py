@@ -18,6 +18,7 @@ setup(
     install_requires=[
         'click',
         'pydantic',
+        'wexample-filestate',
         'wexample-wex-addon-app',
         'wexample-wex-addon-default',
     ],
