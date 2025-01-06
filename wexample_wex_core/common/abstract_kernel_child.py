@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
-    from wexample_wex_core.utils.kernel import Kernel
+    from wexample_wex_core.common.kernel import Kernel
 
 
 class AbstractKernelChild(BaseModel):
