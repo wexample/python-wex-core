@@ -1,4 +1,5 @@
 click
 pydantic
 wexample-filestate
+wexample-app
 pytest
