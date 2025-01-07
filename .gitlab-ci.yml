@@ -4,7 +4,6 @@ variables:
   TWINE_USERNAME: "__token__"
   # Configure these vars in Settings > CI/CD > Variables
   # TWINE_PASSWORD
-  # GITLAB_TOKEN
 
 stages:
   - test
@@ -42,7 +41,7 @@ publish_gitlab:
   stage: publish
   script:
     - pip install twine
-    - TWINE_PASSWORD=${GITLAB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: always
