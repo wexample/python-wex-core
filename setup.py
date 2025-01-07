@@ -19,8 +19,6 @@ setup(
         'click',
         'pydantic',
         'wexample-filestate',
-        'wexample-wex-addon-app',
-        'wexample-wex-addon-default',
     ],
     python_requires='>=3.6',
 )
