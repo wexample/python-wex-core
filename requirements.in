@@ -1,4 +1,5 @@
 click
+pip-tools
 pydantic
 wexample-filestate
 wexample-app
