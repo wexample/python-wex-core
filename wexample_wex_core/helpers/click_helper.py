@@ -3,8 +3,8 @@ from typing import Any, Dict, List
 import click
 from click.core import Command
 from click.types import BoolParamType
-from wexample_helpers.helpers.args_helper import args_convert_dict_to_snake_dict
-from wexample_helpers.helpers.string_helper import string_to_kebab_case
+from wexample_helpers.helpers.args import args_convert_dict_to_snake_dict
+from wexample_helpers.helpers.type import string_to_kebab_case
 
 from wexample_wex_core.const.types import (
     CoreCommandArgsDict,
