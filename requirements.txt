@@ -74,8 +74,6 @@ wexample-wex-addon-app==0.0.10
     # via
     #   wexample-app
     #   wexample-wex-core
-wexample-wex-addon-default==0.0.11
-    # via wexample-wex-core
 wexample-wex-core==6.0.10
     # via wexample-wex-addon-app
 wheel==0.45.1
