@@ -6,9 +6,12 @@
 #
 annotated-types==0.7.0
     # via pydantic
+build==1.2.2.post1
+    # via pip-tools
 click==8.1.8
     # via
     #   -r requirements.in
+    #   pip-tools
     #   wexample-wex-core
 iniconfig==2.0.0
     # via pytest
@@ -17,7 +20,11 @@ markdown-it-py==3.0.0
 mdurl==0.1.2
     # via markdown-it-py
 packaging==24.2
-    # via pytest
+    # via
+    #   build
+    #   pytest
+pip-tools==7.4.1
+    # via -r requirements.in
 pluggy==1.5.0
     # via pytest
 pydantic==2.10.4
@@ -31,6 +38,10 @@ pydantic-core==2.27.2
     # via pydantic
 pygments==2.19.1
     # via rich
+pyproject-hooks==1.2.0
+    # via
+    #   build
+    #   pip-tools
 pytest==8.3.4
     # via -r requirements.in
 python-dotenv==1.0.1
@@ -67,3 +78,9 @@ wexample-wex-addon-default==0.0.11
     # via wexample-wex-core
 wexample-wex-core==6.0.10
     # via wexample-wex-addon-app
+wheel==0.45.1
+    # via pip-tools
+
+# The following packages are considered to be unsafe in a requirements file:
+# pip
+# setuptools
