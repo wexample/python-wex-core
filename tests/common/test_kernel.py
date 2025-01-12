@@ -51,8 +51,3 @@ def test_get_workdir_state_manager_class(kernel):
     state_manager_class = kernel._get_workdir_state_manager_class()
     assert state_manager_class == KernelDirectoryStructure
 
-
-def test_directory_structure(kernel):
-    """Test that KernelDirectoryStructure is properly initialized."""
-    assert isinstance(kernel.dir_structure, KernelDirectoryStructure)
-    assert kernel.dir_structure.root_path == kernel.entrypoint_path

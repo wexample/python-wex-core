@@ -5,6 +5,7 @@ import shutil
 
 from wexample_wex_core.common.workdir import Workdir
 from wexample_wex_core.common.kernel import Kernel
+from wexample_prompt.common.io_manager import IoManager
 
 
 @pytest.fixture(scope="class")
@@ -33,7 +34,7 @@ def kernel(temp_dir):
 @pytest.fixture
 def workdir():
     """Create a workdir instance for each test."""
-    return Workdir()
+    return Workdir(io_manager=IoManager())
 
 
 def test_initialization(workdir):
