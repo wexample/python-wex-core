@@ -1,13 +1,13 @@
 import re
 from typing import Optional
 
+from wexample_helpers.const.types import StringsList
 from wexample_wex_core.const.types import (
     VersionDescriptor, UPGRADE_TYPE_MINOR, UPGRADE_TYPE_MAJOR,
     UPGRADE_TYPE_INTERMEDIATE, UPGRADE_TYPE_ALPHA, UPGRADE_TYPE_BETA,
     UPGRADE_TYPE_DEV, UPGRADE_TYPE_RC, UPGRADE_TYPE_NIGHTLY,
     UPGRADE_TYPE_SNAPSHOT
 )
-from wexample_helpers.const.types import StringsList
 
 
 def is_greater_than(
@@ -106,7 +106,7 @@ def version_increment(
     version: str,
     type: str = UPGRADE_TYPE_MINOR,
     increment: int = 1,
-    build: bool = False,
+    build: bool | str = False,
 ) -> str:
     version_dict = version_parse(version)
 
