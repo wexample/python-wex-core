@@ -5,79 +5,79 @@
 #    pip-compile requirements.in
 #
 annotated-types==0.7.0
-    # via pydantic
+# via pydantic
 build==1.2.2.post1
-    # via pip-tools
+# via pip-tools
 click==8.1.8
-    # via
-    #   -r requirements.in
-    #   pip-tools
-    #   wexample-wex-core
+# via
+#   -r requirements.in
+#   pip-tools
+#   wexample-wex-core
 iniconfig==2.0.0
-    # via pytest
+# via pytest
 markdown-it-py==3.0.0
-    # via rich
+# via rich
 mdurl==0.1.2
-    # via markdown-it-py
+# via markdown-it-py
 packaging==24.2
-    # via
-    #   build
-    #   pytest
+# via
+#   build
+#   pytest
 pip-tools==7.4.1
-    # via -r requirements.in
+# via -r requirements.in
 pluggy==1.5.0
-    # via pytest
+# via pytest
 pydantic==2.10.4
-    # via
-    #   -r requirements.in
-    #   wexample-app
-    #   wexample-filestate
-    #   wexample-prompt
-    #   wexample-wex-core
+# via
+#   -r requirements.in
+#   wexample-app
+#   wexample-filestate
+#   wexample-prompt
+#   wexample-wex-core
 pydantic-core==2.27.2
-    # via pydantic
+# via pydantic
 pygments==2.19.1
-    # via rich
+# via rich
 pyproject-hooks==1.2.0
-    # via
-    #   build
-    #   pip-tools
+# via
+#   build
+#   pip-tools
 pytest==8.3.4
-    # via -r requirements.in
+# via -r requirements.in
 python-dotenv==1.0.1
-    # via wexample-app
+# via wexample-app
 rich==13.9.4
-    # via wexample-prompt
+# via wexample-prompt
 typing-extensions==4.12.2
-    # via
-    #   pydantic
-    #   pydantic-core
-wexample-app==0.0.12
-    # via -r requirements.in
-wexample-config==0.0.16
-    # via wexample-filestate
-wexample-filestate==0.0.16
-    # via
-    #   -r requirements.in
-    #   wexample-app
-    #   wexample-wex-core
-wexample-helpers==0.0.16
-    # via
-    #   wexample-app
-    #   wexample-config
-    #   wexample-filestate
-wexample-prompt==0.0.15
-    # via
-    #   wexample-app
-    #   wexample-filestate
-wexample-wex-addon-app==0.0.10
-    # via
-    #   wexample-app
-    #   wexample-wex-core
-wexample-wex-core==6.0.10
-    # via wexample-wex-addon-app
+# via
+#   pydantic
+#   pydantic-core
+wexample-app==0.0.14
+# via -r requirements.in
+wexample-config==0.0.18
+# via wexample-filestate
+wexample-filestate==0.0.18
+# via
+#   -r requirements.in
+#   wexample-app
+#   wexample-wex-core
+wexample-helpers==0.0.18
+# via
+#   wexample-app
+#   wexample-config
+#   wexample-filestate
+wexample-prompt==0.0.17
+# via
+#   wexample-app
+#   wexample-filestate
+wexample-wex-addon-app==0.0.12
+# via
+#   wexample-app
+#   wexample-wex-core
+wexample-wex-core==6.0.13
+# via wexample-wex-addon-app
 wheel==0.45.1
-    # via pip-tools
+# via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

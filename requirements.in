@@ -1,6 +1,6 @@
 click
 pip-tools
 pydantic
-wexample-filestate
-wexample-app
+wexample-filestate==0.0.18
+wexample-app==0.0.14
 pytest
