@@ -20,7 +20,10 @@ classifiers = [
 ]
 dependencies = [
     "click",
+    "pip-tools",
     "pydantic",
+    "pytest",
+    "wexample-app==0.0.14",
     "wexample-filestate==0.0.18",
 ]
 
