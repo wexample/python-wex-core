@@ -52,7 +52,7 @@ typing-extensions==4.12.2
 # via
 #   pydantic
 #   pydantic-core
-wexample-app==0.0.15
+wexample-app==0.0.16
 # via -r requirements.in
 wexample-config==0.0.19
 # via wexample-filestate
