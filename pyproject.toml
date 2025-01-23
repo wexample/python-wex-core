@@ -1,27 +1,35 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = [
+    "setuptools",
+    "wheel",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "wexample-wex-core"
 version = "6.0.11"
 description = "Wex core"
-readme = { file = "README.md", content-type = "text/markdown" }
-authors = [{name = "weeger", email = "contact@wexample.com"}]
-license = { text = "MIT" }
+authors = [
+    { name = "weeger", email = "contact@wexample.com" },
+]
 requires-python = ">=3.6"
-
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-
 dependencies = [
     "click",
     "pydantic",
     "wexample-filestate",
 ]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.license]
+text = "MIT"
 
 [project.urls]
 homepage = "https://github.com/wexample/wexample-wex-core"
