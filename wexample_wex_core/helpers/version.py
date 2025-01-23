@@ -41,7 +41,7 @@ def is_greater_than(
     return true_if_equal
 
 
-def version_join(version: VersionDescriptor, add_build: bool = False) -> str:
+def version_join(version: VersionDescriptor, add_build: bool | str = False) -> str:
     output = f"{version['major']}.{version['intermediate']}.{version['minor']}"
 
     # Build version string
@@ -49,9 +49,11 @@ def version_join(version: VersionDescriptor, add_build: bool = False) -> str:
         output += f'-{version["pre_build_type"]}.{version["pre_build_number"]}'
 
     if add_build:
-        import datetime
-
-        output += f"+build." + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        if isinstance(add_build, str):
+            output += f"+build.{add_build}"
+        else:
+            import datetime
+            output += f"+build." + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
     return output
 
@@ -80,21 +82,11 @@ def version_parse(version: str) -> VersionDescriptor | None:
                         int(pre_build_parts[1]) if pre_build_parts[1] else None
                     )
 
-        # Vérifie que la version de base est au format X.Y.Z
-        base_parts = version.split("-")[0].split(".")
-        for part in base_parts:
-            if part and not part.isdigit():
-                return None
-
         match = re.match(r"(\d+)?\.?(\d+)?\.?(\d+)?([-.+].*)?", version)
-        if not match:
-            return None
-            
-        major, intermediate, minor, _ = match.groups()
-        
-        # Si aucun des champs n'est un nombre, la version est invalide
-        if not (major or intermediate or minor):
-            return None
+        major = intermediate = minor = None
+
+        if match:
+            major, intermediate, minor, _ = match.groups()
 
         # Create a dictionary to store the elements
         version_dict: VersionDescriptor = {
@@ -117,19 +109,16 @@ def version_increment(
     build: bool = False,
 ) -> str:
     version_dict = version_parse(version)
-    if not version_dict:
-        raise ValueError(f"Invalid version format: {version}")
 
     # Increment according to type
     if type == UPGRADE_TYPE_MAJOR:
-        version_dict["major"] = int(version_dict["major"]) + increment
-        version_dict["intermediate"] = 0
-        version_dict["minor"] = 0
+        version_dict["major"] = str(int(version_dict["major"]) + increment)
+        version_dict["intermediate"], version_dict["minor"] = "0", "0"
     elif type == UPGRADE_TYPE_INTERMEDIATE:
-        version_dict["intermediate"] = int(version_dict["intermediate"]) + increment
-        version_dict["minor"] = 0
-    elif type == UPGRADE_TYPE_MINOR:
-        version_dict["minor"] = int(version_dict["minor"]) + increment
+        version_dict["intermediate"] = str(
+            int(version_dict["intermediate"]) + increment
+        )
+        version_dict["minor"] = "0"
     # Any of pre-build version
     elif type in [
         UPGRADE_TYPE_ALPHA,
@@ -139,7 +128,21 @@ def version_increment(
         UPGRADE_TYPE_NIGHTLY,
         UPGRADE_TYPE_SNAPSHOT,
     ]:
-        version_dict["pre_build_type"] = type
-        version_dict["pre_build_number"] = increment
+        version_dict["pre_build_number"] += increment
+    # type == 'version_dict['minor']' or everything else
+    else:
+        version_dict["minor"] = str(int(version_dict["minor"]) + increment)
+
+    # Set to zero if result is negative
+    if int(version_dict["major"]) < 0:
+        version_dict["major"], version_dict["intermediate"], version_dict["minor"] = (
+            "1",
+            "0",
+            "0",
+        )
+    elif int(version_dict["intermediate"]) < 0:
+        version_dict["intermediate"], version_dict["minor"] = "0", "0"
+    elif int(version_dict["minor"]) < 0:
+        version_dict["minor"] = "0"
 
     return version_join(version_dict, build)
