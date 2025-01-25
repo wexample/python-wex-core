@@ -82,11 +82,19 @@ def version_parse(version: str) -> VersionDescriptor | None:
                         int(pre_build_parts[1]) if pre_build_parts[1] else None
                     )
 
-        match = re.match(r"(\d+)?\.?(\d+)?\.?(\d+)?([-.+].*)?", version)
-        major = intermediate = minor = None
+        base_parts = version.split("-")[0].split(".")
+        for part in base_parts:
+            if part and not part.isdigit():
+                return None
 
-        if match:
-            major, intermediate, minor, _ = match.groups()
+        match = re.match(r"(\d+)?\.?(\d+)?\.?(\d+)?([-.+].*)?", version)
+        if not match:
+            return None
+            
+        major, intermediate, minor, _ = match.groups()
+        
+        if not (major or intermediate or minor):
+            return None
 
         # Create a dictionary to store the elements
         version_dict: VersionDescriptor = {
