@@ -117,16 +117,19 @@ def version_increment(
     build: bool | str = False,
 ) -> str:
     version_dict = version_parse(version)
+    if not version_dict:
+        raise ValueError(f"Invalid version format: {version}")
 
     # Increment according to type
     if type == UPGRADE_TYPE_MAJOR:
-        version_dict["major"] = str(int(version_dict["major"]) + increment)
-        version_dict["intermediate"], version_dict["minor"] = "0", "0"
+        version_dict["major"] = int(version_dict["major"]) + increment
+        version_dict["intermediate"] = 0
+        version_dict["minor"] = 0
     elif type == UPGRADE_TYPE_INTERMEDIATE:
-        version_dict["intermediate"] = str(
-            int(version_dict["intermediate"]) + increment
-        )
-        version_dict["minor"] = "0"
+        version_dict["intermediate"] = int(version_dict["intermediate"]) + increment
+        version_dict["minor"] = 0
+    elif type == UPGRADE_TYPE_MINOR:
+        version_dict["minor"] = int(version_dict["minor"]) + increment
     # Any of pre-build version
     elif type in [
         UPGRADE_TYPE_ALPHA,
@@ -136,21 +139,7 @@ def version_increment(
         UPGRADE_TYPE_NIGHTLY,
         UPGRADE_TYPE_SNAPSHOT,
     ]:
-        version_dict["pre_build_number"] += increment
-    # type == 'version_dict['minor']' or everything else
-    else:
-        version_dict["minor"] = str(int(version_dict["minor"]) + increment)
-
-    # Set to zero if result is negative
-    if int(version_dict["major"]) < 0:
-        version_dict["major"], version_dict["intermediate"], version_dict["minor"] = (
-            "1",
-            "0",
-            "0",
-        )
-    elif int(version_dict["intermediate"]) < 0:
-        version_dict["intermediate"], version_dict["minor"] = "0", "0"
-    elif int(version_dict["minor"]) < 0:
-        version_dict["minor"] = "0"
+        version_dict["pre_build_type"] = type
+        version_dict["pre_build_number"] = increment
 
     return version_join(version_dict, build)
