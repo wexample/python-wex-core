@@ -1,7 +1,32 @@
-# Wex core toolkit 
+# Wex Core
 
-To use as python package.
+Wex core
 
-## Testing
+Version: 6.0.15
 
-  > python -m unittest discover -s tests -p "*.py"
+## Requirements
+
+- Python >=3.6
+
+## Dependencies
+
+- click
+- pip-tools
+- pydantic
+- pytest
+- wexample-app==0.0.17
+- wexample-filestate==0.0.20
+
+## Installation
+
+```bash
+pip install wexample-wex-core
+```
+
+## Links
+
+- Homepage: https://github.com/wexample/wexample-wex-core
+
+## License
+
+MIT
