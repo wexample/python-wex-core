@@ -78,32 +78,32 @@ typing-extensions==4.12.2
 #   pydantic-core
 wcwidth==0.2.13
 # via prompt-toolkit
-wexample-app==0.0.25
+wexample-app==0.0.26
 # via
 #   -r /home/weeger/Desktop/WIP/WEB/WEXAMPLE/PIP/pip/wex-core/requirements.in
 #   wexample-wex-core
-wexample-config==0.0.28
+wexample-config==0.0.29
 # via wexample-filestate
-wexample-filestate==0.0.28
+wexample-filestate==0.0.29
 # via
 #   -r /home/weeger/Desktop/WIP/WEB/WEXAMPLE/PIP/pip/wex-core/requirements.in
 #   wexample-app
 #   wexample-wex-core
-wexample-helpers==0.0.28
+wexample-helpers==0.0.29
 # via
 #   wexample-app
 #   wexample-config
 #   wexample-filestate
 #   wexample-helpers-yaml
-wexample-helpers-yaml==0.0.27
+wexample-helpers-yaml==0.0.28
 # via wexample-app
-wexample-prompt==0.0.29
+wexample-prompt==0.0.30
 # via
 #   wexample-app
 #   wexample-filestate
-wexample-wex-addon-app==0.0.22
+wexample-wex-addon-app==0.0.23
 # via wexample-app
-wexample-wex-core==6.0.23
+wexample-wex-core==6.0.24
 # via wexample-wex-addon-app
 wheel==0.45.1
 # via pip-tools

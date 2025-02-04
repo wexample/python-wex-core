@@ -2,7 +2,7 @@
 
 Wex core
 
-Version: 6.0.23
+Version: 6.0.24
 
 ## Requirements
 
@@ -14,8 +14,8 @@ Version: 6.0.23
 - pip-tools
 - pydantic
 - pytest
-- wexample-app==0.0.25
-- wexample-filestate==0.0.28
+- wexample-app==0.0.26
+- wexample-filestate==0.0.29
 
 ## Installation
 
