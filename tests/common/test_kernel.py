@@ -5,8 +5,8 @@ import shutil
 
 from wexample_wex_core.common.kernel import Kernel
 from wexample_wex_core.common.file.kernel_directory_structure import KernelDirectoryStructure
-from wexample_app.utils.abstract_kernel import AbstractKernel
-from wexample_app.utils.mixins.command_line_kernel import CommandLineKernel
+from wexample_app.common.abstract_kernel import AbstractKernel
+from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 
 
 @pytest.fixture(scope="class")

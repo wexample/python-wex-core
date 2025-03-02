@@ -1,2 +1,4 @@
 CORE_COMMAND_NAME = "wex"
 WORKDIR_SETUP_DIR = f".{CORE_COMMAND_NAME}"
+COMMAND_TYPE_SERVICE = "service"
+COMMAND_PATTERN_SERVICE = r"^@([\w_-]+)::([\w_-]+)/([\w_-]+)$"
