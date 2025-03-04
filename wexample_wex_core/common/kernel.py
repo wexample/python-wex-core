@@ -6,7 +6,6 @@ from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 if TYPE_CHECKING:
     from wexample_app.common.resolver.abstract_command_resolver import AbstractCommandResolver
     from wexample_filestate.file_state_manager import FileStateManager
-    from wexample_wex_core.workdir.kernel_directory_structure import KernelDirectoryStructure
 
 class Kernel(AbstractKernel, CommandLineKernel):
     def model_post_init(self, __context: Any) -> None:
@@ -21,6 +20,6 @@ class Kernel(AbstractKernel, CommandLineKernel):
         ]
 
     def _get_workdir_state_manager_class(self) -> Type["FileStateManager"]:
-        from wexample_wex_core.workdir.kernel_directory_structure import KernelDirectoryStructure
+        from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
-        return KernelDirectoryStructure
+        return KernelWorkdir
