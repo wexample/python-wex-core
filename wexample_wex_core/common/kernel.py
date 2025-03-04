@@ -1,16 +1,12 @@
-from typing import Type, Any, TYPE_CHECKING
+from typing import Any
 
-from wexample_app.utils.abstract_kernel import AbstractKernel
-from wexample_app.utils.mixins.command_line_kernel import CommandLineKernel
+from wexample_app.common.abstract_kernel import AbstractKernel
+from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 
-if TYPE_CHECKING:
-    from utils.abstract_command_resolver import AbstractCommandResolver
-    from wexample_filestate.file_state_manager import FileStateManager
-    from wexample_wex_core.common.file.kernel_directory_structure import KernelDirectoryStructure
 
 class Kernel(AbstractKernel, CommandLineKernel):
-    def __init__(self, /, **data: Any) -> None:
-        super().__init__(**data)
+    def model_post_init(self, __context: Any) -> None:
+        super().model_post_init(__context)
         self._init_command_line_kernel()
 
     def _get_command_resolvers(self) -> list[Type["AbstractCommandResolver"]]:
