@@ -3,10 +3,12 @@ from typing import Type, Any, TYPE_CHECKING
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
+from wexample_prompt.enums.verbosity_level import VerbosityLevel
 
 if TYPE_CHECKING:
     from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
     from wexample_filestate.file_state_manager import FileStateManager
+
 
 class Kernel(AbstractKernel, CommandRunnerKernel, CommandLineKernel):
     def model_post_init(self, __context: Any) -> None:
@@ -25,3 +27,10 @@ class Kernel(AbstractKernel, CommandRunnerKernel, CommandLineKernel):
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
         return KernelWorkdir
+
+    def _get_core_args(self):
+        return super()._get_core_args().update([
+            {"arg": "quiet", "attr": "verbosity", "value": VerbosityLevel.QUIET},
+            {"arg": "vv", "attr": "verbosity", "value": VerbosityLevel.MEDIUM},
+            {"arg": "vvv", "attr": "verbosity", "value": VerbosityLevel.MAXIMUM},
+        ])
