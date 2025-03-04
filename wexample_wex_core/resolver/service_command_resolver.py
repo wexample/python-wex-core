@@ -13,7 +13,7 @@ class ServiceCommandResolver(AbstractCommandResolver):
         return COMMAND_TYPE_SERVICE
 
     def build_command_path(self, request: "CommandRequest") -> Optional[str]:
-        return f"{self.get_kernel().workdir.get_resolved()}cli/{request.name}.{FILE_EXTENSION_PYTHON}"
+        return f"{self.kernel.workdir.get_resolved()}cli/{request.name}.{FILE_EXTENSION_PYTHON}"
 
     def build_command_function_name(self, request: "CommandRequest") -> Optional[str]:
         import re
