@@ -1,7 +1,7 @@
 from typing import Optional, TYPE_CHECKING
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_SERVICE
-from wexample_app.utils.abstract_command_resolver import AbstractCommandResolver
+from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
 from wexample_helpers.const.globals import FILE_EXTENSION_PYTHON
 
 if TYPE_CHECKING:
