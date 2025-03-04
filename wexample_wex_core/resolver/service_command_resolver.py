@@ -1,13 +1,18 @@
 from typing import Optional, TYPE_CHECKING
 
-from wexample_wex_core.const.globals import COMMAND_TYPE_SERVICE
 from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
 from wexample_helpers.const.globals import FILE_EXTENSION_PYTHON
+from wexample_wex_core.const.globals import COMMAND_TYPE_SERVICE, COMMAND_PATTERN_SERVICE
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
 
+
 class ServiceCommandResolver(AbstractCommandResolver):
+    @classmethod
+    def get_pattern(cls) -> str:
+        return COMMAND_PATTERN_SERVICE
+
     @classmethod
     def get_type(cls) -> str:
         return COMMAND_TYPE_SERVICE

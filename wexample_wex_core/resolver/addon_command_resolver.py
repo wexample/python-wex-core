@@ -9,13 +9,12 @@ if TYPE_CHECKING:
 
 class AddonCommandResolver(AbstractCommandResolver):
     @classmethod
+    def get_pattern(cls) -> str:
+        return COMMAND_PATTERN_ADDON
+
+    @classmethod
     def get_type(cls) -> str:
         return COMMAND_TYPE_ADDON
-
-    def supports(self, request: "CommandRequest") -> bool:
-        # Check if the command matches the addon pattern (addon::group/command)
-        import re
-        return bool(re.match(COMMAND_PATTERN_ADDON, request.name))
 
     def build_command_path(self, request: "CommandRequest") -> Optional[str]:
         # TODO: Implement path building based on addon name and command path

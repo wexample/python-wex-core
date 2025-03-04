@@ -4,6 +4,7 @@ from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
 from wexample_prompt.enums.verbosity_level import VerbosityLevel
+from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolver
 
 if TYPE_CHECKING:
     from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
@@ -21,6 +22,7 @@ class Kernel(AbstractKernel, CommandRunnerKernel, CommandLineKernel):
         from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
 
         return [
+            AddonCommandResolver,
             ServiceCommandResolver,
         ]
 
