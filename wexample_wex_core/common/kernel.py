@@ -29,8 +29,8 @@ class Kernel(AbstractKernel, CommandRunnerKernel, CommandLineKernel):
         return KernelWorkdir
 
     def _get_core_args(self):
-        return super()._get_core_args().update([
+        return super()._get_core_args() + [
             {"arg": "quiet", "attr": "verbosity", "value": VerbosityLevel.QUIET},
             {"arg": "vv", "attr": "verbosity", "value": VerbosityLevel.MEDIUM},
             {"arg": "vvv", "attr": "verbosity", "value": VerbosityLevel.MAXIMUM},
-        ])
+        ]
