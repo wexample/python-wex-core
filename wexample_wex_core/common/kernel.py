@@ -15,6 +15,7 @@ class Kernel(AbstractKernel, CommandRunnerKernel, CommandLineKernel):
         super().model_post_init(__context)
         self._init_command_line_kernel()
         self._init_resolvers()
+        self._init_runners()
 
     def _get_command_resolvers(self) -> list[Type["AbstractCommandResolver"]]:
         from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
