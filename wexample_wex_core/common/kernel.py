@@ -1,4 +1,4 @@
-from typing import Type, Any, TYPE_CHECKING
+from typing import Type, TYPE_CHECKING, Optional, List
 
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
@@ -9,14 +9,20 @@ from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolv
 if TYPE_CHECKING:
     from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
     from wexample_filestate.file_state_manager import FileStateManager
+    from wexample_app.common.abstract_addon_manager import AbstractAddonManager
 
 
-class Kernel(AbstractKernel, CommandRunnerKernel, CommandLineKernel):
-    def model_post_init(self, __context: Any) -> None:
-        super().model_post_init(__context)
+class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
+    def __init__(self, **kwargs) -> None:
+        AbstractKernel.__init__(self, **kwargs)
+
+    def setup(self, addons: Optional[List[Type["AbstractAddonManager"]]] = None) -> "AbstractKernel":
+        response = super().setup(addons=addons)
         self._init_command_line_kernel()
         self._init_resolvers()
         self._init_runners()
+
+        return response
 
     def _get_command_resolvers(self) -> list[Type["AbstractCommandResolver"]]:
         from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
