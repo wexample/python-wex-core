@@ -3,6 +3,7 @@ from wexample_wex_core.common.kernel import Kernel
 
 def default__info__show(
         kernel: "Kernel",
+        arguments # TODO TMP
 ) -> None:
     from wexample_app.const.globals import ENV_VAR_NAME_APP_ENV
 

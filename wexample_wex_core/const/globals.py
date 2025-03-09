@@ -8,3 +8,5 @@ COMMAND_TYPE_ADDON = "addon"
 # Command patterns
 COMMAND_PATTERN_SERVICE = r"^@([\w_-]+)::([\w_-]+)/([\w_-]+)$"
 COMMAND_PATTERN_ADDON = r"^(?:([\w_-]+)::)?([\w_-]+)/([\w_-]+)$"
+
+COMMAND_SEPARATOR_FUNCTION_PARTS = "__"

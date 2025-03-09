@@ -1,4 +1,4 @@
-from typing import Type, TYPE_CHECKING, Optional, List
+from typing import Type, TYPE_CHECKING, Optional, List, cast
 
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
@@ -26,10 +26,11 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return response
 
     def _init_addons(self, addons: Optional[List[Type["AbstractAddonManager"]]] = None):
-        from wexample_helpers.service.registry import Registry
+        from wexample_app.service.service_registry import ServiceRegistry
 
-        self.set_registry("addon", Registry)
-        self.register_items("addon", addons or [])
+        cast(ServiceRegistry, self.set_registry("addon"))
+        registry = self.register_items("addon", addons or [])
+        registry.instantiate_all(kernel=self)
 
     def _get_command_resolvers(self) -> list[Type["AbstractCommandResolver"]]:
         from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
