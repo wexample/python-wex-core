@@ -23,7 +23,7 @@ dependencies = [
     "pip-tools",
     "pydantic",
     "pytest",
-    "wexample-app>=0.0.28",
+    "wexample-app>=0.0.29",
     "wexample-filestate>=0.0.31",
 ]
 
