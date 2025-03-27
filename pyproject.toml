@@ -24,7 +24,7 @@ dependencies = [
     "pydantic",
     "pytest",
     "wexample-app>=0.0.29",
-    "wexample-filestate>=0.0.31",
+    "wexample-filestate>=0.0.32",
 ]
 
 [project.readme]
