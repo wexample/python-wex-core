@@ -33,7 +33,7 @@ class AddonCommandResolver(AbstractCommandResolver):
 
         return str(
             Path(addon_manager.workdir.get_resolved())
-            / "instructions"
+            / "commands"
             / group
             / f"{command}.{FILE_EXTENSION_PYTHON}"
         )
