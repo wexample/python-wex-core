@@ -5,6 +5,10 @@ from wexample_wex_core.decorator.command import command
 from wexample_wex_core.decorator.option import option
 
 
+@option(name="version")
+@option(name="type")
+@option(name="increment")
+@option(name="build")
 @command()
 def default__version__increment(
         kernel: "Kernel",
