@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_app.const.types import CommandLineArgumentsList
     from wexample_wex_core.common.command_request import CommandRequest
+    from wexample_app.runner.abstract_command_runner import AbstractCommandRunner
 
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
@@ -40,6 +41,14 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return [
             AddonCommandResolver,
             ServiceCommandResolver,
+        ]
+
+    def _get_command_runners(self) -> list[Type["AbstractCommandRunner"]]:
+        from wexample_wex_core.runner.command_python_command_runner import CommandPythonCommandRunner
+
+        return [
+            # Default runner.
+            CommandPythonCommandRunner
         ]
 
     def _get_workdir_state_manager_class(self) -> Type["FileStateManager"]:

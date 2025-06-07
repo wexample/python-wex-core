@@ -1,6 +1,7 @@
+from wexample_wex_core.decorator.command import command
 from wexample_wex_core.common.kernel import Kernel
 
-
+@command()
 def default__info__show(
         kernel: "Kernel"
 ) -> None:

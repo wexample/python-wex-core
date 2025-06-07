@@ -1,8 +1,11 @@
 from wexample_helpers.const.types import UPGRADE_TYPE_MINOR
 from wexample_helpers.helpers.version import version_increment
 from wexample_wex_core.common.kernel import Kernel
+from wexample_wex_core.decorator.command import command
+from wexample_wex_core.decorator.option import option
 
 
+@command()
 def default__version__increment(
         kernel: "Kernel",
         version: str,
