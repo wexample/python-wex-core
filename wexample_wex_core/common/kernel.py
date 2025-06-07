@@ -10,6 +10,8 @@ if TYPE_CHECKING:
     from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
     from wexample_filestate.file_state_manager import FileStateManager
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+    from wexample_app.const.types import CommandLineArgumentsList
+    from wexample_wex_core.common.command_request import CommandRequest
 
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
@@ -44,6 +46,20 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
         return KernelWorkdir
+
+    def _build_single_command_request_from_arguments(self, arguments: "CommandLineArgumentsList"):
+        # Core command request takes a request id.
+        return [
+            self._get_command_request_class()(
+                kernel=self,
+                request_id=arguments[0],
+                name=arguments[1],
+                arguments=arguments[2:])
+        ]
+
+    def _get_command_request_class(self) -> Type["CommandRequest"]:
+        from wexample_wex_core.common.command_request import CommandRequest
+        return CommandRequest
 
     def _get_core_args(self):
         return super()._get_core_args() + [
