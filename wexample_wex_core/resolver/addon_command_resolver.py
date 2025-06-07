@@ -1,13 +1,13 @@
 from pathlib import Path
 from typing import Optional, TYPE_CHECKING, cast
 
-from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
 from wexample_helpers.const.globals import FILE_EXTENSION_PYTHON
 from wexample_helpers.helpers.string import string_to_snake_case
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON, COMMAND_PATTERN_ADDON, COMMAND_SEPARATOR_FUNCTION_PARTS
+from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 if TYPE_CHECKING:
-    from wexample_app.common.command_request import CommandRequest
+    from wexample_wex_core.common.command_request import CommandRequest
 
 
 class AddonCommandResolver(AbstractCommandResolver):
