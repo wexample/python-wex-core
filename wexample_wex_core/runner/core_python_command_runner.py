@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.common.command_request import CommandRequest
 
 
-class CommandPythonCommandRunner(PythonCommandRunner):
+class CorePythonCommandRunner(PythonCommandRunner):
     def will_run(self, request: "CommandRequest") -> bool:
         if super().will_run(request):
             # TODO Check function was wrapped in @command()
@@ -16,16 +16,17 @@ class CommandPythonCommandRunner(PythonCommandRunner):
         return False
 
     def build_runnable_command(self, request: "CommandRequest") -> Optional["Command"]:
-        import importlib.util
+        from wexample_wex_core.common.command_executor import CommandExecutor
 
         command_wrapper = self._load_command_python_function(request=request)
-
         if not isinstance(command_wrapper, CommandMethodWrapper):
             # TODO Exception
             return None
 
-        # TODO This is temporary, we may need to pass the full wrapper or decopose it here.
-        return request.resolver.get_command_class_type()(
+        command_class = request.resolver.get_command_class_type()
+        assert isinstance(command_class, type) and issubclass(command_class, CommandExecutor)
+
+        return command_class(
             kernel=self.kernel,
-            function=command_wrapper.function
-        ) if command_wrapper.function is not None else None
+            command_wrapper=command_wrapper
+        )

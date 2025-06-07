@@ -44,11 +44,11 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def _get_command_runners(self) -> list[Type["AbstractCommandRunner"]]:
-        from wexample_wex_core.runner.command_python_command_runner import CommandPythonCommandRunner
+        from wexample_wex_core.runner.core_python_command_runner import CorePythonCommandRunner
 
         return [
             # Default runner.
-            CommandPythonCommandRunner
+            CorePythonCommandRunner
         ]
 
     def _get_workdir_state_manager_class(self) -> Type["FileStateManager"]:
