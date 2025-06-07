@@ -1,8 +1,11 @@
-from typing import TYPE_CHECKING, Dict, Any, List, Optional, Union, Type
+from typing import TYPE_CHECKING, Dict, Any, List, Optional, Type
 
 from wexample_app.common.command import Command
 from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 from wexample_wex_core.common.command_option import CommandOption
+from wexample_wex_core.exception.command_option_missing_exception import CommandOptionMissingException
+from wexample_wex_core.exception.command_unexpected_argument_exception import CommandUnexpectedArgumentException
+from wexample_wex_core.exception.command_argument_conversion_exception import CommandArgumentConversionException
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
@@ -21,14 +24,7 @@ class CommandExecutor(Command):
         )
 
     def execute_request(self, request: "CommandRequest"):
-        """Execute the command with the given request arguments.
-        
-        Args:
-            request: The command request containing arguments
-            
-        Returns:
-            The result of the command execution
-        """
+        """Execute the command with the given request arguments."""
         # Parse and convert arguments to appropriate types
         parsed_args = self._parse_arguments(request.arguments)
         
@@ -42,14 +38,7 @@ class CommandExecutor(Command):
         return self.function(**function_kwargs)
     
     def _parse_arguments(self, arguments: List[str]) -> Dict[str, Any]:
-        """Parse raw command line arguments into a dictionary of option name to value.
-        
-        Args:
-            arguments: List of raw command line arguments
-            
-        Returns:
-            Dictionary mapping option names to their values
-        """
+        """Parse raw command line arguments into a dictionary of option name to value."""
         result: Dict[str, Any] = {}
         skip_next = False
         
@@ -62,81 +51,74 @@ class CommandExecutor(Command):
             # Check if the argument is an option (starts with - or --)
             if arg.startswith('--'):
                 # Long option name (e.g., --version)
-                option_name = arg[2:]  # Remove '--'
+                option_name = arg[2:]
                 option = self._find_option_by_name(option_name)
                 
-                if option:
-                    # If it's a flag option, set it to True
-                    if option.is_flag:
-                        result[option.name] = True
-                    # Otherwise, look for the value in the next argument
-                    elif i + 1 < len(arguments) and not arguments[i + 1].startswith('-'):
+                if not option:
+                    # Raise exception for unexpected argument
+                    raise CommandUnexpectedArgumentException(argument=arg)
+                    
+                # Process the option
+                if option.is_flag:
+                    result[option.name] = True
+                elif i + 1 < len(arguments) and not arguments[i + 1].startswith('-'):
+                    try:
                         result[option.name] = self._convert_value(arguments[i + 1], option.type)
                         skip_next = True
-                    # If no value is provided but it's not a flag, use default or None
-                    else:
-                        result[option.name] = option.default if option.default is not None else None
+                    except Exception as e:
+                        raise CommandArgumentConversionException(
+                            argument_name=option.name,
+                            value=arguments[i + 1],
+                            target_type=option.type,
+                            cause=e
+                        )
+                else:
+                    result[option.name] = option.default if option.default is not None else None
                         
             elif arg.startswith('-') and len(arg) > 1:
                 # Short option name (e.g., -v)
-                short_name = arg[1:]  # Remove '-'
+                short_name = arg[1:]
                 option = self._find_option_by_short_name(short_name)
                 
-                if option:
-                    # If it's a flag option, set it to True
-                    if option.is_flag:
-                        result[option.name] = True
-                    # Otherwise, look for the value in the next argument
-                    elif i + 1 < len(arguments) and not arguments[i + 1].startswith('-'):
+                if not option:
+                    # Raise exception for unexpected argument
+                    raise CommandUnexpectedArgumentException(argument=arg)
+                    
+                # Process the option
+                if option.is_flag:
+                    result[option.name] = True
+                elif i + 1 < len(arguments) and not arguments[i + 1].startswith('-'):
+                    try:
                         result[option.name] = self._convert_value(arguments[i + 1], option.type)
                         skip_next = True
-                    # If no value is provided but it's not a flag, use default or None
-                    else:
-                        result[option.name] = option.default if option.default is not None else None
+                    except Exception as e:
+                        raise CommandArgumentConversionException(
+                            argument_name=option.name,
+                            value=arguments[i + 1],
+                            target_type=option.type,
+                            cause=e
+                        )
+                else:
+                    result[option.name] = option.default if option.default is not None else None
         
         return result
     
     def _find_option_by_name(self, name: str) -> Optional[CommandOption]:
-        """Find an option by its name.
-        
-        Args:
-            name: The option name to search for
-            
-        Returns:
-            The CommandOption if found, None otherwise
-        """
+        """Find an option by its name."""
         for option in self.command_wrapper.options:
             if option.name == name:
                 return option
         return None
     
     def _find_option_by_short_name(self, short_name: str) -> Optional[CommandOption]:
-        """Find an option by its short name.
-        
-        Args:
-            short_name: The short option name to search for
-            
-        Returns:
-            The CommandOption if found, None otherwise
-        """
+        """Find an option by its short name."""
         for option in self.command_wrapper.options:
             if option.short_name == short_name:
                 return option
         return None
     
     def _convert_value(self, value: str, target_type: Type) -> Any:
-        """Convert a string value to the target type.
-        
-        Args:
-            value: The string value to convert
-            target_type: The target type to convert to
-            
-        Returns:
-            The converted value
-            
-        Raises:
-            ValueError: If the value cannot be converted to the target type
-        """
+        """Convert a string value to the target type."""
         if target_type == bool:
             return value.lower() in ('true', 'yes', 'y', '1', 'on')
         elif target_type == int:
@@ -153,20 +135,7 @@ class CommandExecutor(Command):
             return target_type(value)
     
     def _build_function_kwargs(self, parsed_args: Dict[str, Any]) -> Dict[str, Any]:
-        """Build the final kwargs dictionary for the function call.
-        
-        This includes applying defaults for missing required options and
-        validating that all required options are present.
-        
-        Args:
-            parsed_args: Dictionary of parsed arguments
-            
-        Returns:
-            Dictionary of kwargs to pass to the function
-            
-        Raises:
-            ValueError: If a required option is missing
-        """
+        """Build the final kwargs dictionary for the function call."""
         function_kwargs = {}
         
         # Process all declared options
@@ -179,6 +148,6 @@ class CommandExecutor(Command):
                 function_kwargs[option.name] = option.default
             # If the option is required but not provided, raise an error
             elif option.required:
-                raise ValueError(f"Required option '{option.name}' is missing")
+                raise CommandOptionMissingException(option_name=option.name)
         
         return function_kwargs
