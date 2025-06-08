@@ -2,9 +2,12 @@ from typing import Any, Optional, Type
 
 from pydantic import BaseModel
 
+from wexample_helpers.helpers.string import string_to_kebab_case
+
 
 class CommandOption(BaseModel):
     name: str
+    kebab_name: Optional[str] = None
     short_name: Optional[str] = None
     type: Type
     description: Optional[str] = None
@@ -17,4 +20,5 @@ class CommandOption(BaseModel):
 
         super().__init__(**kwargs)
 
+        self.kebab_name = string_to_kebab_case(self.name)
         self.short_name = option_build_short_name(self.name)

@@ -106,7 +106,7 @@ class CommandExecutor(Command):
     def _find_option_by_name(self, name: str) -> Optional[CommandOption]:
         """Find an option by its name."""
         for option in self.command_wrapper.options:
-            if option.name == name:
+            if option.kebab_name == name:
                 return option
         return None
     
