@@ -1,6 +1,5 @@
 from typing import Optional, TYPE_CHECKING
 
-from wexample_helpers.const.globals import FILE_EXTENSION_PYTHON
 from wexample_wex_core.const.globals import COMMAND_TYPE_SERVICE, COMMAND_PATTERN_SERVICE
 from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
@@ -17,8 +16,12 @@ class ServiceCommandResolver(AbstractCommandResolver):
     def get_type(cls) -> str:
         return COMMAND_TYPE_SERVICE
 
-    def build_command_path(self, request: "CommandRequest") -> Optional[str]:
-        return f"{self.kernel.workdir.get_resolved()}cli/{request.name}.{FILE_EXTENSION_PYTHON}"
+    def build_command_path(
+            self,
+            request: "CommandRequest",
+            extension: str
+    ) -> Optional[str]:
+        return f"{self.kernel.workdir.get_resolved()}cli/{request.name}.{extension}"
 
     def build_command_function_name(self, request: "CommandRequest") -> Optional[str]:
         import re

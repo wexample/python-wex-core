@@ -5,6 +5,7 @@ from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
 from wexample_prompt.enums.verbosity_level import VerbosityLevel
 from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolver
+from wexample_wex_core.runner.core_yaml_command_runner import CoreYamlCommandRunner
 
 if TYPE_CHECKING:
     from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
@@ -48,7 +49,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         return [
             # Default runner.
-            CorePythonCommandRunner
+            CorePythonCommandRunner,
+            CoreYamlCommandRunner
         ]
 
     def _get_workdir_state_manager_class(self) -> Type["FileStateManager"]:
