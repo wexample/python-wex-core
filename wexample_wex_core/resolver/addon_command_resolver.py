@@ -4,6 +4,7 @@ from typing import Optional, TYPE_CHECKING, cast
 from wexample_helpers.const.globals import FILE_EXTENSION_PYTHON
 from wexample_helpers.helpers.string import string_to_snake_case
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON, COMMAND_PATTERN_ADDON, COMMAND_SEPARATOR_FUNCTION_PARTS
+from wexample_wex_core.exception.addon_not_registered_exception import AddonNotRegisteredException
 from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 if TYPE_CHECKING:
@@ -25,11 +26,15 @@ class AddonCommandResolver(AbstractCommandResolver):
         match = request.match
 
         # Extract addon, group and command from match
-        addon = string_to_snake_case(match.group(1))
+        addon_name = string_to_snake_case(match.group(1))
         group = string_to_snake_case(match.group(2))
         command = string_to_snake_case(match.group(3))
 
-        addon_manager = cast(AbstractAddonManager, self.kernel.get_registry('addon').get(addon))
+        addon_registry = self.kernel.get_registry('addon')
+        if not addon_registry.has(addon_name):
+            raise AddonNotRegisteredException(addon_name=addon_name)
+
+        addon_manager = cast(AbstractAddonManager, addon_registry.get(addon_name))
 
         return str(
             Path(addon_manager.workdir.get_resolved())
