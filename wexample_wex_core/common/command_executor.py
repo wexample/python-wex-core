@@ -1,8 +1,7 @@
-from typing import TYPE_CHECKING, Dict, Any, List, Optional
+from typing import TYPE_CHECKING, Dict, Any, List
 
 from wexample_app.common.command import Command
 from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-from wexample_wex_core.common.command_option import CommandOption
 from wexample_wex_core.exception.command_argument_conversion_exception import CommandArgumentConversionException
 from wexample_wex_core.exception.command_option_missing_exception import CommandOptionMissingException
 from wexample_wex_core.exception.command_unexpected_argument_exception import CommandUnexpectedArgumentException
@@ -54,7 +53,7 @@ class CommandExecutor(Command):
             if arg.startswith('--'):
                 # Long option name (e.g., --version)
                 option_name = arg[2:]
-                option = self._find_option_by_name(option_name)
+                option = self.command_wrapper.find_option_by_name(option_name)
 
                 if not option:
                     # Raise exception for unexpected argument
@@ -80,7 +79,7 @@ class CommandExecutor(Command):
             elif arg.startswith('-') and len(arg) > 1:
                 # Short option name (e.g., -v)
                 short_name = arg[1:]
-                option = self._find_option_by_short_name(short_name)
+                option = self.command_wrapper.find_option_by_short_name(short_name)
 
                 if not option:
                     # Raise exception for unexpected argument
@@ -104,20 +103,6 @@ class CommandExecutor(Command):
                     result[option.name] = option.default if option.default is not None else None
 
         return result
-
-    def _find_option_by_name(self, name: str) -> Optional[CommandOption]:
-        """Find an option by its name."""
-        for option in self.command_wrapper.options:
-            if option.kebab_name == name:
-                return option
-        return None
-
-    def _find_option_by_short_name(self, short_name: str) -> Optional[CommandOption]:
-        """Find an option by its short name."""
-        for option in self.command_wrapper.options:
-            if option.short_name == short_name:
-                return option
-        return None
 
     def _build_function_kwargs(self, parsed_args: Dict[str, Any]) -> Dict[str, Any]:
         """Build the final kwargs dictionary for the function call."""
