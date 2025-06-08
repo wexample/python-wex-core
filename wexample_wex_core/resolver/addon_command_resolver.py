@@ -32,7 +32,12 @@ class AddonCommandResolver(AbstractCommandResolver):
 
         addon_registry = self.kernel.get_registry('addon')
         if not addon_registry.has(addon_name):
-            raise AddonNotRegisteredException(addon_name=addon_name)
+            # Get list of available addons for better error reporting
+            available_addons = list(addon_registry.get_all().keys())
+            raise AddonNotRegisteredException(
+                addon_name=addon_name,
+                available_addons=available_addons
+            )
 
         addon_manager = cast(AbstractAddonManager, addon_registry.get(addon_name))
 
