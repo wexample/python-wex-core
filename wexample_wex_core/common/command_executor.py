@@ -23,7 +23,7 @@ class CommandExecutor(Command):
             **kwargs
         )
 
-    def execute_request(self, request: "CommandRequest"):
+    def execute_request(self, request: "CommandRequest") -> Any:
         """Execute the command with the given request arguments."""
         # Parse and convert arguments to appropriate types
         parsed_args = self._parse_arguments(request.arguments)
@@ -120,7 +120,7 @@ class CommandExecutor(Command):
     def _convert_value(self, value: str, target_type: Type) -> Any:
         """Convert a string value to the target type."""
         if target_type == bool:
-            return value.lower() in ('true', 'yes', 'y', '1', 'on')
+            return value.lower() in ('true', 'yes', 'y', '1')
         elif target_type == int:
             return int(value)
         elif target_type == float:
