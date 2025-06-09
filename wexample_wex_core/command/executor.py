@@ -70,7 +70,7 @@ class Executor(Command):
                     # Raise exception for unexpected argument
                     raise CommandUnexpectedArgumentException(
                         argument=arg,
-                        allowed_arguments=list(self.command_wrapper.get_options_names().keys())
+                        allowed_arguments=self.command_wrapper.get_options_names()
                     )
 
                 # Process the option

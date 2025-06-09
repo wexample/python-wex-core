@@ -1,9 +1,9 @@
 from dataclasses import field
-from typing import List, Optional, Dict
+from typing import List, Optional
 
 from pydantic import BaseModel
 
-from wexample_helpers.const.types import AnyCallable, StringsDict
+from wexample_helpers.const.types import AnyCallable
 from wexample_wex_core.command.option import Option
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
@@ -23,13 +23,10 @@ class CommandMethodWrapper(BaseModel):
         for option in options:
             self.set_option(option)
 
-    def get_options_names(self) -> Dict[str, StringsDict]:
-        options = {}
+    def get_options_names(self) -> List[str]:
+        options = []
         for option in self.options:
-            options[option.name] = {
-                "short": option.short_name,
-                "kebab": option.kebab_name,
-            }
+            options.append(option.name)
 
         return options
 
