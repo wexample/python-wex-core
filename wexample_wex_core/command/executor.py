@@ -23,18 +23,12 @@ class Executor(Command):
         )
 
     def execute_request(self, request: "CommandRequest") -> Any:
-        """Execute the command with the given request arguments."""
-        # Parse and convert arguments to appropriate types
-        parsed_args = self._parse_arguments(request.arguments)
-
-        # Create the function kwargs dictionary with parsed arguments
-        function_kwargs = self._build_function_kwargs(parsed_args)
-
-        # Add kernel to the kwargs
-        function_kwargs["kernel"] = self.kernel
-
         # Execute the function with the processed arguments
-        return self.function(**function_kwargs)
+        return self.function(
+            **self._build_function_kwargs(
+                request=request
+            )
+        )
 
     def _parse_arguments(self, arguments: List[str]) -> Dict[str, Any]:
         from wexample_helpers.helpers.cli import cli_argument_convert_value
@@ -104,7 +98,11 @@ class Executor(Command):
 
         return result
 
-    def _build_function_kwargs(self, parsed_args: Dict[str, Any]) -> Dict[str, Any]:
+    def _build_function_kwargs(self, request: "CommandRequest") -> Dict[str, Any]:
+        """Execute the command with the given request arguments."""
+        # Parse and convert arguments to appropriate types
+        parsed_args = self._parse_arguments(request.arguments)
+
         """Build the final kwargs dictionary for the function call."""
         function_kwargs = {}
 
@@ -119,5 +117,8 @@ class Executor(Command):
             # If the option is required but not provided, raise an error
             elif option.required:
                 raise CommandOptionMissingException(option_name=option.name)
+
+        # Add kernel to the kwargs
+        function_kwargs["kernel"] = self.kernel
 
         return function_kwargs
