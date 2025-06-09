@@ -6,9 +6,9 @@ from wexample_helpers.classes.mixin.has_class_dependencies import HasClassDepend
 from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin import HasSnakeShortClassNameClassMixin
 from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
 from wexample_wex_core.command.option import Option
+from wexample_helpers.const.types import Kwargs
 
 if TYPE_CHECKING:
-    from wexample_helpers.const.types import Kwargs
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
@@ -22,7 +22,7 @@ class AbstractMiddleware(
     options: List[Union[Dict[str, Any], Option]] = Field(default_factory=list)
     normalized_options: List[Option] = Field(default_factory=list)
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Kwargs) -> None:
         super().__init__(**kwargs)
         self.normalized_options = self.build_options()
 
