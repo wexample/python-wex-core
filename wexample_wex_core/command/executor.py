@@ -23,11 +23,13 @@ class Executor(Command):
         )
 
     def execute_request(self, request: "CommandRequest") -> Any:
+        function_kwargs = self._build_function_kwargs(
+            request=request
+        )
+
         # Execute the function with the processed arguments
         return self.function(
-            **self._build_function_kwargs(
-                request=request
-            )
+            **function_kwargs
         )
 
     def _parse_arguments(self, arguments: List[str]) -> Dict[str, Any]:
