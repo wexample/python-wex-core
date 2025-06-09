@@ -2,4 +2,5 @@ from wexample_wex_core.middleware.abstract_each_path_middleware import AbstractE
 
 
 class EachDirectoryMiddleware(AbstractEachPathMiddleware):
-    pass
+    option_name: str = 'directory'
+    option_description: str = "Path to local directory"

@@ -27,6 +27,21 @@ class Executor(Command):
             request=request
         )
 
+        if len(self.command_wrapper.middlewares) > 0:
+            output = []
+
+            for middleware in self.command_wrapper.middlewares:
+                passes = middleware.build_execution_passes(function_kwargs=function_kwargs)
+
+                for execution_pass_kwargs in passes:
+                    output.append(
+                        self.function(
+                            **execution_pass_kwargs
+                        )
+                    )
+
+            return output
+
         # Execute the function with the processed arguments
         return self.function(
             **function_kwargs

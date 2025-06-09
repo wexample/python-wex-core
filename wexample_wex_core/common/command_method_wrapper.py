@@ -18,6 +18,10 @@ class CommandMethodWrapper(BaseModel):
 
     def set_middleware(self, middleware: AbstractMiddleware) -> None:
         self.middlewares.append(middleware)
+        options = middleware.build_options()
+
+        for option in options:
+            self.set_option(option)
 
     def find_option_by_name(self, name: str) -> Optional["CommandOption"]:
         """Find an option by its name."""
