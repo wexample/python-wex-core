@@ -28,11 +28,14 @@ class EachFileMiddleware(AbstractEachPathMiddleware):
             request: "CommandRequest",
             function_kwargs: "Kwargs"
     ) -> bool:
-        if super().validate_options(
-                command_wrapper=command_wrapper,
-                request=request,
-                function_kwargs=function_kwargs,
-        ):
+        valid = super().validate_options(
+            command_wrapper=command_wrapper,
+            request=request,
+            function_kwargs=function_kwargs,
+        )
+
+        # Do not search files in directory, so we check validity of curren given path.
+        if valid and not self.expand_glob:
             option = self.get_first_option()
             file_path = function_kwargs[option.name]
             if not os.path.isfile(file_path):
@@ -43,4 +46,4 @@ class EachFileMiddleware(AbstractEachPathMiddleware):
 
             return True
 
-        return False
+        return valid
