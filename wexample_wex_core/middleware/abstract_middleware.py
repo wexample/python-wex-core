@@ -19,7 +19,12 @@ class AbstractMiddleware(
     HasClassDependencies,
     BaseModel
 ):
-    options: List[Union[Dict[str, Any], "Option"]] = Field(default_factory=list)
+    options: List[Union[Dict[str, Any], Option]] = Field(default_factory=list)
+    normalized_options: List[Option] = Field(default_factory=list)
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.normalized_options = self.build_options()
 
     @classmethod
     def get_class_name_suffix(cls) -> Optional[str]:
@@ -27,9 +32,8 @@ class AbstractMiddleware(
 
     def get_first_option(self) -> Optional["Option"]:
         """Get the path option from the normalized options."""
-        options = self.build_options()
-        if options:
-            return options[0]
+        if self.normalized_options:
+            return self.normalized_options[0]
         return None
 
     def build_options(self) -> List["Option"]:
@@ -62,6 +66,12 @@ class AbstractMiddleware(
             request: "CommandRequest",
             function_kwargs: "Kwargs"
     ) -> List["Kwargs"]:
+        self.validate_options(
+            command_wrapper=command_wrapper,
+            request=request,
+            function_kwargs=function_kwargs,
+        )
+
         return [
             function_kwargs
         ]

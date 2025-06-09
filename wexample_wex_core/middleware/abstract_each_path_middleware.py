@@ -18,11 +18,11 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         if 'option' not in kwargs or not kwargs['option']:
             kwargs['option'] = self._get_default_option()
 
-        super().__init__(**kwargs)
-
-        self.options = [
+        kwargs['options'] = [
             kwargs['option']
         ]
+
+        super().__init__(**kwargs)
 
     def _get_default_option(self) -> Dict[str, Any]:
         from wexample_helpers.const.globals import PATH_NAME_PATH

@@ -1,5 +1,5 @@
 import os.path
-from typing import TYPE_CHECKING, Dict, Any
+from typing import TYPE_CHECKING, Dict, Any, List
 
 from wexample_wex_core.exception.path_is_not_file_command_option_exception import PathIsNotFileCommandOptionException
 from wexample_wex_core.middleware.abstract_each_path_middleware import AbstractEachPathMiddleware

@@ -31,12 +31,6 @@ class Executor(Command):
             output = []
 
             for middleware in self.command_wrapper.middlewares:
-                middleware.validate_options(
-                    command_wrapper=self.command_wrapper,
-                    request=request,
-                    function_kwargs=function_kwargs,
-                )
-
                 passes = middleware.build_execution_passes(
                     command_wrapper=self.command_wrapper,
                     request=request,
@@ -107,7 +101,10 @@ class Executor(Command):
 
                 if not option:
                     # Raise exception for unexpected argument
-                    raise CommandUnexpectedArgumentException(argument=arg)
+                    raise CommandUnexpectedArgumentException(
+                        argument=arg,
+                        allowed_arguments=self.command_wrapper.get_options_names()
+                    )
 
                 # Process the option
                 if option.is_flag:

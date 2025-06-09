@@ -18,9 +18,8 @@ class CommandMethodWrapper(BaseModel):
 
     def set_middleware(self, middleware: AbstractMiddleware) -> None:
         self.middlewares.append(middleware)
-        options = middleware.build_options()
 
-        for option in options:
+        for option in middleware.normalized_options:
             self.set_option(option)
 
     def get_options_names(self) -> List[str]:
