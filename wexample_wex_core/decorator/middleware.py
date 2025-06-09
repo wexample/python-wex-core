@@ -13,7 +13,8 @@ def middleware(
         **kwargs
 ) -> "AnyCallable":
     def decorator(command_wrapper: "CommandMethodWrapper") -> "CommandMethodWrapper":
-        command_wrapper.set_middleware(middlewares_registry.get_service('middlewares', name))
+        middleware_class = middlewares_registry.get_registry('middlewares').get(name)
+        command_wrapper.set_middleware(middleware_class(**kwargs))
         return command_wrapper
 
     return decorator

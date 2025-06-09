@@ -2,13 +2,13 @@ from typing import TYPE_CHECKING, List, cast, Type
 
 from pydantic import BaseModel
 
-from wexample_app.service.mixins.service_container_mixin import ServiceContainerMixin
+from wexample_helpers.service.mixins.registry_container_mixin import RegistryContainerMixin
 
 if TYPE_CHECKING:
     from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 
-class MiddlewaresRegistry(ServiceContainerMixin, BaseModel):
+class MiddlewaresRegistry(RegistryContainerMixin, BaseModel):
     """Middleware configuration for command execution.
     
     Middlewares can modify the behavior of commands, such as by iterating over
@@ -21,7 +21,7 @@ class MiddlewaresRegistry(ServiceContainerMixin, BaseModel):
         self._init_middlewares()
 
     def _init_middlewares(self):
-        self.register_services(
+        self.register_items(
             'middlewares',
             self._get_middlewares_classes()
         )
