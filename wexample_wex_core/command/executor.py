@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Dict, Any, List
 
+from wexample_helpers.const.types import Kwargs
 from wexample_app.common.command import Command
 from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 from wexample_wex_core.exception.command_argument_conversion_exception import CommandArgumentConversionException
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 class Executor(Command):
     command_wrapper: CommandMethodWrapper
 
-    def __init__(self, command_wrapper: CommandMethodWrapper, *args, **kwargs):
+    def __init__(self, command_wrapper: CommandMethodWrapper, *args: Any, **kwargs: Kwargs):
         kwargs['command_wrapper'] = command_wrapper
 
         super().__init__(
