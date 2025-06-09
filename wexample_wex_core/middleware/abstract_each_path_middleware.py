@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, Any
+from typing import TYPE_CHECKING, Dict, Any, Optional
 
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
@@ -23,6 +23,10 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         ]
 
         super().__init__(**kwargs)
+
+    def _get_option_file_path(self, function_kwargs: "Kwargs") -> Optional[str]:
+        option = self.get_first_option()
+        return function_kwargs[option.name]
 
     def _get_default_option(self) -> Dict[str, Any]:
         from wexample_helpers.const.globals import PATH_NAME_PATH
