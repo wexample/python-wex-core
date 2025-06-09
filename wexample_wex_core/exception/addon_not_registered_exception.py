@@ -18,9 +18,6 @@ class AddonNotRegisteredException(NotAllowedItemException):
             cause: Optional[Exception] = None,
             previous: Optional[Exception] = None
     ):
-        # Store addon_name as instance attribute for backward compatibility
-        self.addon_name = addon_name
-        
         # Call parent constructor with appropriate parameters
         super().__init__(
             item_type="addon",

@@ -1,6 +1,7 @@
-from typing import Optional
+from typing import Optional, List
 
-from wexample_app.exception.abstract_exception import AbstractException, ExceptionData
+from wexample_app.exception.abstract_exception import ExceptionData
+from wexample_helpers.exception.not_allowed_item_exception import NotAllowedItemException
 
 
 class CommandUnexpectedArgumentData(ExceptionData):
@@ -8,25 +9,22 @@ class CommandUnexpectedArgumentData(ExceptionData):
     argument: str
 
 
-class CommandUnexpectedArgumentException(AbstractException):
+class CommandUnexpectedArgumentException(NotAllowedItemException):
     """Exception raised when an unexpected argument is provided to a command."""
     error_code: str = "COMMAND_UNEXPECTED_ARGUMENT"
 
     def __init__(
             self,
             argument: str,
+            allowed_arguments: List[str],
             cause: Optional[Exception] = None,
             previous: Optional[Exception] = None
     ):
-        # Create structured data using Pydantic model
-        data_model = CommandUnexpectedArgumentData(argument=argument)
-
-        # Store argument as instance attribute
-        self.argument = argument
-
+        # Call parent constructor with appropriate parameters
         super().__init__(
-            message=f"Unexpected argument: {argument}",
-            data=data_model.model_dump(),
+            item_type="argument",
+            item_value=argument,
+            allowed_values=allowed_arguments,
             cause=cause,
             previous=previous
         )

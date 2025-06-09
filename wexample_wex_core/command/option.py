@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from wexample_helpers.helpers.string import string_to_kebab_case
 
 
-class CommandOption(BaseModel):
+class Option(BaseModel):
     name: str
     kebab_name: Optional[str] = None
     short_name: Optional[str] = None

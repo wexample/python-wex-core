@@ -68,7 +68,10 @@ class Executor(Command):
 
                 if not option:
                     # Raise exception for unexpected argument
-                    raise CommandUnexpectedArgumentException(argument=arg)
+                    raise CommandUnexpectedArgumentException(
+                        argument=arg,
+                        allowed_arguments=list(self.command_wrapper.get_options_names().keys())
+                    )
 
                 # Process the option
                 if option.is_flag:

@@ -1,19 +1,19 @@
 from dataclasses import field
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from pydantic import BaseModel
 
-from wexample_helpers.const.types import AnyCallable
-from wexample_wex_core.common.command_option import CommandOption
+from wexample_helpers.const.types import AnyCallable, StringsDict
+from wexample_wex_core.command.option import Option
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 
 class CommandMethodWrapper(BaseModel):
     function: AnyCallable
-    options: List[CommandOption] = field(default_factory=list)
+    options: List[Option] = field(default_factory=list)
     middlewares: List[AbstractMiddleware] = field(default_factory=list)
 
-    def set_option(self, option: "CommandOption") -> None:
+    def set_option(self, option: "Option") -> None:
         self.options.append(option)
 
     def set_middleware(self, middleware: AbstractMiddleware) -> None:
@@ -23,14 +23,24 @@ class CommandMethodWrapper(BaseModel):
         for option in options:
             self.set_option(option)
 
-    def find_option_by_name(self, name: str) -> Optional["CommandOption"]:
+    def get_options_names(self) -> Dict[str, StringsDict]:
+        options = {}
+        for option in self.options:
+            options[option.name] = {
+                "short": option.short_name,
+                "kebab": option.kebab_name,
+            }
+
+        return options
+
+    def find_option_by_name(self, name: str) -> Optional["Option"]:
         """Find an option by its name."""
         for option in self.options:
             if option.kebab_name == name:
                 return option
         return None
 
-    def find_option_by_short_name(self, short_name: str) -> Optional["CommandOption"]:
+    def find_option_by_short_name(self, short_name: str) -> Optional["Option"]:
         """Find an option by its short name."""
         for option in self.options:
             if option.short_name == short_name:
