@@ -1,6 +1,7 @@
+from typing import Optional
+
 from wexample_config.const.types import DictConfig
 from wexample_filestate.file_state_manager import FileStateManager
-from wexample_helpers.const.types import Optional
 
 
 class Workdir(FileStateManager):
