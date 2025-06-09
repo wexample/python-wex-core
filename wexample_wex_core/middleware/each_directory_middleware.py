@@ -1,5 +1,5 @@
 import os.path
-from typing import TYPE_CHECKING, Dict, Any
+from typing import TYPE_CHECKING, Dict, Any, List
 
 from wexample_wex_core.exception.path_is_not_directory_command_option_exception import PathIsNotDirectoryCommandOptionException
 from wexample_wex_core.middleware.abstract_each_path_middleware import AbstractEachPathMiddleware
@@ -44,3 +44,6 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
             return True
 
         return False
+        
+    def _should_process_item(self, item_path: str) -> bool:
+        return os.path.isdir(item_path)

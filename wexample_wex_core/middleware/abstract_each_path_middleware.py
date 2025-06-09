@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Dict, Any, Optional
+import os.path
+from typing import TYPE_CHECKING, Dict, Any, Optional, List
 
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
@@ -59,3 +60,61 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
                     )
 
         return True
+        
+    def _should_process_item(self, item_path: str) -> bool:
+        """
+        Determine if an item should be processed based on its path.
+        This method should be overridden by subclasses to implement specific filtering logic.
+        
+        Args:
+            item_path: Path to the item to check
+            
+        Returns:
+            True if the item should be processed, False otherwise
+        """
+        # Base implementation accepts all items
+        return True
+        
+    def build_execution_passes(
+            self,
+            command_wrapper: "CommandMethodWrapper",
+            request: "CommandRequest",
+            function_kwargs: "Kwargs"
+    ) -> List["Kwargs"]:
+        # If glob expansion is enabled and the path is a directory,
+        # create an execution for each matching item in that directory
+        if self.expand_glob:
+            path = self._get_option_file_path(function_kwargs=function_kwargs)
+            
+            # If the path is a directory, process each item it contains based on subclass criteria
+            if os.path.isdir(path):
+                passes = []
+                option = self.get_first_option()
+                
+                # Iterate through all directory items
+                for item in os.listdir(path):
+                    item_path = os.path.join(path, item)
+                    
+                    # Only process items that match the subclass criteria
+                    if self._should_process_item(item_path):
+                        # Create a copy of arguments for each matching item
+                        kwargs_copy = function_kwargs.copy()
+                        kwargs_copy[option.name] = item_path
+                        passes.append(kwargs_copy)
+                        
+                return passes
+            
+            # If the path is not a directory, continue normally
+            # (validation will happen in validate_options)
+            
+        # If expand_glob is not enabled, use default behavior
+        # First validate options
+        self.validate_options(
+            command_wrapper=command_wrapper,
+            request=request,
+            function_kwargs=function_kwargs,
+        )
+        
+        return [
+            function_kwargs
+        ]
