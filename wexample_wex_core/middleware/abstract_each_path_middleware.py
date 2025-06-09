@@ -1,5 +1,4 @@
-
-from typing import TYPE_CHECKING, List, Dict, Any
+from typing import TYPE_CHECKING, Dict, Any
 
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
@@ -34,15 +33,16 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
             "description": "Path to local file or directory"
         }
 
-    def build_execution_passes(
+    def validate_options(
             self,
             command_wrapper: "CommandMethodWrapper",
             request: "CommandRequest",
             function_kwargs: "Kwargs"
-    ) -> List["Kwargs"]:
+    ) -> bool:
         if self.should_exist:
             import os.path
-            from wexample_wex_core.exception.file_not_found_command_option_exception import FileNotFoundCommandOptionException
+            from wexample_wex_core.exception.file_not_found_command_option_exception import \
+                FileNotFoundCommandOptionException
 
             option = self.get_first_option()
             if option and option.name in function_kwargs:
@@ -53,6 +53,4 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
                         file_path=file_path
                     )
 
-        return [
-            function_kwargs
-        ]
+        return True

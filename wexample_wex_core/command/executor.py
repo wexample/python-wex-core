@@ -31,6 +31,12 @@ class Executor(Command):
             output = []
 
             for middleware in self.command_wrapper.middlewares:
+                middleware.validate_options(
+                    command_wrapper=self.command_wrapper,
+                    request=request,
+                    function_kwargs=function_kwargs,
+                )
+
                 passes = middleware.build_execution_passes(
                     command_wrapper=self.command_wrapper,
                     request=request,

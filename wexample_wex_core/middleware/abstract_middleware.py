@@ -25,16 +25,6 @@ class AbstractMiddleware(
     def get_class_name_suffix(cls) -> Optional[str]:
         return 'Middleware'
 
-    def build_execution_passes(
-            self,
-            command_wrapper: "CommandMethodWrapper",
-            request: "CommandRequest",
-            function_kwargs: "Kwargs"
-    ) -> List["Kwargs"]:
-        return [
-            function_kwargs
-        ]
-
     def get_first_option(self) -> Optional["Option"]:
         """Get the path option from the normalized options."""
         options = self.build_options()
@@ -57,3 +47,21 @@ class AbstractMiddleware(
                 raise TypeError(f"Unsupported option type: {type(option)}")
 
         return normalized
+
+    def validate_options(
+            self,
+            command_wrapper: "CommandMethodWrapper",
+            request: "CommandRequest",
+            function_kwargs: "Kwargs"
+    ):
+        pass
+
+    def build_execution_passes(
+            self,
+            command_wrapper: "CommandMethodWrapper",
+            request: "CommandRequest",
+            function_kwargs: "Kwargs"
+    ) -> List["Kwargs"]:
+        return [
+            function_kwargs
+        ]
