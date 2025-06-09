@@ -75,6 +75,20 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         """
         # Base implementation accepts all items
         return True
+        
+    def _should_explore_directory(self, directory_name: str) -> bool:
+        """
+        Determine if a directory should be explored during recursive traversal.
+        This method can be overridden by subclasses to skip certain directories.
+        
+        Args:
+            directory_name: Name of the directory to check (not the full path)
+            
+        Returns:
+            True if the directory should be explored, False otherwise
+        """
+        # Base implementation explores all directories
+        return True
 
     def _process_directory_recursively(self, directory_path: str, option_name: str, current_depth: int = 0) -> List[
         Dict]:
@@ -104,8 +118,12 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
                     # Create a copy of arguments for each matching item
                     result.append({option_name: item_path})
 
-                # If recursive is enabled and item is a directory, process it recursively
+                # If recursive is enabled and item is a directory, check if we should explore it
                 if self.recursive and os.path.isdir(item_path):
+                    # Skip directories that shouldn't be explored
+                    if not self._should_explore_directory(item):
+                        continue
+                        
                     subdirectory_results = self._process_directory_recursively(
                         directory_path=item_path,
                         option_name=option_name,
