@@ -10,9 +10,9 @@ def middleware(
         **kwargs
 ) -> "AnyCallable":
     def decorator(command_wrapper: "CommandMethodWrapper") -> "CommandMethodWrapper":
-        from wexample_wex_core.command.middleware import Middleware
+        from wexample_wex_core.command.middleware_executor import MiddlewareExecutor
 
-        command_wrapper.set_middleware(Middleware(
+        command_wrapper.set_middleware(MiddlewareExecutor(
             name=name,
             **kwargs
         ))
