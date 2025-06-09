@@ -4,15 +4,20 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from wexample_helpers.const.types import AnyCallable
+from wexample_wex_core.command.middleware import Middleware
 from wexample_wex_core.common.command_option import CommandOption
 
 
 class CommandMethodWrapper(BaseModel):
     function: AnyCallable
     options: List[CommandOption] = field(default_factory=list)
+    middlewares: List[Middleware] = field(default_factory=list)
 
     def set_option(self, option: "CommandOption") -> None:
         self.options.append(option)
+
+    def set_middleware(self, middleware: "Middleware") -> None:
+        self.middlewares.append(middleware)
 
     def find_option_by_name(self, name: str) -> Optional["CommandOption"]:
         """Find an option by its name."""
