@@ -1,10 +1,17 @@
-from typing import Dict, Any
+
+from typing import TYPE_CHECKING, List, Dict, Any
 
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
+
+if TYPE_CHECKING:
+    from wexample_helpers.const.types import Kwargs
+    from wexample_wex_core.common.command_request import CommandRequest
+    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
 
 class AbstractEachPathMiddleware(AbstractMiddleware):
     recursive: bool = False
+    should_exist: bool = False
 
     def __init__(self, **kwargs):
         # Set default option if none provided
@@ -26,3 +33,26 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
             "required": True,
             "description": "Path to local file or directory"
         }
+
+    def build_execution_passes(
+            self,
+            command_wrapper: "CommandMethodWrapper",
+            request: "CommandRequest",
+            function_kwargs: "Kwargs"
+    ) -> List["Kwargs"]:
+        if self.should_exist:
+            import os.path
+            from wexample_wex_core.exception.file_not_found_command_option_exception import FileNotFoundCommandOptionException
+
+            option = self.get_first_option()
+            if option and option.name in function_kwargs:
+                file_path = function_kwargs[option.name]
+                if not os.path.exists(file_path):
+                    raise FileNotFoundCommandOptionException(
+                        option_name=option.name,
+                        file_path=file_path
+                    )
+
+        return [
+            function_kwargs
+        ]

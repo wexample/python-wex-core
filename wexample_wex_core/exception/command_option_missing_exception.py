@@ -1,6 +1,7 @@
 from typing import Optional
 
 from wexample_app.exception.abstract_exception import AbstractException, ExceptionData
+from wexample_wex_core.exception.abstract_command_option_exception import AbstractCommandOptionException
 
 
 class CommandOptionMissingData(ExceptionData):
@@ -8,7 +9,7 @@ class CommandOptionMissingData(ExceptionData):
     option_name: str
 
 
-class CommandOptionMissingException(AbstractException):
+class CommandOptionMissingException(AbstractCommandOptionException):
     """Exception raised when a required command option is missing."""
     error_code: str = "COMMAND_OPTION_MISSING"
 
@@ -25,6 +26,7 @@ class CommandOptionMissingException(AbstractException):
         self.option_name = option_name
 
         super().__init__(
+            option_name=option_name,
             message=f"Required option '{option_name}' is missing",
             data=data_model.model_dump(),
             cause=cause,

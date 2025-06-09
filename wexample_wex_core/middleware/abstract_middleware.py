@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING, List, Type, Dict, Any, Union
+from typing import Optional, TYPE_CHECKING, List, Dict, Any, Union
 
 from pydantic import BaseModel, Field
 
@@ -11,15 +11,6 @@ if TYPE_CHECKING:
     from wexample_helpers.const.types import Kwargs
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-
-
-class OptionDefinition(BaseModel):
-    """Definition of a command option for middleware."""
-    name: str
-    type: Type
-    required: bool = False
-    description: Optional[str] = None
-    default: Any = None
 
 
 class AbstractMiddleware(
@@ -54,7 +45,7 @@ class AbstractMiddleware(
     def build_options(self) -> List["Option"]:
         from wexample_wex_core.command.option import Option
 
-        """Convert options from various formats to OptionDefinition objects."""
+        """Convert options from various formats to Option objects."""
         normalized = []
 
         for option in self.options:
