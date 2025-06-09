@@ -48,5 +48,5 @@ class EachFileMiddleware(AbstractEachPathMiddleware):
 
         return valid
 
-    def _should_process_item(self, item_path: str) -> bool:
+    def _should_process_item(self, request: "CommandRequest", item_path: str) -> bool:
         return os.path.isfile(item_path)

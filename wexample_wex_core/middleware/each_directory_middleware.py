@@ -45,5 +45,5 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
 
         return False
         
-    def _should_process_item(self, item_path: str) -> bool:
+    def _should_process_item(self, request: "CommandRequest", item_path: str) -> bool:
         return os.path.isdir(item_path)

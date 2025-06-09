@@ -62,7 +62,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
         return True
 
-    def _should_process_item(self, item_path: str) -> bool:
+    def _should_process_item(self, request: "CommandRequest", item_path: str) -> bool:
         """
         Determine if an item should be processed based on its path.
         This method should be overridden by subclasses to implement specific filtering logic.
@@ -75,8 +75,8 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         """
         # Base implementation accepts all items
         return True
-        
-    def _should_explore_directory(self, directory_name: str) -> bool:
+
+    def _should_explore_directory(self, request: "CommandRequest", directory_name: str) -> bool:
         """
         Determine if a directory should be explored during recursive traversal.
         This method can be overridden by subclasses to skip certain directories.
@@ -90,7 +90,8 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         # Base implementation explores all directories
         return True
 
-    def _process_directory_recursively(self, directory_path: str, option_name: str, current_depth: int = 0) -> List[
+    def _process_directory_recursively(self, request: "CommandRequest", directory_path: str, option_name: str,
+                                       current_depth: int = 0) -> List[
         Dict]:
         """
         Process a directory recursively, collecting paths that match the criteria.
@@ -114,17 +115,19 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
                 item_path = os.path.join(directory_path, item)
 
                 # Process items that match the subclass criteria
-                if self._should_process_item(item_path):
+                if self._should_process_item(request=request, item_path=item_path):
                     # Create a copy of arguments for each matching item
                     result.append({option_name: item_path})
 
                 # If recursive is enabled and item is a directory, check if we should explore it
                 if self.recursive and os.path.isdir(item_path):
                     # Skip directories that shouldn't be explored
-                    if not self._should_explore_directory(item):
+                    if not self._should_explore_directory(request=request, directory_name=item):
+                        request.kernel.io.info(f'Skipping path that does not match middleware policy: {item_path}')
                         continue
-                        
+
                     subdirectory_results = self._process_directory_recursively(
+                        request=request,
                         directory_path=item_path,
                         option_name=option_name,
                         current_depth=current_depth + 1
@@ -154,6 +157,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
                 # Process the directory (recursively if enabled)
                 path_kwargs_list = self._process_directory_recursively(
+                    request=request,
                     directory_path=path,
                     option_name=option.name
                 )
