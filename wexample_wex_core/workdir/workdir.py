@@ -1,24 +1,24 @@
 from wexample_config.const.types import DictConfig
 from wexample_filestate.file_state_manager import FileStateManager
-from wexample_helpers.const.types import *
+from wexample_helpers.const.types import Optional
 
 
 class Workdir(FileStateManager):
     should_exist: bool = True
 
-    def prepare_value(self, config: Optional[DictConfig] = None) -> DictConfig:
+    def prepare_value(self, raw_value: Optional[DictConfig] = None) -> DictConfig:
         from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
         from wexample_filestate.const.disk import DiskItemType
 
-        config = super().prepare_value(config)
+        raw_value = super().prepare_value(raw_value)
 
-        if "children" not in config:
-            config["children"] = []
+        if "children" not in raw_value:
+            raw_value["children"] = []
 
-        config["children"].append({
+        raw_value["children"].append({
             "name": WORKDIR_SETUP_DIR,
             'type': DiskItemType.DIRECTORY,
             'should_exist': True,
         })
 
-        return config
+        return raw_value
