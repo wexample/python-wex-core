@@ -57,8 +57,8 @@ class AbstractMiddleware(
             command_wrapper: "CommandMethodWrapper",
             request: "CommandRequest",
             function_kwargs: "Kwargs"
-    ):
-        pass
+    ) -> bool:
+        return True
 
     def build_execution_passes(
             self,
