@@ -1,6 +1,13 @@
-from typing import Dict, Any
+import os.path
+from typing import TYPE_CHECKING, Dict, Any
 
+from wexample_wex_core.exception.path_is_not_directory_command_option_exception import PathIsNotDirectoryCommandOptionException
 from wexample_wex_core.middleware.abstract_each_path_middleware import AbstractEachPathMiddleware
+
+if TYPE_CHECKING:
+    from wexample_helpers.const.types import Kwargs
+    from wexample_wex_core.common.command_request import CommandRequest
+    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
 
 class EachDirectoryMiddleware(AbstractEachPathMiddleware):
@@ -14,3 +21,26 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
             "required": True,
             "description": "Path to local directory"
         }
+        
+    def validate_options(
+            self,
+            command_wrapper: "CommandMethodWrapper",
+            request: "CommandRequest",
+            function_kwargs: "Kwargs"
+    ) -> bool:
+        if super().validate_options(
+                command_wrapper=command_wrapper,
+                request=request,
+                function_kwargs=function_kwargs,
+        ):
+            option = self.get_first_option()
+            directory_path = function_kwargs[option.name]
+            if not os.path.isdir(directory_path):
+                raise PathIsNotDirectoryCommandOptionException(
+                    option_name=option.name,
+                    directory_path=directory_path
+                )
+
+            return True
+
+        return False

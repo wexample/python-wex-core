@@ -41,14 +41,14 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
     ) -> bool:
         if self.should_exist:
             import os.path
-            from wexample_wex_core.exception.file_not_found_command_option_exception import \
-                FileNotFoundCommandOptionException
+            from wexample_wex_core.exception.path_not_found_command_option_exception import \
+                PathNotFoundCommandOptionException
 
             option = self.get_first_option()
             if option and option.name in function_kwargs:
                 file_path = function_kwargs[option.name]
                 if not os.path.exists(file_path):
-                    raise FileNotFoundCommandOptionException(
+                    raise PathNotFoundCommandOptionException(
                         option_name=option.name,
                         file_path=file_path
                     )
