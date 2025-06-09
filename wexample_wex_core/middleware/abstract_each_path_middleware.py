@@ -13,7 +13,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
     recursive: bool = False
     should_exist: bool = False
     expand_glob: bool = False
-    recursion_max_depth: int = 10  # Default maximum recursion depth to prevent excessive traversal
+    recursion_limit: int = 100
 
     def __init__(self, **kwargs):
         # Set default option if none provided
@@ -61,7 +61,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
                     )
 
         return True
-        
+
     def _should_process_item(self, item_path: str) -> bool:
         """
         Determine if an item should be processed based on its path.
@@ -75,8 +75,9 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         """
         # Base implementation accepts all items
         return True
-        
-    def _process_directory_recursively(self, directory_path: str, option_name: str, current_depth: int = 0) -> List[Dict]:
+
+    def _process_directory_recursively(self, directory_path: str, option_name: str, current_depth: int = 0) -> List[
+        Dict]:
         """
         Process a directory recursively, collecting paths that match the criteria.
         
@@ -88,21 +89,21 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         Returns:
             List of function kwargs dictionaries for each matching path
         """
-        if current_depth > self.recursion_max_depth:
+        if current_depth > self.recursion_limit:
             return []  # Stop recursion if max depth is reached
-            
+
         result = []
-        
+
         try:
             # Iterate through all directory items
             for item in os.listdir(directory_path):
                 item_path = os.path.join(directory_path, item)
-                
+
                 # Process items that match the subclass criteria
                 if self._should_process_item(item_path):
                     # Create a copy of arguments for each matching item
                     result.append({option_name: item_path})
-                
+
                 # If recursive is enabled and item is a directory, process it recursively
                 if self.recursive and os.path.isdir(item_path):
                     subdirectory_results = self._process_directory_recursively(
@@ -114,9 +115,9 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         except (PermissionError, FileNotFoundError) as e:
             # Skip directories we can't access
             pass
-            
+
         return result
-    
+
     def build_execution_passes(
             self,
             command_wrapper: "CommandMethodWrapper",
@@ -127,29 +128,29 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         # create an execution for each matching item in that directory
         if self.expand_glob:
             path = self._get_option_file_path(function_kwargs=function_kwargs)
-            
+
             # If the path is a directory, process it
             if os.path.isdir(path):
                 passes = []
                 option = self.get_first_option()
-                
+
                 # Process the directory (recursively if enabled)
                 path_kwargs_list = self._process_directory_recursively(
                     directory_path=path,
                     option_name=option.name
                 )
-                
+
                 # Create execution passes by combining the original kwargs with each path
                 for path_kwargs in path_kwargs_list:
                     kwargs_copy = function_kwargs.copy()
                     kwargs_copy.update(path_kwargs)
                     passes.append(kwargs_copy)
-                    
+
                 return passes
-            
+
             # If the path is not a directory, continue normally
             # (validation will happen in validate_options)
-            
+
         # If expand_glob is not enabled, use default behavior
         # First validate options
         self.validate_options(
@@ -157,7 +158,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
             request=request,
             function_kwargs=function_kwargs,
         )
-        
+
         return [
             function_kwargs
         ]

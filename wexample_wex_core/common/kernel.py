@@ -1,4 +1,4 @@
-from typing import Type, TYPE_CHECKING, Optional, List, cast
+from typing import Type, TYPE_CHECKING, Optional, List, cast, Dict
 
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
@@ -26,6 +26,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_command_line_kernel()
         self._init_resolvers()
         self._init_runners()
+        self._init_middlewares()
 
         return response
 
@@ -53,6 +54,15 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             CoreYamlCommandRunner
         ]
 
+    def _init_middlewares(self):
+        from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+
+        classes = []
+        for addon in self.get_addons().values():
+            classes.extend(cast(AbstractAddonManager, addon).get_middlewares_classes())
+
+        self.register_items("middlewares", classes)
+
     def _get_workdir_state_manager_class(self) -> Type["FileStateManager"]:
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
@@ -78,3 +88,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             {"arg": "vv", "attr": "verbosity", "value": VerbosityLevel.MEDIUM},
             {"arg": "vvv", "attr": "verbosity", "value": VerbosityLevel.MAXIMUM},
         ]
+
+    def get_addons(self) -> Dict[str, "AbstractAddonManager"]:
+        return self.get_registry("addon").get_all()

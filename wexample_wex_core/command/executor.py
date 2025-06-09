@@ -23,6 +23,14 @@ class Executor(Command):
         )
 
     def execute_request(self, request: "CommandRequest") -> Any:
+        middlewares_attributes = self.command_wrapper.middlewares_attributes
+        middlewares_registry = self.kernel.get_registry('middlewares')
+
+        for name in middlewares_attributes:
+            middleware_class = middlewares_registry.get_class(name)
+            middleware = middleware_class(name=name, **middlewares_attributes[name])
+            self.command_wrapper.set_middleware(middleware)
+
         function_kwargs = self._build_function_kwargs(
             request=request
         )

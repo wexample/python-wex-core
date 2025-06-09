@@ -1,9 +1,9 @@
 from dataclasses import field
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from pydantic import BaseModel
 
-from wexample_helpers.const.types import AnyCallable
+from wexample_helpers.const.types import AnyCallable, Kwargs
 from wexample_wex_core.command.option import Option
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
@@ -12,11 +12,15 @@ class CommandMethodWrapper(BaseModel):
     function: AnyCallable
     options: List[Option] = field(default_factory=list)
     middlewares: List[AbstractMiddleware] = field(default_factory=list)
+    middlewares_attributes: Dict[str, Kwargs] = field(default_factory=dict)
 
     def set_option(self, option: "Option") -> None:
         self.options.append(option)
 
-    def set_middleware(self, middleware: AbstractMiddleware) -> None:
+    def register_middleware(self, name: str, middleware_kwargs: "Kwargs") -> None:
+        self.middlewares_attributes[name] = middleware_kwargs
+
+    def set_middleware(self, middleware:AbstractMiddleware) -> None:
         self.middlewares.append(middleware)
 
         for option in middleware.normalized_options:
