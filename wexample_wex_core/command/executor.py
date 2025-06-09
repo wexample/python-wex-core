@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
 
 
-class CommandExecutor(Command):
+class Executor(Command):
     command_wrapper: CommandMethodWrapper
 
     def __init__(self, command_wrapper: CommandMethodWrapper, *args, **kwargs):
