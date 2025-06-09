@@ -1,6 +1,6 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
-from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware, OptionDefinition
+from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 
 class AbstractEachPathMiddleware(AbstractMiddleware):
@@ -18,17 +18,11 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         ]
 
     def _get_default_option(self) -> Dict[str, Any]:
+        from wexample_helpers.const.globals import PATH_NAME_PATH
         """Get the default path option definition."""
         return {
-            "name": "path",
+            "name": PATH_NAME_PATH,
             "type": str,
             "required": True,
             "description": "Path to local file or directory"
         }
-
-    def get_path_option(self) -> Optional[OptionDefinition]:
-        """Get the path option from the normalized options."""
-        options = self._normalize_options()
-        if options:
-            return options[0]
-        return None

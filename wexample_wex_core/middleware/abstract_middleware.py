@@ -5,10 +5,12 @@ from pydantic import BaseModel, Field
 from wexample_helpers.classes.mixin.has_class_dependencies import HasClassDependencies
 from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin import HasSnakeShortClassNameClassMixin
 from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
+from wexample_wex_core.command.option import Option
 
 if TYPE_CHECKING:
     from wexample_helpers.const.types import Kwargs
-    from wexample_wex_core.command.option import Option
+    from wexample_wex_core.common.command_request import CommandRequest
+    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
 
 class OptionDefinition(BaseModel):
@@ -26,16 +28,28 @@ class AbstractMiddleware(
     HasClassDependencies,
     BaseModel
 ):
-    options: List[Union[Dict[str, Any], OptionDefinition]] = Field(default_factory=list)
+    options: List[Union[Dict[str, Any], "Option"]] = Field(default_factory=list)
 
     @classmethod
     def get_class_name_suffix(cls) -> Optional[str]:
         return 'Middleware'
 
-    def build_execution_passes(self, function_kwargs: "Kwargs") -> List["Kwargs"]:
+    def build_execution_passes(
+            self,
+            command_wrapper: "CommandMethodWrapper",
+            request: "CommandRequest",
+            function_kwargs: "Kwargs"
+    ) -> List["Kwargs"]:
         return [
             function_kwargs
         ]
+
+    def get_first_option(self) -> Optional["Option"]:
+        """Get the path option from the normalized options."""
+        options = self.build_options()
+        if options:
+            return options[0]
+        return None
 
     def build_options(self) -> List["Option"]:
         from wexample_wex_core.command.option import Option

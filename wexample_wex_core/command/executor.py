@@ -31,7 +31,11 @@ class Executor(Command):
             output = []
 
             for middleware in self.command_wrapper.middlewares:
-                passes = middleware.build_execution_passes(function_kwargs=function_kwargs)
+                passes = middleware.build_execution_passes(
+                    command_wrapper=self.command_wrapper,
+                    request=request,
+                    function_kwargs=function_kwargs
+                )
 
                 for execution_pass_kwargs in passes:
                     output.append(

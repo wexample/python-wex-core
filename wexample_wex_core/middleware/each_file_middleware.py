@@ -5,9 +5,11 @@ from wexample_wex_core.middleware.abstract_each_path_middleware import AbstractE
 
 class EachFileMiddleware(AbstractEachPathMiddleware):
     def _get_default_option(self) -> Dict[str, Any]:
+        from wexample_helpers.const.globals import PATH_NAME_FILE
+
         """Get the default file option definition."""
         return {
-            "name": "file",
+            "name": PATH_NAME_FILE,
             "type": str,
             "required": True,
             "description": "Path to local file"
