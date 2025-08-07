@@ -52,6 +52,11 @@ class Executor(Command):
                     function_kwargs=function_kwargs
                 )
 
+                # Apply limit if specified
+                if isinstance(middleware.max_iterations, int) and middleware.max_iterations > 0:
+                    passes = passes[:middleware.max_iterations]
+                    self.kernel.io.info(f'Middleware \"{middleware.get_short_class_name()}\" truncated list to {middleware.max_iterations} items')
+
                 for execution_pass_kwargs in passes:
                     response = response_normalize(
                         kernel=self.kernel,

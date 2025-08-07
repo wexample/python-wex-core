@@ -5,8 +5,8 @@ from pydantic import BaseModel, Field
 from wexample_helpers.classes.mixin.has_class_dependencies import HasClassDependencies
 from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin import HasSnakeShortClassNameClassMixin
 from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
-from wexample_wex_core.command.option import Option
 from wexample_helpers.const.types import Kwargs
+from wexample_wex_core.command.option import Option
 
 if TYPE_CHECKING:
     from wexample_wex_core.common.command_request import CommandRequest
@@ -22,6 +22,7 @@ class AbstractMiddleware(
     options: List[Union[Dict[str, Any], Option]] = Field(default_factory=list)
     normalized_options: List[Option] = Field(default_factory=list)
     stop_on_failure: bool = True
+    max_iterations: Optional[int] = None
 
     def __init__(self, **kwargs: Kwargs) -> None:
         super().__init__(**kwargs)
