@@ -85,6 +85,8 @@ class AbstractMiddleware(
         return [
             ExecutionPass(
                 middleware=self,
+                command_wrapper=command_wrapper,
+                request=request,
                 function_kwargs=function_kwargs
             )
         ]

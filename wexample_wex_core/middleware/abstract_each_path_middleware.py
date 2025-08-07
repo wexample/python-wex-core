@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from wexample_helpers.const.types import Kwargs
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+    from wexample_wex_core.common.execution_pass import ExecutionPass
 
 
 class AbstractEachPathMiddleware(AbstractMiddleware):
@@ -147,10 +148,12 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
             command_wrapper: "CommandMethodWrapper",
             request: "CommandRequest",
             function_kwargs: "Kwargs"
-    ) -> List["Kwargs"]:
+    ) -> List["ExecutionPass"]:
         # If glob expansion is enabled and the path is a directory,
         # create an execution for each matching item in that directory
         if self.expand_glob:
+            from wexample_wex_core.common.execution_pass import ExecutionPass
+
             path = self._get_option_file_path(function_kwargs=function_kwargs)
 
             # If the path is a directory, process it
@@ -169,7 +172,15 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
                 for path_kwargs in path_kwargs_list:
                     kwargs_copy = function_kwargs.copy()
                     kwargs_copy.update(path_kwargs)
-                    passes.append(kwargs_copy)
+
+                    passes.append(
+                        ExecutionPass(
+                            middleware=self,
+                            command_wrapper=command_wrapper,
+                            request=request,
+                            function_kwargs=kwargs_copy
+                        )
+                    )
 
                 return passes
 
@@ -177,13 +188,8 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
             # (validation will happen in validate_options)
 
         # If expand_glob is not enabled, use default behavior
-        # First validate options
-        self.validate_options(
+        return super().build_execution_passes(
             command_wrapper=command_wrapper,
             request=request,
             function_kwargs=function_kwargs,
         )
-
-        return [
-            function_kwargs
-        ]
