@@ -5,12 +5,13 @@ from pydantic import BaseModel, Field
 from wexample_helpers.classes.mixin.has_class_dependencies import HasClassDependencies
 from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin import HasSnakeShortClassNameClassMixin
 from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
-from wexample_helpers.const.types import Kwargs
 from wexample_wex_core.command.option import Option
+from wexample_helpers.const.types import Kwargs
 
 if TYPE_CHECKING:
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+    from wexample_wex_core.common.execution_pass import ExecutionPass
 
 
 class AbstractMiddleware(
@@ -21,13 +22,16 @@ class AbstractMiddleware(
 ):
     options: List[Union[Dict[str, Any], Option]] = Field(default_factory=list)
     normalized_options: List[Option] = Field(default_factory=list)
-    # Only when parallel is set to false, stops on the first returned FailureResponse
     stop_on_failure: bool = True
     max_iterations: Optional[int] = None
     parallel: bool = False
 
     def __init__(self, **kwargs: Kwargs) -> None:
         super().__init__(**kwargs)
+
+        if self.parallel:
+            self.stop_on_failure = False
+
         self.normalized_options = self.build_options()
 
     @classmethod
@@ -69,7 +73,9 @@ class AbstractMiddleware(
             command_wrapper: "CommandMethodWrapper",
             request: "CommandRequest",
             function_kwargs: "Kwargs"
-    ) -> List["Kwargs"]:
+    ) -> List["ExecutionPass"]:
+        from wexample_wex_core.common.execution_pass import ExecutionPass
+        
         self.validate_options(
             command_wrapper=command_wrapper,
             request=request,
@@ -77,5 +83,8 @@ class AbstractMiddleware(
         )
 
         return [
-            function_kwargs
+            ExecutionPass(
+                middleware=self,
+                function_kwargs=function_kwargs
+            )
         ]
