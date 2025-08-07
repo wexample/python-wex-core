@@ -5,8 +5,8 @@ from pydantic import BaseModel, Field
 from wexample_helpers.classes.mixin.has_class_dependencies import HasClassDependencies
 from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin import HasSnakeShortClassNameClassMixin
 from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
-from wexample_wex_core.command.option import Option
 from wexample_helpers.const.types import Kwargs
+from wexample_wex_core.command.option import Option
 
 if TYPE_CHECKING:
     from wexample_wex_core.common.command_request import CommandRequest
@@ -22,9 +22,9 @@ class AbstractMiddleware(
 ):
     options: List[Union[Dict[str, Any], Option]] = Field(default_factory=list)
     normalized_options: List[Option] = Field(default_factory=list)
-    stop_on_failure: bool = True
+    stop_on_failure: Union[None, bool, str] = False
     max_iterations: Optional[int] = None
-    parallel: bool = False
+    parallel: Union[None, bool, str] = False
 
     def __init__(self, **kwargs: Kwargs) -> None:
         super().__init__(**kwargs)
@@ -60,6 +60,33 @@ class AbstractMiddleware(
 
         return normalized
 
+    def append_options(
+            self,
+            command_wrapper: "CommandMethodWrapper",
+    ) -> None:
+        from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_OPTIONAL
+        from wexample_wex_core.command.option import Option
+
+        if self.parallel == MIDDLEWARE_OPTION_VALUE_OPTIONAL:
+            command_wrapper.set_option(Option(
+                name="parallel",
+                short_name="pll",
+                type=bool,
+                description="Execute async when possible",
+                default=False,
+                is_flag=True,
+            ))
+
+        if self.stop_on_failure == MIDDLEWARE_OPTION_VALUE_OPTIONAL:
+            command_wrapper.set_option(Option(
+                name="stop-on-failure",
+                short_name="sof",
+                type=bool,
+                description="Stop at first failure response if not async",
+                default=False,
+                is_flag=True,
+            ))
+
     def validate_options(
             self,
             command_wrapper: "CommandMethodWrapper",
@@ -75,7 +102,7 @@ class AbstractMiddleware(
             function_kwargs: "Kwargs"
     ) -> List["ExecutionContext"]:
         from wexample_wex_core.common.execution_context import ExecutionContext
-        
+
         self.validate_options(
             command_wrapper=command_wrapper,
             request=request,

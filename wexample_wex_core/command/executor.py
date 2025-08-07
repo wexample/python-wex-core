@@ -7,6 +7,8 @@ from wexample_app.response.failure_response import FailureResponse
 from wexample_helpers.const.types import Kwargs
 from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 from wexample_wex_core.common.execution_context import ExecutionContext
+from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_ALLWAYS, MIDDLEWARE_OPTION_VALUE_OPTIONAL
+from wexample_wex_core.const.types import ParsedArgs
 from wexample_wex_core.exception.command_argument_conversion_exception import CommandArgumentConversionException
 from wexample_wex_core.exception.command_option_missing_exception import CommandOptionMissingException
 from wexample_wex_core.exception.command_unexpected_argument_exception import CommandUnexpectedArgumentException
@@ -63,6 +65,8 @@ class Executor(Command):
 
                 # Check if middleware should run in parallel
                 if hasattr(middleware, 'parallel') and middleware.parallel:
+                if (middleware.parallel == MIDDLEWARE_OPTION_VALUE_ALLWAYS
+                        or (middleware.parallel == MIDDLEWARE_OPTION_VALUE_OPTIONAL and function_kwargs["parallel"])):
                     # Execute passes in parallel using asyncio
                     responses = asyncio.run(self._execute_passes_parallel(
                         execution_contexts=execution_contexts,
@@ -89,6 +93,11 @@ class Executor(Command):
                         output.append(response)
 
                         if isinstance(response, FailureResponse) and middleware.stop_on_failure:
+                        if isinstance(response, FailureResponse) and (
+                                middleware.stop_on_failure
+                                or (middleware.stop_on_failure == MIDDLEWARE_OPTION_VALUE_OPTIONAL
+                                    and function_kwargs["stop_on_failure"])
+                        ):
                             # "Stop" does not mean "fail", so we just stop the process.
                             return output
 
@@ -154,7 +163,7 @@ class Executor(Command):
 
         return responses
 
-    def _parse_arguments(self, arguments: List[str]) -> Dict[str, Any]:
+    def _parse_arguments(self, arguments: List[str]) -> ParsedArgs:
         from wexample_helpers.helpers.cli import cli_argument_convert_value
 
         """Parse raw command line arguments into a dictionary of option name to value."""
@@ -229,6 +238,12 @@ class Executor(Command):
         return result
 
     def _build_function_kwargs(self, request: "CommandRequest") -> Dict[str, Any]:
+        # Allow middleware to add extra options.
+        for middleware in self.command_wrapper.middlewares:
+            middleware.append_options(
+                command_wrapper=self.command_wrapper,
+            )
+
         """Execute the command with the given request arguments."""
         # Parse and convert arguments to appropriate types
         parsed_args = self._parse_arguments(request.arguments)
