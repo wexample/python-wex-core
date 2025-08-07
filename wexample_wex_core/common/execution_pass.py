@@ -1,7 +1,7 @@
-from typing import TYPE_CHECKING
+from pydantic import BaseModel, Field
 
-from pydantic import BaseModel
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
+from wexample_helpers.const.types import Kwargs
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 
@@ -10,10 +10,11 @@ class ExecutionPass(
     BaseModel,
 ):
     middleware: AbstractMiddleware
+    function_kwargs: Kwargs = Field(default_factory=dict)
 
-    def __init__(self, middleware: "AbstractMiddleware", **kwargs):
+    def __init__(self, **kwargs):
         BaseModel.__init__(self, **kwargs)
         AbstractKernelChild.__init__(
             self,
-            kernel=middleware.kernel
+            kernel=self.middleware.kernel
         )
