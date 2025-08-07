@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING, Dict, Any, List
 
-from wexample_helpers.const.types import Kwargs
 from wexample_app.common.command import Command
+from wexample_app.response.failure_response import FailureResponse
+from wexample_helpers.const.types import Kwargs
 from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 from wexample_wex_core.exception.command_argument_conversion_exception import CommandArgumentConversionException
 from wexample_wex_core.exception.command_option_missing_exception import CommandOptionMissingException
@@ -24,8 +25,14 @@ class Executor(Command):
         )
 
     def execute_request(self, request: "CommandRequest") -> Any:
+        from wexample_app.helpers.response import response_normalize
+        from wexample_app.response.multiple_response import MultipleResponse
+        from wexample_wex_core.decorator.option_stop_on_failure import OPTION_NAME_STOP_ON_FAILURE
+
         middlewares_attributes = self.command_wrapper.middlewares_attributes
         middlewares_registry = self.kernel.get_registry('middlewares')
+        stop_on_failure_option = self.command_wrapper.find_option_by_name(OPTION_NAME_STOP_ON_FAILURE)
+        stop_on_failure = stop_on_failure_option.value if stop_on_failure_option else False
 
         for name in middlewares_attributes:
             middleware_class = middlewares_registry.get_class(name)
@@ -37,7 +44,7 @@ class Executor(Command):
         )
 
         if len(self.command_wrapper.middlewares) > 0:
-            output = []
+            output = MultipleResponse(kernel=self.kernel)
 
             for middleware in self.command_wrapper.middlewares:
                 passes = middleware.build_execution_passes(
@@ -47,11 +54,18 @@ class Executor(Command):
                 )
 
                 for execution_pass_kwargs in passes:
-                    output.append(
-                        self.function(
+                    response = response_normalize(
+                        kernel=self.kernel,
+                        response=self.function(
                             **execution_pass_kwargs
                         )
                     )
+
+                    output.append(response)
+
+                    if isinstance(response, FailureResponse) and stop_on_failure:
+                        # "Stop" does not mean "fail", so we just stop the process.
+                        return output
 
             return output
 
@@ -77,7 +91,7 @@ class Executor(Command):
             if arg.startswith('--'):
                 # Long option name (e.g., --version)
                 option_name = arg[2:]
-                option = self.command_wrapper.find_option_by_name(option_name)
+                option = self.command_wrapper.find_option_by_kebab_name(option_name)
 
                 if not option:
                     # Raise exception for unexpected argument
@@ -146,10 +160,10 @@ class Executor(Command):
         for option in self.command_wrapper.options:
             # If the option is in parsed args, use that value
             if option.name in parsed_args:
-                function_kwargs[option.name] = parsed_args[option.name]
+                option.value = function_kwargs[option.name] = parsed_args[option.name]
             # Otherwise, use the default value if available
             elif option.default is not None:
-                function_kwargs[option.name] = option.default
+                option.value = function_kwargs[option.name] = option.default
             # If the option is required but not provided, raise an error
             elif option.required:
                 raise CommandOptionMissingException(option_name=option.name)

@@ -36,7 +36,14 @@ class CommandMethodWrapper(BaseModel):
     def find_option_by_name(self, name: str) -> Optional["Option"]:
         """Find an option by its name."""
         for option in self.options:
-            if option.kebab_name == name:
+            if option.name == name:
+                return option
+        return None
+
+    def find_option_by_kebab_name(self, kabab_name: str) -> Optional["Option"]:
+        """Find an option by its name."""
+        for option in self.options:
+            if option.kebab_name == kabab_name:
                 return option
         return None
 

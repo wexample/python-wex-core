@@ -14,6 +14,8 @@ class Option(BaseModel):
     required: bool = False
     default: Any = None
     is_flag: bool = False
+    # The computed value using input argument or default value.
+    value: Any = None
 
     def __init__(self, **kwargs):
         from wexample_wex_core.helpers.option import option_build_short_name
