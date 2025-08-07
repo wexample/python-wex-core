@@ -11,7 +11,7 @@ from wexample_helpers.const.types import Kwargs
 if TYPE_CHECKING:
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-    from wexample_wex_core.common.execution_pass import ExecutionPass
+    from wexample_wex_core.common.execution_context import ExecutionContext
 
 
 class AbstractMiddleware(
@@ -68,13 +68,13 @@ class AbstractMiddleware(
     ) -> bool:
         return True
 
-    def build_execution_passes(
+    def build_execution_contexts(
             self,
             command_wrapper: "CommandMethodWrapper",
             request: "CommandRequest",
             function_kwargs: "Kwargs"
-    ) -> List["ExecutionPass"]:
-        from wexample_wex_core.common.execution_pass import ExecutionPass
+    ) -> List["ExecutionContext"]:
+        from wexample_wex_core.common.execution_context import ExecutionContext
         
         self.validate_options(
             command_wrapper=command_wrapper,
@@ -83,7 +83,7 @@ class AbstractMiddleware(
         )
 
         return [
-            ExecutionPass(
+            ExecutionContext(
                 middleware=self,
                 command_wrapper=command_wrapper,
                 request=request,

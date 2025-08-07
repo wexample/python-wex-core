@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from wexample_helpers.const.types import Kwargs
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-    from wexample_wex_core.common.execution_pass import ExecutionPass
+    from wexample_wex_core.common.execution_context import ExecutionContext
 
 
 class AbstractEachPathMiddleware(AbstractMiddleware):
@@ -143,16 +143,16 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
         return result
 
-    def build_execution_passes(
+    def build_execution_contexts(
             self,
             command_wrapper: "CommandMethodWrapper",
             request: "CommandRequest",
             function_kwargs: "Kwargs"
-    ) -> List["ExecutionPass"]:
+    ) -> List["ExecutionContext"]:
         # If glob expansion is enabled and the path is a directory,
         # create an execution for each matching item in that directory
         if self.expand_glob:
-            from wexample_wex_core.common.execution_pass import ExecutionPass
+            from wexample_wex_core.common.execution_context import ExecutionContext
 
             path = self._get_option_file_path(function_kwargs=function_kwargs)
 
@@ -174,7 +174,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
                     kwargs_copy.update(path_kwargs)
 
                     passes.append(
-                        ExecutionPass(
+                        ExecutionContext(
                             middleware=self,
                             command_wrapper=command_wrapper,
                             request=request,
@@ -188,7 +188,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
             # (validation will happen in validate_options)
 
         # If expand_glob is not enabled, use default behavior
-        return super().build_execution_passes(
+        return super().build_execution_contexts(
             command_wrapper=command_wrapper,
             request=request,
             function_kwargs=function_kwargs,

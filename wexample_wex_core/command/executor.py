@@ -6,7 +6,7 @@ from wexample_app.common.command import Command
 from wexample_app.response.failure_response import FailureResponse
 from wexample_helpers.const.types import Kwargs
 from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-from wexample_wex_core.common.execution_pass import ExecutionPass
+from wexample_wex_core.common.execution_context import ExecutionContext
 from wexample_wex_core.exception.command_argument_conversion_exception import CommandArgumentConversionException
 from wexample_wex_core.exception.command_option_missing_exception import CommandOptionMissingException
 from wexample_wex_core.exception.command_unexpected_argument_exception import CommandUnexpectedArgumentException
@@ -49,7 +49,7 @@ class Executor(Command):
             for middleware in self.command_wrapper.middlewares:
                 # Each middleware can multiply the executions,
                 # e.g. executing the command on every file of a list.
-                passes = middleware.build_execution_passes(
+                execution_contexts = middleware.build_execution_contexts(
                     command_wrapper=self.command_wrapper,
                     request=request,
                     function_kwargs=function_kwargs
@@ -57,7 +57,7 @@ class Executor(Command):
 
                 # Apply limit if specified
                 if isinstance(middleware.max_iterations, int) and middleware.max_iterations > 0:
-                    passes = passes[:middleware.max_iterations]
+                    execution_contexts = execution_contexts[:middleware.max_iterations]
                     self.kernel.io.info(
                         f'Middleware \"{middleware.get_short_class_name()}\" truncated list to {middleware.max_iterations} items')
 
@@ -65,7 +65,7 @@ class Executor(Command):
                 if hasattr(middleware, 'parallel') and middleware.parallel:
                     # Execute passes in parallel using asyncio
                     responses = asyncio.run(self._execute_passes_parallel(
-                        passes=passes,
+                        execution_contexts=execution_contexts,
                     ))
 
                     # Add all responses to output
@@ -77,12 +77,12 @@ class Executor(Command):
                             # "Stop" does not mean "fail", so we just stop the process.
                             return output
                 else:
-                    # Execute passes sequentially (original behavior)
-                    for execution_pass in passes:
+                    # Execute passes sequentially
+                    for context in execution_contexts:
                         response = response_normalize(
                             kernel=self.kernel,
                             response=self.function(
-                                **execution_pass.function_kwargs
+                                **context.function_kwargs
                             )
                         )
 
@@ -99,11 +99,11 @@ class Executor(Command):
             **function_kwargs
         )
 
-    async def _execute_passes_parallel(self, passes: List[ExecutionPass]) -> List[Any]:
+    async def _execute_passes_parallel(self, execution_contexts: List[ExecutionContext]) -> List[Any]:
         """Execute multiple passes in parallel using asyncio.
         
         Args:
-            passes: List of ExecutionPass objects to execute in parallel
+            execution_contexts: List of ExecutionPass objects to execute in parallel
             
         Returns:
             List of normalized responses from all executions
@@ -115,23 +115,23 @@ class Executor(Command):
         tasks = []
 
         # Create an executor for running CPU-bound functions in a thread pool
-        executor = ThreadPoolExecutor(max_workers=min(32, len(passes)))
+        executor = ThreadPoolExecutor(max_workers=min(32, len(execution_contexts)))
 
         # Define a coroutine that executes a single pass
-        async def execute_single_pass(execution_pass: ExecutionPass) -> "AbstractResponse":
+        async def execute_single_pass(execution_context: ExecutionContext) -> "AbstractResponse":
             # Run the function in a thread pool to avoid blocking the event loop
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
                 executor,
-                lambda: self.function(**execution_pass.function_kwargs)
+                lambda: self.function(**execution_context.function_kwargs)
             )
 
             # Normalize the response
             return response_normalize(kernel=self.kernel, response=result)
 
         # Create a task for each pass
-        for execution_pass in passes:
-            task = asyncio.create_task(execute_single_pass(execution_pass))
+        for execution_context in execution_contexts:
+            task = asyncio.create_task(execute_single_pass(execution_context))
             tasks.append(task)
 
         # Wait for all tasks to complete
@@ -235,8 +235,5 @@ class Executor(Command):
             # If the option is required but not provided, raise an error
             elif option.required:
                 raise CommandOptionMissingException(option_name=option.name)
-
-        # Add kernel to the kwargs
-        function_kwargs["kernel"] = self.kernel
 
         return function_kwargs

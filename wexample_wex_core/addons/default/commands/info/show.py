@@ -1,27 +1,32 @@
+from typing import TYPE_CHECKING
+
 from wexample_wex_core.decorator.command import command
-from wexample_wex_core.common.kernel import Kernel
+
+if TYPE_CHECKING:
+    from wexample_wex_core.common.execution_context import ExecutionContext
+
 
 @command()
 def default__info__show(
-        kernel: "Kernel"
+        context: "ExecutionContext"
 ) -> None:
     from wexample_app.const.globals import ENV_VAR_NAME_APP_ENV
 
-    kernel.io.properties(
+    context.io.properties(
         title="General",
         properties={
-            "Location": kernel.workdir.get_resolved(),
-            "Environment": kernel.get_env_parameter(ENV_VAR_NAME_APP_ENV),
-            "Arguments": kernel._sys_argv,
+            "Location": context.workdir.get_resolved(),
+            "Environment": context.get_env_parameter(ENV_VAR_NAME_APP_ENV),
+            "Arguments": context._sys_argv,
         }
     )
 
-    kernel.io.properties(
+    context.io.properties(
         title="Resolvers",
-        properties=kernel.get_resolvers()
+        properties=context.get_resolvers()
     )
 
-    kernel.io.properties(
+    context.io.properties(
         title="Runners",
-        properties=kernel.get_runners()
+        properties=context.get_runners()
     )
