@@ -21,8 +21,10 @@ class AbstractMiddleware(
 ):
     options: List[Union[Dict[str, Any], Option]] = Field(default_factory=list)
     normalized_options: List[Option] = Field(default_factory=list)
+    # Only when parallel is set to false, stops on the first returned FailureResponse
     stop_on_failure: bool = True
     max_iterations: Optional[int] = None
+    parallel: bool = False
 
     def __init__(self, **kwargs: Kwargs) -> None:
         super().__init__(**kwargs)
