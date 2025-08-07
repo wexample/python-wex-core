@@ -27,12 +27,9 @@ class Executor(Command):
     def execute_request(self, request: "CommandRequest") -> Any:
         from wexample_app.helpers.response import response_normalize
         from wexample_app.response.multiple_response import MultipleResponse
-        from wexample_wex_core.decorator.option_stop_on_failure import OPTION_NAME_STOP_ON_FAILURE
 
         middlewares_attributes = self.command_wrapper.middlewares_attributes
         middlewares_registry = self.kernel.get_registry('middlewares')
-        stop_on_failure_option = self.command_wrapper.find_option_by_name(OPTION_NAME_STOP_ON_FAILURE)
-        stop_on_failure = stop_on_failure_option.value if stop_on_failure_option else False
 
         for name in middlewares_attributes:
             middleware_class = middlewares_registry.get_class(name)
@@ -47,6 +44,8 @@ class Executor(Command):
             output = MultipleResponse(kernel=self.kernel)
 
             for middleware in self.command_wrapper.middlewares:
+                # Each middleware can multiply the executions,
+                # e.g. executing the command on every file of a list.
                 passes = middleware.build_execution_passes(
                     command_wrapper=self.command_wrapper,
                     request=request,
@@ -63,7 +62,7 @@ class Executor(Command):
 
                     output.append(response)
 
-                    if isinstance(response, FailureResponse) and stop_on_failure:
+                    if isinstance(response, FailureResponse) and middleware.stop_on_failure:
                         # "Stop" does not mean "fail", so we just stop the process.
                         return output
 

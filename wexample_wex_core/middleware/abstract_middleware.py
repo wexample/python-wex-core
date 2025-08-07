@@ -21,6 +21,7 @@ class AbstractMiddleware(
 ):
     options: List[Union[Dict[str, Any], Option]] = Field(default_factory=list)
     normalized_options: List[Option] = Field(default_factory=list)
+    stop_on_failure: bool = True
 
     def __init__(self, **kwargs: Kwargs) -> None:
         super().__init__(**kwargs)
