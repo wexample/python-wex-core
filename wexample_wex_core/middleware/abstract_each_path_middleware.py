@@ -90,9 +90,12 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         # Base implementation explores all directories
         return True
 
-    def _process_directory_recursively(self, request: "CommandRequest", directory_path: str, option_name: str,
-                                       current_depth: int = 0) -> List[
-        Dict]:
+    def _process_directory_recursively(
+            self,
+            request: "CommandRequest",
+            directory_path: str,
+            option_name: str,
+            current_depth: int = 0) -> List[Dict]:
         """
         Process a directory recursively, collecting paths that match the criteria.
         
