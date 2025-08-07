@@ -119,11 +119,23 @@ class Executor(Command):
 
         # Define a coroutine that executes a single pass
         async def execute_single_pass(execution_context: ExecutionContext) -> "AbstractResponse":
+            from wexample_prompt.output.buffer_output_handler import BufferOutputHandler
+
+            output = BufferOutputHandler()
+            # Detach io manager to print log result at the end.
+            execution_context._init_io_manager(
+                output=output
+            )
+
             # Run the function in a thread pool to avoid blocking the event loop
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
                 executor,
                 lambda: self.function(**execution_context.function_kwargs)
+            )
+
+            self.kernel.io.print_responses(
+                output.buffer
             )
 
             # Normalize the response
