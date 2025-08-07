@@ -1,3 +1,5 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING, Dict, Any, List
 
 from wexample_app.common.command import Command
@@ -55,21 +57,39 @@ class Executor(Command):
                 # Apply limit if specified
                 if isinstance(middleware.max_iterations, int) and middleware.max_iterations > 0:
                     passes = passes[:middleware.max_iterations]
-                    self.kernel.io.info(f'Middleware \"{middleware.get_short_class_name()}\" truncated list to {middleware.max_iterations} items')
+                    self.kernel.io.info(
+                        f'Middleware \"{middleware.get_short_class_name()}\" truncated list to {middleware.max_iterations} items')
 
-                for execution_pass_kwargs in passes:
-                    response = response_normalize(
-                        kernel=self.kernel,
-                        response=self.function(
-                            **execution_pass_kwargs
+                # Check if middleware should run in parallel
+                if hasattr(middleware, 'parallel') and middleware.parallel:
+                    # Execute passes in parallel using asyncio
+                    responses = asyncio.run(self._execute_passes_parallel(
+                        passes=passes,
+                    ))
+
+                    # Add all responses to output
+                    for response in responses:
+                        output.append(response)
+
+                        # Check if we should stop on failure
+                        if isinstance(response, FailureResponse) and middleware.stop_on_failure:
+                            # "Stop" does not mean "fail", so we just stop the process.
+                            return output
+                else:
+                    # Execute passes sequentially (original behavior)
+                    for execution_pass_kwargs in passes:
+                        response = response_normalize(
+                            kernel=self.kernel,
+                            response=self.function(
+                                **execution_pass_kwargs
+                            )
                         )
-                    )
 
-                    output.append(response)
+                        output.append(response)
 
-                    if isinstance(response, FailureResponse) and middleware.stop_on_failure:
-                        # "Stop" does not mean "fail", so we just stop the process.
-                        return output
+                        if isinstance(response, FailureResponse) and middleware.stop_on_failure:
+                            # "Stop" does not mean "fail", so we just stop the process.
+                            return output
 
             return output
 
@@ -77,6 +97,50 @@ class Executor(Command):
         return self.function(
             **function_kwargs
         )
+
+    async def _execute_passes_parallel(self, passes: List[Dict[str, Any]]) -> List[Any]:
+        """Execute multiple passes in parallel using asyncio.
+        
+        Args:
+            passes: List of function kwargs for each execution pass
+            middleware: The middleware instance that generated the passes
+            
+        Returns:
+            List of normalized responses from all executions
+        """
+        from wexample_app.helpers.response import response_normalize
+        from wexample_app.response.abstract_response import AbstractResponse
+
+        # Create a list to store all tasks
+        tasks = []
+
+        # Create an executor for running CPU-bound functions in a thread pool
+        executor = ThreadPoolExecutor(max_workers=min(32, len(passes)))
+
+        # Define a coroutine that executes a single pass
+        async def execute_single_pass(pass_kwargs: "Kwargs") -> "AbstractResponse":
+            # Run the function in a thread pool to avoid blocking the event loop
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(
+                executor,
+                lambda: self.function(**pass_kwargs)
+            )
+
+            # Normalize the response
+            return response_normalize(kernel=self.kernel, response=result)
+
+        # Create a task for each pass
+        for pass_kwargs in passes:
+            task = asyncio.create_task(execute_single_pass(pass_kwargs))
+            tasks.append(task)
+
+        # Wait for all tasks to complete
+        responses = await asyncio.gather(*tasks)
+
+        # Close the executor
+        executor.shutdown(wait=False)
+
+        return responses
 
     def _parse_arguments(self, arguments: List[str]) -> Dict[str, Any]:
         from wexample_helpers.helpers.cli import cli_argument_convert_value
