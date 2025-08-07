@@ -25,6 +25,7 @@ class AbstractMiddleware(
     stop_on_failure: Union[None, bool, str] = False
     max_iterations: Optional[int] = None
     parallel: Union[None, bool, str] = False
+    show_progress: Union[None, bool, str] = False
 
     def __init__(self, **kwargs: Kwargs) -> None:
         super().__init__(**kwargs)
@@ -75,6 +76,16 @@ class AbstractMiddleware(
                 short_name="pll",
                 type=bool,
                 description="Execute async when possible",
+                default=False,
+                is_flag=True,
+            ))
+
+        if self.show_progress == MIDDLEWARE_OPTION_VALUE_OPTIONAL:
+            command_wrapper.set_option(Option(
+                name="progress",
+                short_name="prgs",
+                type=bool,
+                description="Display progress bar",
                 default=False,
                 is_flag=True,
             ))

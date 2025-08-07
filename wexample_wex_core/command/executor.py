@@ -49,6 +49,8 @@ class Executor(Command):
             output = MultipleResponse(kernel=self.kernel)
 
             for middleware in self.command_wrapper.middlewares:
+                show_progress = middleware.show_progress == MIDDLEWARE_OPTION_VALUE_ALLWAYS or (middleware.show_progress == MIDDLEWARE_OPTION_VALUE_OPTIONAL and function_kwargs["show_progress"])
+
                 # Each middleware can multiply the executions,
                 # e.g. executing the command on every file of a list.
                 execution_contexts = middleware.build_execution_contexts(
@@ -81,8 +83,16 @@ class Executor(Command):
                             # "Stop" does not mean "fail", so we just stop the process.
                             return output
                 else:
+                    i = 0
+                    length = len(execution_contexts)
+
+                    if show_progress:
+                        # First bar.
+                        request.kernel.io.progress(length, i)
+
                     # Execute passes sequentially
                     for context in execution_contexts:
+
                         response = response_normalize(
                             kernel=self.kernel,
                             response=self.function(
@@ -91,9 +101,13 @@ class Executor(Command):
                         )
 
                         output.append(response)
+                        i += 1
+
+                        if show_progress:
+                            request.kernel.io.progress(length, i)
 
                         if isinstance(response, FailureResponse) and (
-                                middleware.stop_on_failure == True
+                                middleware.stop_on_failure == MIDDLEWARE_OPTION_VALUE_ALLWAYS
                                 or (middleware.stop_on_failure == MIDDLEWARE_OPTION_VALUE_OPTIONAL
                                     and "stop_on_failure" in function_kwargs and function_kwargs["stop_on_failure"])
                         ):
