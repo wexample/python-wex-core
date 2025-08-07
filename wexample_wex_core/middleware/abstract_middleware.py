@@ -29,9 +29,6 @@ class AbstractMiddleware(
     def __init__(self, **kwargs: Kwargs) -> None:
         super().__init__(**kwargs)
 
-        if self.parallel:
-            self.stop_on_failure = False
-
         self.normalized_options = self.build_options()
 
     @classmethod
@@ -62,10 +59,15 @@ class AbstractMiddleware(
 
     def append_options(
             self,
-            command_wrapper: "CommandMethodWrapper",
+            request: "CommandRequest",
+            command_wrapper: "CommandMethodWrapper"
     ) -> None:
         from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_OPTIONAL
         from wexample_wex_core.command.option import Option
+
+        if self.parallel:
+            self.stop_on_failure = False
+            request.kernel.io.log("Option \"stop_on_failure\" will be ignored due to parallelization")
 
         if self.parallel == MIDDLEWARE_OPTION_VALUE_OPTIONAL:
             command_wrapper.set_option(Option(

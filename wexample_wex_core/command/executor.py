@@ -64,9 +64,9 @@ class Executor(Command):
                         f'Middleware \"{middleware.get_short_class_name()}\" truncated list to {middleware.max_iterations} items')
 
                 # Check if middleware should run in parallel
-                if hasattr(middleware, 'parallel') and middleware.parallel:
                 if (middleware.parallel == MIDDLEWARE_OPTION_VALUE_ALLWAYS
-                        or (middleware.parallel == MIDDLEWARE_OPTION_VALUE_OPTIONAL and function_kwargs["parallel"])):
+                        or (middleware.parallel == MIDDLEWARE_OPTION_VALUE_OPTIONAL
+                            and "parallel" in function_kwargs and function_kwargs["parallel"])):
                     # Execute passes in parallel using asyncio
                     responses = asyncio.run(self._execute_passes_parallel(
                         execution_contexts=execution_contexts,
@@ -92,11 +92,10 @@ class Executor(Command):
 
                         output.append(response)
 
-                        if isinstance(response, FailureResponse) and middleware.stop_on_failure:
                         if isinstance(response, FailureResponse) and (
-                                middleware.stop_on_failure
+                                middleware.stop_on_failure == True
                                 or (middleware.stop_on_failure == MIDDLEWARE_OPTION_VALUE_OPTIONAL
-                                    and function_kwargs["stop_on_failure"])
+                                    and "stop_on_failure" in function_kwargs and function_kwargs["stop_on_failure"])
                         ):
                             # "Stop" does not mean "fail", so we just stop the process.
                             return output
@@ -241,6 +240,7 @@ class Executor(Command):
         # Allow middleware to add extra options.
         for middleware in self.command_wrapper.middlewares:
             middleware.append_options(
+                request=request,
                 command_wrapper=self.command_wrapper,
             )
 
