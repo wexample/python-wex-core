@@ -18,10 +18,6 @@ def test__run__all(
     workdir = context.kernel.workdir.get_resolved()
     os.chdir(workdir)
 
-    for addon in context.kernel.get_addons().values():
-        assert isinstance(addon, AbstractAddonManager)
-        context.io.log(f'Adding tests from addon: {addon.get_snake_short_class_name()}')
-
     context.io.log(f"Starting pytest test suite from {workdir}")
 
     # Build pytest arguments explicitly to avoid using sys.argv
@@ -30,6 +26,12 @@ def test__run__all(
         "--color=yes",  # Enable colored output
         "-v"  # Verbose output
     ]
+
+    # Add addons tests directories
+    for addon in context.kernel.get_addons().values():
+        assert isinstance(addon, AbstractAddonManager)
+        context.io.log(f'Adding tests from addon: {addon.get_snake_short_class_name()}')
+        pytest_args.append(addon.workdir.get_resolved_target('tests'))
 
     context.io.log(f"Running pytest with args: {' '.join(pytest_args)}")
 
