@@ -1,0 +1,1 @@
+REGISTRY_KERNEL_ADDON: str = "addon"

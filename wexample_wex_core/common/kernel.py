@@ -4,6 +4,7 @@ from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
 from wexample_prompt.enums.verbosity_level import VerbosityLevel
+from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
 from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolver
 from wexample_wex_core.runner.core_yaml_command_runner import CoreYamlCommandRunner
 
@@ -33,8 +34,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def _init_addons(self, addons: Optional[List[Type["AbstractAddonManager"]]] = None):
         from wexample_app.service.service_registry import ServiceRegistry
 
-        cast(ServiceRegistry, self.set_registry("addon"))
-        registry = self.register_items("addon", addons or [])
+        cast(ServiceRegistry, self.set_registry(REGISTRY_KERNEL_ADDON))
+        registry = self.register_items(REGISTRY_KERNEL_ADDON, addons or [])
         registry.instantiate_all(kernel=self)
 
     def _get_command_resolvers(self) -> list[Type["AbstractCommandResolver"]]:
@@ -90,4 +91,4 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def get_addons(self) -> Dict[str, "AbstractAddonManager"]:
-        return self.get_registry("addon").get_all()
+        return self.get_registry(REGISTRY_KERNEL_ADDON).get_all()
