@@ -15,18 +15,18 @@ def default__info__show(
     context.io.properties(
         title="General",
         properties={
-            "Location": context.workdir.get_resolved(),
-            "Environment": context.get_env_parameter(ENV_VAR_NAME_APP_ENV),
-            "Arguments": context._sys_argv,
+            "Location": context.kernel.workdir.get_resolved(),
+            "Environment": context.kernel.get_env_parameter(ENV_VAR_NAME_APP_ENV),
+            "Arguments": context.kernel._sys_argv,
         }
     )
 
-    context.io.properties(
+    context.kernel.io.properties(
         title="Resolvers",
-        properties=context.get_resolvers()
+        properties=context.kernel.get_resolvers()
     )
 
-    context.io.properties(
+    context.kernel.io.properties(
         title="Runners",
-        properties=context.get_runners()
+        properties=context.kernel.get_runners()
     )

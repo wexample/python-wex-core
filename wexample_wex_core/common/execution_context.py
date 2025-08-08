@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
@@ -15,7 +17,7 @@ class ExecutionContext(
 ):
     command_wrapper: CommandMethodWrapper
     function_kwargs: Kwargs = Field(default_factory=dict)
-    middleware: AbstractMiddleware
+    middleware: Optional[AbstractMiddleware]
     request: CommandRequest
 
     def __init__(self, **kwargs):

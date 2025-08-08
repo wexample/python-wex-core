@@ -49,7 +49,9 @@ class Executor(Command):
             output = MultipleResponse(kernel=self.kernel)
 
             for middleware in self.command_wrapper.middlewares:
-                show_progress = middleware.show_progress == MIDDLEWARE_OPTION_VALUE_ALLWAYS or (middleware.show_progress == MIDDLEWARE_OPTION_VALUE_OPTIONAL and function_kwargs["show_progress"])
+                show_progress = middleware.show_progress == MIDDLEWARE_OPTION_VALUE_ALLWAYS or (
+                            middleware.show_progress == MIDDLEWARE_OPTION_VALUE_OPTIONAL and function_kwargs[
+                        "show_progress"])
 
                 # Each middleware can multiply the executions,
                 # e.g. executing the command on every file of a list.
@@ -116,9 +118,18 @@ class Executor(Command):
 
             return output
 
-        # Execute the function with the processed arguments
-        return self.function(
-            **function_kwargs
+        context = ExecutionContext(
+            middleware=None,
+            command_wrapper=self.command_wrapper,
+            request=request,
+            function_kwargs=function_kwargs
+        )
+
+        return response_normalize(
+            kernel=self.kernel,
+            response=self.function(
+                **context.function_kwargs
+            )
         )
 
     async def _execute_passes_parallel(self, execution_contexts: List[ExecutionContext]) -> List[Any]:
