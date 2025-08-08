@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class EachFileMiddleware(AbstractEachPathMiddleware):
     def _get_default_option(self) -> Dict[str, Any]:
-        from wexample_helpers.const.globals import PATH_NAME_FILE
+        from wexample_file.const.globals import PATH_NAME_FILE
 
         """Get the default file option definition."""
         return {
