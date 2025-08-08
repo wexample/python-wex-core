@@ -1,6 +1,6 @@
 from typing import Optional
 
-from wexample_app.exception.abstract_exception import AbstractException, ExceptionData
+from wexample_helpers.exception.abstract_exception import AbstractException, ExceptionData
 from wexample_wex_core.exception.abstract_command_option_exception import AbstractCommandOptionException
 
 

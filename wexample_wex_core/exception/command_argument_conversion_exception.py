@@ -1,6 +1,6 @@
 from typing import Optional, Any, Type
 
-from wexample_app.exception.abstract_exception import AbstractException, ExceptionData
+from wexample_helpers.exception.abstract_exception import AbstractException, ExceptionData
 
 
 class CommandArgumentConversionData(ExceptionData):
