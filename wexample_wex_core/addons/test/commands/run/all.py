@@ -19,8 +19,17 @@ def test__run__all(
 
     context.io.log(f"Starting pytest test suite from {workdir}")
 
-    # Run pytest and capture the exit code
-    exit_code = pytest.main()
+    # Build pytest arguments explicitly to avoid using sys.argv
+    pytest_args = [
+        "tests",  # Run tests from the tests directory
+        "--color=yes",  # Enable colored output
+        "-v"  # Verbose output
+    ]
+    
+    context.io.log(f"Running pytest with args: {' '.join(pytest_args)}")
+    
+    # Run pytest with explicit arguments
+    exit_code = pytest.main(pytest_args)
 
     if exit_code == 0:
         context.io.success("All tests passed!")
