@@ -1,6 +1,6 @@
 from typing import Optional, Any, Type
 
-from wexample_helpers.exception.abstract_exception import AbstractException, ExceptionData
+from wexample_helpers.exception.undefined_exception import UndefinedException, ExceptionData
 
 
 class CommandArgumentConversionData(ExceptionData):
@@ -10,7 +10,7 @@ class CommandArgumentConversionData(ExceptionData):
     target_type: str
 
 
-class CommandArgumentConversionException(AbstractException):
+class CommandArgumentConversionException(UndefinedException):
     """Exception raised when a command argument cannot be converted to the expected type."""
     error_code: str = "COMMAND_ARGUMENT_CONVERSION_ERROR"
 

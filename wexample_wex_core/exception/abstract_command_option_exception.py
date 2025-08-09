@@ -1,9 +1,9 @@
 from typing import Optional, Dict, Any
 
-from wexample_helpers.exception.abstract_exception import AbstractException
+from wexample_helpers.exception.undefined_exception import UndefinedException
 
 
-class AbstractCommandOptionException(AbstractException):
+class AbstractCommandOptionException(UndefinedException):
     """Base exception class for command option related errors."""
     error_code: str = "COMMAND_OPTION_ERROR"
 

@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from wexample_helpers.exception.abstract_exception import ExceptionData
+from wexample_helpers.exception.undefined_exception import ExceptionData
 from wexample_helpers.exception.not_allowed_item_exception import NotAllowedItemException
 
 

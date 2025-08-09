@@ -1,6 +1,6 @@
 from typing import Optional
 
-from wexample_helpers.exception.abstract_exception import AbstractException, ExceptionData
+from wexample_helpers.exception.undefined_exception import UndefinedException, ExceptionData
 
 
 class CommandFunctionBuildFailedData(ExceptionData):
@@ -10,7 +10,7 @@ class CommandFunctionBuildFailedData(ExceptionData):
     actual_type: str
 
 
-class CommandFunctionBuildFailedException(AbstractException):
+class CommandFunctionBuildFailedException(UndefinedException):
     """Exception raised when a command function could not be built correctly.
     
     This exception is thrown when the system tries to build a command function but
