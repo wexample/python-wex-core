@@ -9,7 +9,7 @@ from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolv
 from wexample_wex_core.runner.core_yaml_command_runner import CoreYamlCommandRunner
 
 if TYPE_CHECKING:
-    from wexample_wex_core.path.kernel_registry_local_file import KernelRegistryLocalFile
+    from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
     from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
     from wexample_filestate.file_state_manager import FileStateManager
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
-    _commands_registry: "KernelRegistryLocalFile"
+    _commands_registry: "KernelRegistryFile"
 
     def __init__(self, **kwargs) -> None:
         AbstractKernel.__init__(self, **kwargs)
