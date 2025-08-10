@@ -45,12 +45,13 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def _init_commands_registry(self):
         from wexample_wex_core.const.globals import FILE_REGISTRY
         from wexample_wex_core.path.kernel_registry_local_file import KernelRegistryLocalFile
+        from wexample_wex_core.common.registry_builder import RegistryBuilder
 
         self._commands_registry = KernelRegistryLocalFile.create_from_path(
             self.workdir.find_by_name_recursive('tmp').get_path() / FILE_REGISTRY,
             io_manager=self.io,
             config={
-                "default_content": "registry: todo"
+                "default_content": RegistryBuilder()
             }
         )
 
