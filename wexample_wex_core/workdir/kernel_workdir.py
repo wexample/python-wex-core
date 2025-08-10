@@ -14,8 +14,10 @@ class KernelWorkdir(ProjectWorkdir):
         children = raw_value["children"]
 
         children.append({
+            "shortcut": "tmp",
             "name": "tmp",
             "type": DiskItemType.DIRECTORY,
             "should_exist": True
         })
+
         return config
