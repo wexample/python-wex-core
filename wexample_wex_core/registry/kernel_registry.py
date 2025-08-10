@@ -1,15 +1,5 @@
-from typing import TypedDict
-
-from wexample_helpers.const.types import StringKeysDict
+from pydantic import BaseModel
 
 
-class KernelRegistry(TypedDict):
+class KernelRegistry(BaseModel):
     env: str
-    resolvers: StringKeysDict
-
-    def __init__(self, env: str) -> None:
-        super().__init__()
-        self.env = env
-
-    def to_dict(self) -> StringKeysDict:
-        return vars(self)
