@@ -9,6 +9,7 @@ from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolv
 from wexample_wex_core.runner.core_yaml_command_runner import CoreYamlCommandRunner
 
 if TYPE_CHECKING:
+    from wexample_wex_core.path.kernel_registry_local_file import KernelRegistryLocalFile
     from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
     from wexample_filestate.file_state_manager import FileStateManager
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
@@ -18,6 +19,8 @@ if TYPE_CHECKING:
 
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
+    _commands_registry: "KernelRegistryLocalFile"
+
     def __init__(self, **kwargs) -> None:
         AbstractKernel.__init__(self, **kwargs)
 
@@ -28,6 +31,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_resolvers()
         self._init_runners()
         self._init_middlewares()
+        self._init_commands_registry()
 
         return response
 
@@ -37,6 +41,20 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         cast(ServiceRegistry, self.set_registry(REGISTRY_KERNEL_ADDON))
         registry = self.register_items(REGISTRY_KERNEL_ADDON, addons or [])
         registry.instantiate_all(kernel=self)
+
+    def _init_commands_registry(self):
+        from wexample_wex_core.const.globals import FILE_REGISTRY
+        from wexample_wex_core.path.kernel_registry_local_file import KernelRegistryLocalFile
+
+        self._commands_registry = KernelRegistryLocalFile.create_from_path(
+            self.workdir.find_by_name_recursive('tmp').get_path() / FILE_REGISTRY,
+            io_manager=self.io,
+            config={
+                "default_content": "registry: todo"
+            }
+        )
+
+        self._commands_registry.apply()
 
     def _get_command_resolvers(self) -> list[Type["AbstractCommandResolver"]]:
         from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
