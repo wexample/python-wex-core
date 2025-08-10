@@ -31,7 +31,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_resolvers()
         self._init_runners()
         self._init_middlewares()
-        self._init_commands_registry()
 
         return response
 
@@ -41,22 +40,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         cast(ServiceRegistry, self.set_registry(REGISTRY_KERNEL_ADDON))
         registry = self.register_items(REGISTRY_KERNEL_ADDON, addons or [])
         registry.instantiate_all(kernel=self)
-
-    def _init_commands_registry(self):
-        from wexample_wex_core.const.globals import FILE_REGISTRY
-        from wexample_wex_core.path.kernel_registry_local_file import KernelRegistryLocalFile
-        from wexample_wex_core.common.registry_builder import RegistryBuilder
-        from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
-
-        self._commands_registry = KernelRegistryLocalFile.create_from_path(
-            self.workdir.get_shortcut(KernelWorkdir.SHORTCUT_TMP).get_path() / FILE_REGISTRY,
-            io_manager=self.io,
-            config={
-                "default_content": RegistryBuilder()
-            }
-        )
-
-        self._commands_registry.apply()
 
     def _get_command_resolvers(self) -> list[Type["AbstractCommandResolver"]]:
         from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
