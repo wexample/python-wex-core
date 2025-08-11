@@ -19,10 +19,11 @@ if TYPE_CHECKING:
     from wexample_app.runner.abstract_command_runner import AbstractCommandRunner
     from wexample_prompt.common.io_manager import IoManager
     from wexample_config.const.types import DictConfig
+    from wexample_wex_core.registry.kernel_registry import KernelRegistry
 
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
-    _commands_registry: "KernelRegistryFile"
+    _registry: "KernelRegistry"
 
     def __init__(self, **kwargs) -> None:
         AbstractKernel.__init__(self, **kwargs)
@@ -46,12 +47,17 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         registry.instantiate_all(kernel=self)
 
     def _init_registry(self):
-        registry_builder = self.workdir.get_shortcut(KernelWorkdir.SHORTCUT_REGISTRY)
-        # Registry has zero length.
-        if registry_builder.get_local_file().is_empty():
-            self._rebuild_workdir_content()
+        from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
+        kernel_registry_file = self.workdir.get_shortcut(KernelWorkdir.SHORTCUT_REGISTRY)
+        assert isinstance(kernel_registry_file, KernelRegistryFile)
 
-        self.registry = registry_builder.hydrate_registry()
+        # Registry has zero length.
+        if kernel_registry_file.get_local_file().is_empty():
+            # Create registry and dump in file
+            self._registry = kernel_registry_file.create_registry_and_save(kernel=self)
+        else:
+            # Fill registry from existing file
+            self._registry = kernel_registry_file.create_registry_from_content(kernel=self)
 
     def _get_command_resolvers(self) -> list[Type["AbstractCommandResolver"]]:
         from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
@@ -116,3 +122,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
     def get_addons(self) -> Dict[str, "AbstractAddonManager"]:
         return self.get_registry(REGISTRY_KERNEL_ADDON).get_all()
+
+    def get_configuration_registry(self) -> "KernelRegistry":
+        return self._registry

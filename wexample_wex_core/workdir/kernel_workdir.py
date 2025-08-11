@@ -22,7 +22,6 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
         AbstractKernelChild.__init__(self, kernel=kernel)
 
     def prepare_value(self, raw_value: Optional[DictConfig] = None) -> DictConfig:
-        from wexample_wex_core.common.registry_builder import RegistryBuilder
         from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
 
         config = super().prepare_value(
@@ -41,7 +40,6 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
                     "class": KernelRegistryFile,
                     "name": KernelWorkdir.FILE_REGISTRY,
                     "shortcut": KernelWorkdir.SHORTCUT_REGISTRY,
-                    "default_content": RegistryBuilder(kernel=self.kernel),
                     "type": DiskItemType.FILE,
                 }
             ]

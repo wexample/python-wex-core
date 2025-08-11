@@ -25,7 +25,10 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseModel):
         AbstractKernelChild.__init__(self, kernel=kernel)
         SerializableMixin.__init__(self)
 
-    def to_dict(self) -> StringKeysDict:
+    def serialize(self) -> StringKeysDict:
         return {
             "env": self.env
         }
+
+    def hydrate(self, data: StringKeysDict) -> None:
+        self.env = data["env"]
