@@ -10,13 +10,13 @@ if TYPE_CHECKING:
 def default__info__show(
         context: "ExecutionContext"
 ) -> None:
-    from wexample_app.const.globals import ENV_VAR_NAME_APP_ENV
-
+    registry = context.kernel.get_configuration_registry()
+    
     context.io.properties(
         title="General",
         properties={
             "Location": context.kernel.workdir.get_resolved(),
-            "Environment": context.kernel.get_env_parameter(ENV_VAR_NAME_APP_ENV),
+            "Environment": registry.env,
             "Arguments": context.kernel._sys_argv,
         }
     )
