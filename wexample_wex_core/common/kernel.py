@@ -16,7 +16,8 @@ if TYPE_CHECKING:
     from wexample_app.const.types import CommandLineArgumentsList
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_app.runner.abstract_command_runner import AbstractCommandRunner
-
+    from wexample_prompt.common.io_manager import IoManager
+    from wexample_config.const.types import DictConfig
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _commands_registry: "KernelRegistryFile"
@@ -67,10 +68,19 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         self.register_items("middlewares", classes)
 
-    def _get_workdir_state_manager_class(self) -> Type["FileStateManager"]:
+    def _get_workdir_state_manager_class(
+            self,
+            entrypoint_path: str,
+            io_manager: "IoManager",
+            config: Optional["DictConfig"] = None
+    ) -> "FileStateManager":
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
-        return KernelWorkdir
+        return KernelWorkdir.create_from_kernel(
+            kernel=self,
+            config=config or {},
+            io_manager=io_manager
+        )
 
     def _build_single_command_request_from_arguments(self, arguments: "CommandLineArgumentsList"):
         # Core command request takes a request id.
