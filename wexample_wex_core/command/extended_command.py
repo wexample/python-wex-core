@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
 
 
-class Executor(Command):
+class ExtendedCommand(Command):
     command_wrapper: CommandMethodWrapper
 
     def __init__(self, command_wrapper: CommandMethodWrapper, *args: Any, **kwargs: Kwargs):
@@ -50,8 +50,8 @@ class Executor(Command):
 
             for middleware in self.command_wrapper.middlewares:
                 show_progress = middleware.show_progress == MIDDLEWARE_OPTION_VALUE_ALLWAYS or (
-                            middleware.show_progress == MIDDLEWARE_OPTION_VALUE_OPTIONAL and function_kwargs[
-                        "show_progress"])
+                        middleware.show_progress == MIDDLEWARE_OPTION_VALUE_OPTIONAL and function_kwargs[
+                    "show_progress"])
 
                 # Each middleware can multiply the executions,
                 # e.g. executing the command on every file of a list.

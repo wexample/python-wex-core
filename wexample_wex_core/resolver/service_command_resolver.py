@@ -26,3 +26,8 @@ class ServiceCommandResolver(AbstractCommandResolver):
     def build_command_function_name(self, request: "CommandRequest") -> Optional[str]:
         import re
         return re.sub(r'[^a-zA-Z0-9_]', '', request.name.replace("/", "__"))
+
+    def build_registry_data(self, test: bool = False):
+        registry = {}
+
+        return registry

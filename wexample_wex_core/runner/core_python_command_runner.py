@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 class CorePythonCommandRunner(PythonCommandRunner):
     def build_runnable_command(self, request: "CommandRequest") -> Optional["Command"]:
-        from wexample_wex_core.command.executor import Executor
+        from wexample_wex_core.command.extended_command import ExtendedCommand
         from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
         command_wrapper = self._build_command_function(request=request)
@@ -22,7 +22,7 @@ class CorePythonCommandRunner(PythonCommandRunner):
                 actual_type=actual_type
             )
 
-        return Executor(
+        return ExtendedCommand(
             kernel=self.kernel,
             command_wrapper=command_wrapper
         )
