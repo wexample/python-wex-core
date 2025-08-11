@@ -7,6 +7,7 @@ from wexample_prompt.enums.verbosity_level import VerbosityLevel
 from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
 from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolver
 from wexample_wex_core.runner.core_yaml_command_runner import CoreYamlCommandRunner
+from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
 if TYPE_CHECKING:
     from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
     from wexample_app.runner.abstract_command_runner import AbstractCommandRunner
     from wexample_prompt.common.io_manager import IoManager
     from wexample_config.const.types import DictConfig
+
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _commands_registry: "KernelRegistryFile"
@@ -32,6 +34,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_resolvers()
         self._init_runners()
         self._init_middlewares()
+        self._init_registry()
 
         return response
 
@@ -41,6 +44,14 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         cast(ServiceRegistry, self.set_registry(REGISTRY_KERNEL_ADDON))
         registry = self.register_items(REGISTRY_KERNEL_ADDON, addons or [])
         registry.instantiate_all(kernel=self)
+
+    def _init_registry(self):
+        registry_builder = self.workdir.get_shortcut(KernelWorkdir.SHORTCUT_REGISTRY)
+        # Registry has zero length.
+        if registry_builder.get_local_file().is_empty():
+            self._rebuild_workdir_content()
+
+        self.registry = registry_builder.hydrate_registry()
 
     def _get_command_resolvers(self) -> list[Type["AbstractCommandResolver"]]:
         from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
