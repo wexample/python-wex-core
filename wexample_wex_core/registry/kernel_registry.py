@@ -40,4 +40,3 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseModel):
 
     def hydrate(self, data: StructuredData) -> None:
         self.env = data["env"]
-        self.resolvers = data["resolvers"]

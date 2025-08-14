@@ -15,6 +15,7 @@ class Workdir(FileStateManager):
             raw_value["children"] = []
 
         raw_value["children"].append({
+            # .wex
             "name": WORKDIR_SETUP_DIR,
             'type': DiskItemType.DIRECTORY,
             'should_exist': True,
