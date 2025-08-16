@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
+from wexample_helpers.classes.mixin.printable_mixin import PrintableMixin
 from wexample_helpers.const.types import Kwargs
 from wexample_prompt.mixins.with_required_io_manager import WithRequiredIoManager
 from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
@@ -13,6 +14,7 @@ from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 class ExecutionContext(
     AbstractKernelChild,
     WithRequiredIoManager,
+    PrintableMixin,
     BaseModel,
 ):
     command_wrapper: CommandMethodWrapper
