@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Optional, TYPE_CHECKING, cast
 
 from wexample_helpers.helpers.string import string_to_snake_case
@@ -10,6 +9,7 @@ from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommand
 
 if TYPE_CHECKING:
     from wexample_wex_core.common.command_request import CommandRequest
+    from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
 
 
 class AddonCommandResolver(AbstractCommandResolver):
@@ -26,16 +26,27 @@ class AddonCommandResolver(AbstractCommandResolver):
             request: "CommandRequest",
             extension: str
     ) -> Optional[str]:
-        from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
 
         match = request.match
 
         # Extract addon, group and command from match
-        addon_name = string_to_snake_case(match.group(1))
         group = string_to_snake_case(match.group(2))
         command = string_to_snake_case(match.group(3))
 
+        addon_manager = self._get_request_addon_manager(request)
+
+        return str(
+            addon_manager.workdir.get_path()
+            / "commands"
+            / group
+            / f"{command}.{extension}"
+        )
+
+    def _get_request_addon_manager(self, request: "CommandRequest") -> "AbstractAddonManager":
+        match = request.match
+        addon_name = string_to_snake_case(match.group(1))
         addon_registry = self.kernel.get_registry('addon')
+
         if not addon_registry.has(addon_name):
             # Get list of available addons for better error reporting
             available_addons = list(addon_registry.get_all().keys())
@@ -44,14 +55,7 @@ class AddonCommandResolver(AbstractCommandResolver):
                 available_addons=available_addons
             )
 
-        addon_manager = cast(AbstractAddonManager, addon_registry.get(addon_name))
-
-        return str(
-            Path(addon_manager.workdir.get_resolved())
-            / "commands"
-            / group
-            / f"{command}.{extension}"
-        )
+        return cast(AbstractAddonManager, addon_registry.get(addon_name))
 
     def build_command_function_name(self, request: "CommandRequest") -> Optional[str]:
         return string_to_snake_case(
