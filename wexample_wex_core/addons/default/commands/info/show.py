@@ -20,13 +20,3 @@ def default__info__show(
             "Arguments": context.kernel._sys_argv,
         }
     )
-
-    context.kernel.io.properties(
-        title="Resolvers",
-        properties=context.kernel.get_resolvers()
-    )
-
-    context.kernel.io.properties(
-        title="Runners",
-        properties=context.kernel.get_runners()
-    )

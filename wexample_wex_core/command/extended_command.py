@@ -118,7 +118,8 @@ class ExtendedCommand(Command):
 
             return output
 
-        context = ExecutionContext(
+        # Delegate context creation to resolver.
+        context = request.resolver.build_execution_context(
             middleware=None,
             command_wrapper=self.command_wrapper,
             request=request,
