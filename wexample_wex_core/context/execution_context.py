@@ -6,7 +6,6 @@ from wexample_app.common.abstract_kernel_child import AbstractKernelChild
 from wexample_helpers.classes.mixin.printable_mixin import PrintableMixin
 from wexample_helpers.const.types import Kwargs
 from wexample_prompt.mixins.with_required_io_manager import WithRequiredIoManager
-from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
 from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 from wexample_wex_core.common.command_request import CommandRequest
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
@@ -18,7 +17,6 @@ class ExecutionContext(
     PrintableMixin,
     BaseModel,
 ):
-    addon: AbstractAddonManager
     command_wrapper: CommandMethodWrapper
     function_kwargs: Kwargs = Field(default_factory=dict)
     middleware: Optional[AbstractMiddleware]

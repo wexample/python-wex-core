@@ -8,3 +8,6 @@ if TYPE_CHECKING:
 
 class CommandRequest(BaseCommandRequest):
     request_id: str
+
+    def get_addon_manager(self):
+        return self.resolver.get_request_addon_manager(self)

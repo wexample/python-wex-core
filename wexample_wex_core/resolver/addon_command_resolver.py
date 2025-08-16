@@ -33,7 +33,7 @@ class AddonCommandResolver(AbstractCommandResolver):
         group = string_to_snake_case(match.group(2))
         command = string_to_snake_case(match.group(3))
 
-        addon_manager = self._get_request_addon_manager(request)
+        addon_manager = self.get_request_addon_manager(request)
 
         return str(
             addon_manager.workdir.get_path()
@@ -42,7 +42,7 @@ class AddonCommandResolver(AbstractCommandResolver):
             / f"{command}.{extension}"
         )
 
-    def _get_request_addon_manager(self, request: "CommandRequest") -> "AbstractAddonManager":
+    def get_request_addon_manager(self, request: "CommandRequest") -> "AbstractAddonManager":
         match = request.match
         addon_name = string_to_snake_case(match.group(1))
         addon_registry = self.kernel.get_registry('addon')
