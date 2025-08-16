@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from wexample_helpers.const.types import Kwargs
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-    from wexample_wex_core.common.execution_context import ExecutionContext
+    from wexample_wex_core.context.execution_context import ExecutionContext
 
 
 class AbstractEachPathMiddleware(AbstractMiddleware):
@@ -152,7 +152,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         # If glob expansion is enabled and the path is a directory,
         # create an execution for each matching item in that directory
         if self.expand_glob:
-            from wexample_wex_core.common.execution_context import ExecutionContext
+            from wexample_wex_core.context.execution_context import ExecutionContext
 
             path = self._get_option_file_path(function_kwargs=function_kwargs)
 

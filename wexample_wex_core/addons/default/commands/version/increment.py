@@ -6,7 +6,7 @@ from wexample_wex_core.decorator.command import command
 from wexample_wex_core.decorator.option import option
 
 if TYPE_CHECKING:
-    from wexample_wex_core.common.execution_context import ExecutionContext
+    from wexample_wex_core.context.execution_context import ExecutionContext
 
 
 @option(name="version", type=str, required=True)

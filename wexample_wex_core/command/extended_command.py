@@ -6,7 +6,7 @@ from wexample_app.common.command import Command
 from wexample_app.response.failure_response import FailureResponse
 from wexample_helpers.const.types import Kwargs
 from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-from wexample_wex_core.common.execution_context import ExecutionContext
+from wexample_wex_core.context.execution_context import ExecutionContext
 from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_ALLWAYS, MIDDLEWARE_OPTION_VALUE_OPTIONAL
 from wexample_wex_core.const.types import ParsedArgs
 from wexample_wex_core.exception.command_argument_conversion_exception import CommandArgumentConversionException

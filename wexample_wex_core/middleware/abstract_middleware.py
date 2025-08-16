@@ -11,7 +11,7 @@ from wexample_wex_core.command.option import Option
 if TYPE_CHECKING:
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-    from wexample_wex_core.common.execution_context import ExecutionContext
+    from wexample_wex_core.context.execution_context import ExecutionContext
 
 
 class AbstractMiddleware(
@@ -114,7 +114,7 @@ class AbstractMiddleware(
             request: "CommandRequest",
             function_kwargs: "Kwargs"
     ) -> List["ExecutionContext"]:
-        from wexample_wex_core.common.execution_context import ExecutionContext
+        from wexample_wex_core.context.execution_context import ExecutionContext
 
         self.validate_options(
             command_wrapper=command_wrapper,
