@@ -14,8 +14,6 @@ from wexample_wex_core.workdir.workdir import Workdir
 
 class ProjectWorkdir(WithReadmeWorkdirMixin, WithVersionWorkdirMixin, Workdir):
     def prepare_value(self, raw_value: Optional[DictConfig] = None) -> DictConfig:
-        from wexample_config.config_value.filter.trim_config_value_filter import TrimConfigValueFilter
-
         raw_value = super().prepare_value(raw_value)
 
         raw_value.update({
@@ -32,7 +30,7 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithVersionWorkdirMixin, Workdir):
             "name": '.gitignore',
             "type": DiskItemType.FILE,
             "should_exist": True,
-            "content_filter": TrimConfigValueFilter
+            "content_trim": True,
         })
 
         children.append({
