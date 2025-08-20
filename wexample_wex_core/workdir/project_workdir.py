@@ -30,7 +30,9 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithVersionWorkdirMixin, Workdir):
             "name": '.gitignore',
             "type": DiskItemType.FILE,
             "should_exist": True,
-            "content_trim": True,
+            "text_filter": [
+                "trim"
+            ],
         })
 
         children.append({
