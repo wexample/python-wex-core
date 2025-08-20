@@ -42,17 +42,23 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithVersionWorkdirMixin, Workdir):
             "should_exist": True,
             "children": [
                 {
+                    # .env
                     "name": APP_FILE_APP_ENV,
                     "type": DiskItemType.FILE,
                     "should_exist": True
                 },
                 {
+                    # config.yml
                     "name": APP_FILE_APP_CONFIG,
                     "type": DiskItemType.FILE,
                     "should_exist": True,
-                    "class": YamlFile
+                    "class": YamlFile,
+                    "yaml_filter": [
+                        "sort_recursive"
+                    ],
                 },
                 {
+                    # tmp
                     "name": "tmp",
                     "type": DiskItemType.DIRECTORY,
                     "should_exist": True
