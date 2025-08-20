@@ -13,6 +13,8 @@ from wexample_wex_core.workdir.workdir import Workdir
 
 class ProjectWorkdir(WithReadmeWorkdirMixin, WithVersionWorkdirMixin, Workdir):
     def prepare_value(self, raw_value: Optional[DictConfig] = None) -> DictConfig:
+        from wexample_filestate.config_option.text_filter_config_option import TextFilterConfigOption
+
         from wexample_filestate.item.file.yaml_file import YamlFile
 
         raw_value = super().prepare_value(raw_value)
@@ -32,7 +34,7 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithVersionWorkdirMixin, Workdir):
             "type": DiskItemType.FILE,
             "should_exist": True,
             "text_filter": [
-                "trim"
+                TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE
             ],
         })
 
@@ -45,7 +47,10 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithVersionWorkdirMixin, Workdir):
                     # .env
                     "name": APP_FILE_APP_ENV,
                     "type": DiskItemType.FILE,
-                    "should_exist": True
+                    "should_exist": True,
+                    "text_filter": [
+                        TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE
+                    ],
                 },
                 {
                     # config.yml
@@ -53,6 +58,9 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithVersionWorkdirMixin, Workdir):
                     "type": DiskItemType.FILE,
                     "should_exist": True,
                     "class": YamlFile,
+                    "text_filter": [
+                        TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE
+                    ],
                     "yaml_filter": [
                         "sort_recursive"
                     ],
