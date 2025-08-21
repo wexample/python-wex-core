@@ -1,5 +1,7 @@
 from typing import Type, TYPE_CHECKING, Optional, List, cast, Dict
 
+from pydantic import PrivateAttr
+
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
@@ -24,6 +26,7 @@ if TYPE_CHECKING:
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _registry: "KernelRegistry"
+    _config_arg_verbosity: str = PrivateAttr(default=VerbosityLevel.MAXIMUM)
 
     def __init__(self, **kwargs) -> None:
         AbstractKernel.__init__(self, **kwargs)
