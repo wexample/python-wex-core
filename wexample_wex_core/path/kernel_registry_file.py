@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING
 from wexample_filestate.item.file.yaml_file import YamlFile
 
 if TYPE_CHECKING:
-    from wexample_wex_core.registry.kernel_registry import KernelRegistry
     from wexample_wex_core.common.kernel import Kernel
+    from wexample_wex_core.registry.kernel_registry import KernelRegistry
 
 
 class KernelRegistryFile(YamlFile):

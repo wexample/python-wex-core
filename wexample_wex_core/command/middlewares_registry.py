@@ -1,13 +1,12 @@
-from typing import TYPE_CHECKING, List, cast, Type
+from typing import TYPE_CHECKING, List, Type, cast
 
 from pydantic import BaseModel
-
-from wexample_helpers.service.mixins.registry_container_mixin import (
-    RegistryContainerMixin,
-)
+from wexample_helpers.service.mixins.registry_container_mixin import \
+    RegistryContainerMixin
 
 if TYPE_CHECKING:
-    from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
+    from wexample_wex_core.middleware.abstract_middleware import \
+        AbstractMiddleware
 
 
 class MiddlewaresRegistry(RegistryContainerMixin, BaseModel):
@@ -26,11 +25,12 @@ class MiddlewaresRegistry(RegistryContainerMixin, BaseModel):
         self.register_items("middlewares", self._get_middlewares_classes())
 
     def _get_middlewares_classes(self) -> List[Type["AbstractMiddleware"]]:
-        from wexample_wex_core.middleware.each_directory_middleware import (
-            EachDirectoryMiddleware,
-        )
-        from wexample_wex_core.middleware.each_file_middleware import EachFileMiddleware
-        from wexample_wex_core.middleware.each_path_middleware import EachPathMiddleware
+        from wexample_wex_core.middleware.each_directory_middleware import \
+            EachDirectoryMiddleware
+        from wexample_wex_core.middleware.each_file_middleware import \
+            EachFileMiddleware
+        from wexample_wex_core.middleware.each_path_middleware import \
+            EachPathMiddleware
 
         return [
             EachDirectoryMiddleware,

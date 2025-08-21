@@ -1,7 +1,6 @@
 from typing import Any, Optional, Type
 
 from pydantic import BaseModel
-
 from wexample_helpers.helpers.string import string_to_kebab_case
 
 

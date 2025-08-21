@@ -1,21 +1,21 @@
-from typing import Optional, TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Optional, cast
 
 from wexample_helpers.helpers.string import string_to_snake_case
-from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
-from wexample_wex_core.const.globals import (
-    COMMAND_TYPE_ADDON,
-    COMMAND_PATTERN_ADDON,
-    COMMAND_SEPARATOR_FUNCTION_PARTS,
-)
+from wexample_wex_core.common.abstract_addon_manager import \
+    AbstractAddonManager
+from wexample_wex_core.const.globals import (COMMAND_PATTERN_ADDON,
+                                             COMMAND_SEPARATOR_FUNCTION_PARTS,
+                                             COMMAND_TYPE_ADDON)
 from wexample_wex_core.const.registries import RegistryResolverData
-from wexample_wex_core.exception.addon_not_registered_exception import (
-    AddonNotRegisteredException,
-)
-from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
+from wexample_wex_core.exception.addon_not_registered_exception import \
+    AddonNotRegisteredException
+from wexample_wex_core.resolver.abstract_command_resolver import \
+    AbstractCommandResolver
 
 if TYPE_CHECKING:
+    from wexample_wex_core.common.abstract_addon_manager import \
+        AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest
-    from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
 
 
 class AddonCommandResolver(AbstractCommandResolver):

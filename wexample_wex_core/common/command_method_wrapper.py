@@ -1,8 +1,7 @@
 from dataclasses import field
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
-
 from wexample_helpers.const.types import AnyCallable, Kwargs
 from wexample_wex_core.command.option import Option
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware

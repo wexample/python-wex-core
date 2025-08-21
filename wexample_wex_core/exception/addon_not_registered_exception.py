@@ -1,8 +1,7 @@
 from typing import List, Optional
 
-from wexample_helpers.exception.not_allowed_item_exception import (
-    NotAllowedItemException,
-)
+from wexample_helpers.exception.not_allowed_item_exception import \
+    NotAllowedItemException
 
 
 class AddonNotRegisteredException(NotAllowedItemException):

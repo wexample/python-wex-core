@@ -1,8 +1,9 @@
-from typing import TYPE_CHECKING, Type, Optional, Any
+from typing import TYPE_CHECKING, Any, Optional, Type
 
 if TYPE_CHECKING:
     from wexample_helpers.const.types import AnyCallable
-    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+    from wexample_wex_core.common.command_method_wrapper import \
+        CommandMethodWrapper
 
 
 def option(

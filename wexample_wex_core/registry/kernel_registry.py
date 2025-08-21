@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
-
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
-from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
+from wexample_app.resolver.abstract_command_resolver import \
+    AbstractCommandResolver
 from wexample_helpers.classes.mixin.serializable_mixin import SerializableMixin
 from wexample_helpers.const.types import StructuredData
 

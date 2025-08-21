@@ -1,9 +1,8 @@
-from typing import Optional, List
+from typing import List, Optional
 
+from wexample_helpers.exception.not_allowed_item_exception import \
+    NotAllowedItemException
 from wexample_helpers.exception.undefined_exception import ExceptionData
-from wexample_helpers.exception.not_allowed_item_exception import (
-    NotAllowedItemException,
-)
 
 
 class CommandUnexpectedArgumentData(ExceptionData):

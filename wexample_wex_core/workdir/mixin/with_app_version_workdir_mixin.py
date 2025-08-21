@@ -1,8 +1,7 @@
 from typing import Any
 
-from wexample_filestate_dev.workdir.mixins.with_version_workdir_mixin import (
-    WithVersionWorkdirMixin,
-)
+from wexample_filestate_dev.workdir.mixins.with_version_workdir_mixin import \
+    WithVersionWorkdirMixin
 from wexample_helpers.helpers.string import string_ensure_end_with_new_line
 
 

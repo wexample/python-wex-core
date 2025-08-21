@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from wexample_helpers.exception.undefined_exception import UndefinedException
 

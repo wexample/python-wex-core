@@ -1,9 +1,7 @@
-from typing import Optional, Any, Type
+from typing import Any, Optional, Type
 
-from wexample_helpers.exception.undefined_exception import (
-    UndefinedException,
-    ExceptionData,
-)
+from wexample_helpers.exception.undefined_exception import (ExceptionData,
+                                                            UndefinedException)
 
 
 class CommandArgumentConversionData(ExceptionData):

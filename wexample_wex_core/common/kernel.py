@@ -1,26 +1,31 @@
-from typing import Type, TYPE_CHECKING, Optional, List, cast, Dict
+from typing import TYPE_CHECKING, Dict, List, Optional, Type, cast
 
 from pydantic import PrivateAttr
-
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
-from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
+from wexample_app.common.mixins.command_runner_kernel import \
+    CommandRunnerKernel
 from wexample_prompt.enums.verbosity_level import VerbosityLevel
 from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
-from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolver
-from wexample_wex_core.runner.core_yaml_command_runner import CoreYamlCommandRunner
+from wexample_wex_core.resolver.addon_command_resolver import \
+    AddonCommandResolver
+from wexample_wex_core.runner.core_yaml_command_runner import \
+    CoreYamlCommandRunner
 from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
 if TYPE_CHECKING:
-    from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
-    from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
-    from wexample_filestate.file_state_manager import FileStateManager
-    from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_app.const.types import CommandLineArgumentsList
-    from wexample_wex_core.common.command_request import CommandRequest
-    from wexample_app.runner.abstract_command_runner import AbstractCommandRunner
-    from wexample_prompt.common.io_manager import IoManager
+    from wexample_app.resolver.abstract_command_resolver import \
+        AbstractCommandResolver
+    from wexample_app.runner.abstract_command_runner import \
+        AbstractCommandRunner
     from wexample_config.const.types import DictConfig
+    from wexample_filestate.file_state_manager import FileStateManager
+    from wexample_prompt.common.io_manager import IoManager
+    from wexample_wex_core.common.abstract_addon_manager import \
+        AbstractAddonManager
+    from wexample_wex_core.common.command_request import CommandRequest
+    from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
 
 
@@ -57,7 +62,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         registry.instantiate_all(kernel=self)
 
     def _init_registry(self):
-        from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
+        from wexample_wex_core.path.kernel_registry_file import \
+            KernelRegistryFile
 
         kernel_registry_file = self.workdir.get_shortcut(
             KernelWorkdir.SHORTCUT_REGISTRY
@@ -75,9 +81,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             )
 
     def _get_command_resolvers(self) -> list[Type["AbstractCommandResolver"]]:
-        from wexample_wex_core.resolver.service_command_resolver import (
-            ServiceCommandResolver,
-        )
+        from wexample_wex_core.resolver.service_command_resolver import \
+            ServiceCommandResolver
 
         return [
             AddonCommandResolver,
@@ -85,9 +90,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def _get_command_runners(self) -> list[Type["AbstractCommandRunner"]]:
-        from wexample_wex_core.runner.core_python_command_runner import (
-            CorePythonCommandRunner,
-        )
+        from wexample_wex_core.runner.core_python_command_runner import \
+            CorePythonCommandRunner
 
         return [
             # Default runner.
@@ -96,7 +100,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def _init_middlewares(self):
-        from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+        from wexample_wex_core.common.abstract_addon_manager import \
+            AbstractAddonManager
 
         classes = []
         for addon in self.get_addons().values():
