@@ -18,12 +18,10 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
     def __init__(self, **kwargs):
         # Set default option if none provided
-        if 'option' not in kwargs or not kwargs['option']:
-            kwargs['option'] = self._get_default_option()
+        if "option" not in kwargs or not kwargs["option"]:
+            kwargs["option"] = self._get_default_option()
 
-        kwargs['options'] = [
-            kwargs['option']
-        ]
+        kwargs["options"] = [kwargs["option"]]
 
         super().__init__(**kwargs)
 
@@ -33,32 +31,33 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
     def _get_default_option(self) -> Dict[str, Any]:
         from wexample_helpers.const.globals import PATH_NAME_PATH
+
         """Get the default path option definition."""
         return {
             "name": PATH_NAME_PATH,
             "type": str,
             "required": True,
-            "description": "Path to local file or directory"
+            "description": "Path to local file or directory",
         }
 
     def validate_options(
-            self,
-            command_wrapper: "CommandMethodWrapper",
-            request: "CommandRequest",
-            function_kwargs: "Kwargs"
+        self,
+        command_wrapper: "CommandMethodWrapper",
+        request: "CommandRequest",
+        function_kwargs: "Kwargs",
     ) -> bool:
         if self.should_exist:
             import os.path
-            from wexample_wex_core.exception.path_not_found_command_option_exception import \
-                PathNotFoundCommandOptionException
+            from wexample_wex_core.exception.path_not_found_command_option_exception import (
+                PathNotFoundCommandOptionException,
+            )
 
             option = self.get_first_option()
             if option and option.name in function_kwargs:
                 file_path = function_kwargs[option.name]
                 if not os.path.exists(file_path):
                     raise PathNotFoundCommandOptionException(
-                        option_name=option.name,
-                        file_path=file_path
+                        option_name=option.name, file_path=file_path
                     )
 
         return True
@@ -67,24 +66,26 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         """
         Determine if an item should be processed based on its path.
         This method should be overridden by subclasses to implement specific filtering logic.
-        
+
         Args:
             item_path: Path to the item to check
-            
+
         Returns:
             True if the item should be processed, False otherwise
         """
         # Base implementation accepts all items
         return True
 
-    def _should_explore_directory(self, request: "CommandRequest", directory_name: str) -> bool:
+    def _should_explore_directory(
+        self, request: "CommandRequest", directory_name: str
+    ) -> bool:
         """
         Determine if a directory should be explored during recursive traversal.
         This method can be overridden by subclasses to skip certain directories.
-        
+
         Args:
             directory_name: Name of the directory to check (not the full path)
-            
+
         Returns:
             True if the directory should be explored, False otherwise
         """
@@ -92,19 +93,20 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         return True
 
     def _process_directory_recursively(
-            self,
-            request: "CommandRequest",
-            directory_path: str,
-            option_name: str,
-            current_depth: int = 0) -> List[Dict]:
+        self,
+        request: "CommandRequest",
+        directory_path: str,
+        option_name: str,
+        current_depth: int = 0,
+    ) -> List[Dict]:
         """
         Process a directory recursively, collecting paths that match the criteria.
-        
+
         Args:
             directory_path: Path to the directory to process
             option_name: Name of the option to set in function kwargs
             current_depth: Current recursion depth
-            
+
         Returns:
             List of function kwargs dictionaries for each matching path
         """
@@ -126,15 +128,19 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
                 # If recursive is enabled and item is a directory, check if we should explore it
                 if self.recursive and os.path.isdir(item_path):
                     # Skip directories that shouldn't be explored
-                    if not self._should_explore_directory(request=request, directory_name=item):
-                        request.kernel.io.info(f'Skipping path that does not match middleware policy: {item_path}')
+                    if not self._should_explore_directory(
+                        request=request, directory_name=item
+                    ):
+                        request.kernel.io.info(
+                            f"Skipping path that does not match middleware policy: {item_path}"
+                        )
                         continue
 
                     subdirectory_results = self._process_directory_recursively(
                         request=request,
                         directory_path=item_path,
                         option_name=option_name,
-                        current_depth=current_depth + 1
+                        current_depth=current_depth + 1,
                     )
                     result.extend(subdirectory_results)
         except (PermissionError, FileNotFoundError) as e:
@@ -144,10 +150,10 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         return result
 
     def build_execution_contexts(
-            self,
-            command_wrapper: "CommandMethodWrapper",
-            request: "CommandRequest",
-            function_kwargs: "Kwargs"
+        self,
+        command_wrapper: "CommandMethodWrapper",
+        request: "CommandRequest",
+        function_kwargs: "Kwargs",
     ) -> List["ExecutionContext"]:
         # If glob expansion is enabled and the path is a directory,
         # create an execution for each matching item in that directory
@@ -163,9 +169,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
                 # Process the directory (recursively if enabled)
                 path_kwargs_list = self._process_directory_recursively(
-                    request=request,
-                    directory_path=path,
-                    option_name=option.name
+                    request=request, directory_path=path, option_name=option.name
                 )
 
                 # Create execution passes by combining the original kwargs with each path
@@ -178,7 +182,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
                             middleware=self,
                             command_wrapper=command_wrapper,
                             request=request,
-                            function_kwargs=kwargs_copy
+                            function_kwargs=kwargs_copy,
                         )
                     )
 

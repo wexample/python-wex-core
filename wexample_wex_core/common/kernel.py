@@ -31,7 +31,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def __init__(self, **kwargs) -> None:
         AbstractKernel.__init__(self, **kwargs)
 
-    def setup(self, addons: Optional[List[Type["AbstractAddonManager"]]] = None) -> "AbstractKernel":
+    def setup(
+        self, addons: Optional[List[Type["AbstractAddonManager"]]] = None
+    ) -> "AbstractKernel":
         response = super().setup()
         self._init_command_line_kernel()
         self._init_addons(addons=addons)
@@ -56,7 +58,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
     def _init_registry(self):
         from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
-        kernel_registry_file = self.workdir.get_shortcut(KernelWorkdir.SHORTCUT_REGISTRY)
+
+        kernel_registry_file = self.workdir.get_shortcut(
+            KernelWorkdir.SHORTCUT_REGISTRY
+        )
         assert isinstance(kernel_registry_file, KernelRegistryFile)
 
         # Registry has zero length.
@@ -65,10 +70,14 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             self._registry = kernel_registry_file.create_registry_and_save(kernel=self)
         else:
             # Fill registry from existing file
-            self._registry = kernel_registry_file.create_registry_from_content(kernel=self)
+            self._registry = kernel_registry_file.create_registry_from_content(
+                kernel=self
+            )
 
     def _get_command_resolvers(self) -> list[Type["AbstractCommandResolver"]]:
-        from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
+        from wexample_wex_core.resolver.service_command_resolver import (
+            ServiceCommandResolver,
+        )
 
         return [
             AddonCommandResolver,
@@ -76,12 +85,14 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def _get_command_runners(self) -> list[Type["AbstractCommandRunner"]]:
-        from wexample_wex_core.runner.core_python_command_runner import CorePythonCommandRunner
+        from wexample_wex_core.runner.core_python_command_runner import (
+            CorePythonCommandRunner,
+        )
 
         return [
             # Default runner.
             CorePythonCommandRunner,
-            CoreYamlCommandRunner
+            CoreYamlCommandRunner,
         ]
 
     def _init_middlewares(self):
@@ -94,31 +105,33 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self.register_items("middlewares", classes)
 
     def _get_workdir_state_manager_class(
-            self,
-            entrypoint_path: str,
-            io_manager: "IoManager",
-            config: Optional["DictConfig"] = None
+        self,
+        entrypoint_path: str,
+        io_manager: "IoManager",
+        config: Optional["DictConfig"] = None,
     ) -> "FileStateManager":
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
         return KernelWorkdir.create_from_kernel(
-            kernel=self,
-            config=config or {},
-            io_manager=io_manager
+            kernel=self, config=config or {}, io_manager=io_manager
         )
 
-    def _build_single_command_request_from_arguments(self, arguments: "CommandLineArgumentsList"):
+    def _build_single_command_request_from_arguments(
+        self, arguments: "CommandLineArgumentsList"
+    ):
         # Core command request takes a request id.
         return [
             self._get_command_request_class()(
                 kernel=self,
                 request_id=arguments[0],
                 name=arguments[1],
-                arguments=arguments[2:])
+                arguments=arguments[2:],
+            )
         ]
 
     def _get_command_request_class(self) -> Type["CommandRequest"]:
         from wexample_wex_core.common.command_request import CommandRequest
+
         return CommandRequest
 
     def _get_core_args(self):

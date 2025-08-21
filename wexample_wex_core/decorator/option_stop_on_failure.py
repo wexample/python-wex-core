@@ -11,14 +11,16 @@ def option_stop_on_failure() -> "AnyCallable":
     def decorator(command_wrapper: "CommandMethodWrapper") -> "CommandMethodWrapper":
         from wexample_wex_core.command.option import Option
 
-        command_wrapper.set_option(Option(
-            name=OPTION_NAME_STOP_ON_FAILURE,
-            type=bool,
-            description="Stop execution when exception occurs",
-            required=False,
-            default=False,
-            is_flag=True,
-        ))
+        command_wrapper.set_option(
+            Option(
+                name=OPTION_NAME_STOP_ON_FAILURE,
+                type=bool,
+                description="Stop execution when exception occurs",
+                required=False,
+                default=False,
+                is_flag=True,
+            )
+        )
 
         return command_wrapper
 

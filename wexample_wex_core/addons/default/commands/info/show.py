@@ -7,16 +7,14 @@ if TYPE_CHECKING:
 
 
 @command()
-def default__info__show(
-        context: "ExecutionContext"
-) -> None:
+def default__info__show(context: "ExecutionContext") -> None:
     registry = context.kernel.get_configuration_registry()
-    
+
     context.io.properties(
         title="General",
         properties={
             "Location": context.kernel.workdir.get_resolved(),
             "Environment": registry.env,
             "Arguments": context.kernel._sys_argv,
-        }
+        },
     )

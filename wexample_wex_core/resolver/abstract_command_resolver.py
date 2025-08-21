@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 
-from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver as BaseAbstractCommandResolver
+from wexample_app.resolver.abstract_command_resolver import (
+    AbstractCommandResolver as BaseAbstractCommandResolver,
+)
 from wexample_helpers.const.types import StructuredData
 
 

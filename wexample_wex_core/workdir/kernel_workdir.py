@@ -24,38 +24,31 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
     def prepare_value(self, raw_value: Optional[DictConfig] = None) -> DictConfig:
         from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
 
-        config = super().prepare_value(
-            raw_value=raw_value
-        )
+        config = super().prepare_value(raw_value=raw_value)
 
         children = raw_value["children"]
 
-        children.append({
-            "shortcut": self.SHORTCUT_TMP,
-            "name": self.SHORTCUT_TMP,
-            "type": DiskItemType.DIRECTORY,
-            "should_exist": True,
-            "children": [
-                {
-                    "class": KernelRegistryFile,
-                    "name": KernelWorkdir.FILE_REGISTRY,
-                    "shortcut": KernelWorkdir.SHORTCUT_REGISTRY,
-                    "type": DiskItemType.FILE,
-                }
-            ]
-        })
+        children.append(
+            {
+                "shortcut": self.SHORTCUT_TMP,
+                "name": self.SHORTCUT_TMP,
+                "type": DiskItemType.DIRECTORY,
+                "should_exist": True,
+                "children": [
+                    {
+                        "class": KernelRegistryFile,
+                        "name": KernelWorkdir.FILE_REGISTRY,
+                        "shortcut": KernelWorkdir.SHORTCUT_REGISTRY,
+                        "type": DiskItemType.FILE,
+                    }
+                ],
+            }
+        )
 
         return config
 
     @classmethod
-    def create_from_kernel(
-            cls,
-            kernel: "Kernel",
-            **kwargs
-    ) -> "ItemTargetDirectory":
+    def create_from_kernel(cls, kernel: "Kernel", **kwargs) -> "ItemTargetDirectory":
         return super().create_from_path(
-            path=kernel.entrypoint_path,
-            kernel=kernel,
-            io=kernel.io,
-            **kwargs
+            path=kernel.entrypoint_path, kernel=kernel, io=kernel.io, **kwargs
         )

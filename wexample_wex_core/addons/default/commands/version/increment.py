@@ -15,11 +15,11 @@ if TYPE_CHECKING:
 @option(name="build", type=bool)
 @command()
 def default__version__increment(
-        context: "ExecutionContext",
-        version: str,
-        type: str = UPGRADE_TYPE_MINOR,
-        increment: int = 1,
-        build: bool = False,
+    context: "ExecutionContext",
+    version: str,
+    type: str = UPGRADE_TYPE_MINOR,
+    increment: int = 1,
+    build: bool = False,
 ) -> str:
     return version_increment(
         version=version,

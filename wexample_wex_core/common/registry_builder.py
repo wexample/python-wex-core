@@ -20,4 +20,5 @@ class RegistryBuilder(AbstractKernelChild, ConfigValue):
 
     def get_str(self, type_check: bool = True) -> str:
         import yaml
+
         return yaml.dump(self.create_registry().to_dict())

@@ -8,9 +8,7 @@ if TYPE_CHECKING:
 
 
 @command()
-def test__run__all(
-        context: "ExecutionContext"
-) -> None:
+def test__run__all(context: "ExecutionContext") -> None:
     import pytest
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
 
@@ -24,14 +22,14 @@ def test__run__all(
     pytest_args = [
         "tests",  # Run tests from the tests directory
         "--color=yes",  # Enable colored output
-        "-v"  # Verbose output
+        "-v",  # Verbose output
     ]
 
     # Add addons tests directories
     for addon in context.kernel.get_addons().values():
         assert isinstance(addon, AbstractAddonManager)
-        context.io.log(f'Adding tests from addon: {addon.get_snake_short_class_name()}')
-        pytest_args.append(addon.workdir.get_resolved_target('tests'))
+        context.io.log(f"Adding tests from addon: {addon.get_snake_short_class_name()}")
+        pytest_args.append(addon.workdir.get_resolved_target("tests"))
 
     context.io.log(f"Running pytest with args: {' '.join(pytest_args)}")
 

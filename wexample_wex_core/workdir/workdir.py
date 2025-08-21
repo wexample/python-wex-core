@@ -14,11 +14,13 @@ class Workdir(FileStateManager):
         if "children" not in raw_value:
             raw_value["children"] = []
 
-        raw_value["children"].append({
-            # .wex
-            "name": WORKDIR_SETUP_DIR,
-            'type': DiskItemType.DIRECTORY,
-            'should_exist': True,
-        })
+        raw_value["children"].append(
+            {
+                # .wex
+                "name": WORKDIR_SETUP_DIR,
+                "type": DiskItemType.DIRECTORY,
+                "should_exist": True,
+            }
+        )
 
         return raw_value

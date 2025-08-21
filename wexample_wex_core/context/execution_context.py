@@ -25,14 +25,8 @@ class ExecutionContext(
     def __init__(self, **kwargs):
         BaseModel.__init__(self, **kwargs)
 
-        AbstractKernelChild.__init__(
-            self,
-            kernel=self.request.kernel
-        )
+        AbstractKernelChild.__init__(self, kernel=self.request.kernel)
 
-        WithRequiredIoManager.__init__(
-            self,
-            io=self.kernel.io
-        )
+        WithRequiredIoManager.__init__(self, io=self.kernel.io)
 
         self.function_kwargs["context"] = self

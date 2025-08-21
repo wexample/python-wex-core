@@ -1,7 +1,9 @@
 from typing import TYPE_CHECKING, Optional
 
 from wexample_app.runner.python_command_runner import PythonCommandRunner
-from wexample_wex_core.exception.command_function_build_failed_exception import CommandFunctionBuildFailedException
+from wexample_wex_core.exception.command_function_build_failed_exception import (
+    CommandFunctionBuildFailedException,
+)
 
 if TYPE_CHECKING:
     from wexample_app.common.command import Command
@@ -19,10 +21,7 @@ class CorePythonCommandRunner(PythonCommandRunner):
             raise CommandFunctionBuildFailedException(
                 command_name=request.name,
                 expected_type=CommandMethodWrapper.__name__,
-                actual_type=actual_type
+                actual_type=actual_type,
             )
 
-        return ExtendedCommand(
-            kernel=self.kernel,
-            command_wrapper=command_wrapper
-        )
+        return ExtendedCommand(kernel=self.kernel, command_wrapper=command_wrapper)
