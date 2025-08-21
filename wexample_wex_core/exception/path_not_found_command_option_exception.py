@@ -1,7 +1,8 @@
 from typing import Optional
 
-from wexample_wex_core.exception.abstract_command_option_exception import \
-    AbstractCommandOptionException
+from wexample_wex_core.exception.abstract_command_option_exception import (
+    AbstractCommandOptionException,
+)
 
 
 class PathNotFoundCommandOptionException(AbstractCommandOptionException):
@@ -15,7 +16,7 @@ class PathNotFoundCommandOptionException(AbstractCommandOptionException):
         file_path: str,
         cause: Optional[Exception] = None,
         previous: Optional[Exception] = None,
-    ):
+    ) -> None:
         super().__init__(
             option_name=option_name,
             message=f"File or directory not found, specified in option '{option_name}': '{file_path}'",

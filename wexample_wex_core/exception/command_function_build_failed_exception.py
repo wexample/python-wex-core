@@ -1,7 +1,9 @@
 from typing import Optional
 
-from wexample_helpers.exception.undefined_exception import (ExceptionData,
-                                                            UndefinedException)
+from wexample_helpers.exception.undefined_exception import (
+    ExceptionData,
+    UndefinedException,
+)
 
 
 class CommandFunctionBuildFailedData(ExceptionData):
@@ -29,7 +31,7 @@ class CommandFunctionBuildFailedException(UndefinedException):
         actual_type: str,
         cause: Optional[Exception] = None,
         previous: Optional[Exception] = None,
-    ):
+    ) -> None:
         # Create structured data using Pydantic model
         data_model = CommandFunctionBuildFailedData(
             command_name=command_name,

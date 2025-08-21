@@ -5,8 +5,7 @@ from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 if TYPE_CHECKING:
     from wexample_helpers.const.types import Kwargs
-    from wexample_wex_core.common.command_method_wrapper import \
-        CommandMethodWrapper
+    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.context.execution_context import ExecutionContext
 
@@ -17,7 +16,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
     expand_glob: bool = False
     recursion_limit: int = 100
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         # Set default option if none provided
         if "option" not in kwargs or not kwargs["option"]:
             kwargs["option"] = self._get_default_option()
@@ -50,8 +49,9 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         if self.should_exist:
             import os.path
 
-            from wexample_wex_core.exception.path_not_found_command_option_exception import \
-                PathNotFoundCommandOptionException
+            from wexample_wex_core.exception.path_not_found_command_option_exception import (
+                PathNotFoundCommandOptionException,
+            )
 
             option = self.get_first_option()
             if option and option.name in function_kwargs:
@@ -159,8 +159,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         # If glob expansion is enabled and the path is a directory,
         # create an execution for each matching item in that directory
         if self.expand_glob:
-            from wexample_wex_core.context.execution_context import \
-                ExecutionContext
+            from wexample_wex_core.context.execution_context import ExecutionContext
 
             path = self._get_option_file_path(function_kwargs=function_kwargs)
 

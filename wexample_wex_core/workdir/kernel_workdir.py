@@ -7,8 +7,7 @@ from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
     from wexample_app.common.abstract_kernel import AbstractKernel
-    from wexample_filestate.item.item_target_directory import \
-        ItemTargetDirectory
+    from wexample_filestate.item.item_target_directory import ItemTargetDirectory
     from wexample_wex_core.common.kernel import Kernel
 
 
@@ -18,13 +17,12 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
     SHORTCUT_TMP: ClassVar[str] = "tmp"
     FILE_REGISTRY: ClassVar[str] = "registry.yml"
 
-    def __init__(self, kernel: "AbstractKernel", **kwargs):
+    def __init__(self, kernel: "AbstractKernel", **kwargs) -> None:
         ProjectWorkdir.__init__(self, **kwargs)
         AbstractKernelChild.__init__(self, kernel=kernel)
 
     def prepare_value(self, raw_value: Optional[DictConfig] = None) -> DictConfig:
-        from wexample_wex_core.path.kernel_registry_file import \
-            KernelRegistryFile
+        from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
 
         config = super().prepare_value(raw_value=raw_value)
 

@@ -1,15 +1,16 @@
 import os.path
 from typing import TYPE_CHECKING, Any, Dict, List
 
-from wexample_wex_core.exception.path_is_not_directory_command_option_exception import \
-    PathIsNotDirectoryCommandOptionException
-from wexample_wex_core.middleware.abstract_each_path_middleware import \
-    AbstractEachPathMiddleware
+from wexample_wex_core.exception.path_is_not_directory_command_option_exception import (
+    PathIsNotDirectoryCommandOptionException,
+)
+from wexample_wex_core.middleware.abstract_each_path_middleware import (
+    AbstractEachPathMiddleware,
+)
 
 if TYPE_CHECKING:
     from wexample_helpers.const.types import Kwargs
-    from wexample_wex_core.common.command_method_wrapper import \
-        CommandMethodWrapper
+    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.common.command_request import CommandRequest
 
 

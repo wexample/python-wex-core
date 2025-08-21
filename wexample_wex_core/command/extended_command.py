@@ -5,18 +5,22 @@ from typing import TYPE_CHECKING, Any, Dict, List
 from wexample_app.common.command import Command
 from wexample_app.response.failure_response import FailureResponse
 from wexample_helpers.const.types import Kwargs
-from wexample_wex_core.common.command_method_wrapper import \
-    CommandMethodWrapper
+from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 from wexample_wex_core.const.middleware import (
-    MIDDLEWARE_OPTION_VALUE_ALLWAYS, MIDDLEWARE_OPTION_VALUE_OPTIONAL)
+    MIDDLEWARE_OPTION_VALUE_ALLWAYS,
+    MIDDLEWARE_OPTION_VALUE_OPTIONAL,
+)
 from wexample_wex_core.const.types import ParsedArgs
 from wexample_wex_core.context.execution_context import ExecutionContext
-from wexample_wex_core.exception.command_argument_conversion_exception import \
-    CommandArgumentConversionException
-from wexample_wex_core.exception.command_option_missing_exception import \
-    CommandOptionMissingException
-from wexample_wex_core.exception.command_unexpected_argument_exception import \
-    CommandUnexpectedArgumentException
+from wexample_wex_core.exception.command_argument_conversion_exception import (
+    CommandArgumentConversionException,
+)
+from wexample_wex_core.exception.command_option_missing_exception import (
+    CommandOptionMissingException,
+)
+from wexample_wex_core.exception.command_unexpected_argument_exception import (
+    CommandUnexpectedArgumentException,
+)
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
@@ -27,7 +31,7 @@ class ExtendedCommand(Command):
 
     def __init__(
         self, command_wrapper: CommandMethodWrapper, *args: Any, **kwargs: Kwargs
-    ):
+    ) -> None:
         kwargs["command_wrapper"] = command_wrapper
 
         super().__init__(function=command_wrapper.function, *args, **kwargs)
@@ -173,8 +177,7 @@ class ExtendedCommand(Command):
         async def execute_single_pass(
             execution_context: ExecutionContext,
         ) -> "AbstractResponse":
-            from wexample_prompt.output.buffer_output_handler import \
-                BufferOutputHandler
+            from wexample_prompt.output.buffer_output_handler import BufferOutputHandler
 
             output = BufferOutputHandler()
             # Detach io manager to print log result at the end.

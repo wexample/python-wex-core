@@ -1,7 +1,8 @@
 from typing import List, Optional
 
-from wexample_helpers.exception.not_allowed_item_exception import \
-    NotAllowedItemException
+from wexample_helpers.exception.not_allowed_item_exception import (
+    NotAllowedItemException,
+)
 from wexample_helpers.exception.undefined_exception import ExceptionData
 
 
@@ -22,7 +23,7 @@ class CommandUnexpectedArgumentException(NotAllowedItemException):
         allowed_arguments: List[str],
         cause: Optional[Exception] = None,
         previous: Optional[Exception] = None,
-    ):
+    ) -> None:
         # Call parent constructor with appropriate parameters
         super().__init__(
             item_type="argument",

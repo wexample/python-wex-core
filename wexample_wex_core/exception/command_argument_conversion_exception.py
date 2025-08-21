@@ -1,7 +1,9 @@
 from typing import Any, Optional, Type
 
-from wexample_helpers.exception.undefined_exception import (ExceptionData,
-                                                            UndefinedException)
+from wexample_helpers.exception.undefined_exception import (
+    ExceptionData,
+    UndefinedException,
+)
 
 
 class CommandArgumentConversionData(ExceptionData):
@@ -24,7 +26,7 @@ class CommandArgumentConversionException(UndefinedException):
         target_type: Type,
         cause: Optional[Exception] = None,
         previous: Optional[Exception] = None,
-    ):
+    ) -> None:
         # Create structured data using Pydantic model
         data_model = CommandArgumentConversionData(
             argument_name=argument_name, value=value, target_type=str(target_type)

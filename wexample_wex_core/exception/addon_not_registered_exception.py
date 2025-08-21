@@ -1,7 +1,8 @@
 from typing import List, Optional
 
-from wexample_helpers.exception.not_allowed_item_exception import \
-    NotAllowedItemException
+from wexample_helpers.exception.not_allowed_item_exception import (
+    NotAllowedItemException,
+)
 
 
 class AddonNotRegisteredException(NotAllowedItemException):
@@ -19,7 +20,7 @@ class AddonNotRegisteredException(NotAllowedItemException):
         available_addons: Optional[List[str]] = None,
         cause: Optional[Exception] = None,
         previous: Optional[Exception] = None,
-    ):
+    ) -> None:
         # Call parent constructor with appropriate parameters
         super().__init__(
             item_type="addon",

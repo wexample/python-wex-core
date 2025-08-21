@@ -16,7 +16,7 @@ class Option(BaseModel):
     # The computed value using input argument or default value.
     value: Any = None
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         from wexample_wex_core.helpers.option import option_build_short_name
 
         super().__init__(**kwargs)

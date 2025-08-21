@@ -1,17 +1,16 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field
-from wexample_helpers.classes.mixin.has_class_dependencies import \
-    HasClassDependencies
-from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin import \
-    HasSnakeShortClassNameClassMixin
+from wexample_helpers.classes.mixin.has_class_dependencies import HasClassDependencies
+from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin import (
+    HasSnakeShortClassNameClassMixin,
+)
 from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
 from wexample_helpers.const.types import Kwargs
 from wexample_wex_core.command.option import Option
 
 if TYPE_CHECKING:
-    from wexample_wex_core.common.command_method_wrapper import \
-        CommandMethodWrapper
+    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.context.execution_context import ExecutionContext
 
@@ -61,8 +60,7 @@ class AbstractMiddleware(
         self, request: "CommandRequest", command_wrapper: "CommandMethodWrapper"
     ) -> None:
         from wexample_wex_core.command.option import Option
-        from wexample_wex_core.const.middleware import \
-            MIDDLEWARE_OPTION_VALUE_OPTIONAL
+        from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_OPTIONAL
 
         if self.parallel:
             self.stop_on_failure = False
@@ -120,8 +118,7 @@ class AbstractMiddleware(
         request: "CommandRequest",
         function_kwargs: "Kwargs",
     ) -> List["ExecutionContext"]:
-        from wexample_wex_core.context.execution_context import \
-            ExecutionContext
+        from wexample_wex_core.context.execution_context import ExecutionContext
 
         self.validate_options(
             command_wrapper=command_wrapper,

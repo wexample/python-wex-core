@@ -15,7 +15,7 @@ class AbstractCommandOptionException(UndefinedException):
         data: Optional[Dict[str, Any]] = None,
         cause: Optional[Exception] = None,
         previous: Optional[Exception] = None,
-    ):
+    ) -> None:
         # Merge provided data with base data
         merged_data = {option_name: option_name}
         if data:
