@@ -48,7 +48,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         # We can then use config.
         self.io.verbosity = self._config_arg_verbosity
 
-    def _init_addons(self, addons: Optional[List[Type["AbstractAddonManager"]]] = None) -> None:
+    def _init_addons(
+        self, addons: Optional[List[Type["AbstractAddonManager"]]] = None
+    ) -> None:
         from wexample_app.service.service_registry import ServiceRegistry
 
         cast(ServiceRegistry, self.set_registry(REGISTRY_KERNEL_ADDON))
