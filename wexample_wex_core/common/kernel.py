@@ -26,21 +26,26 @@ if TYPE_CHECKING:
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _registry: "KernelRegistry"
-    _config_arg_verbosity: str = PrivateAttr(default=VerbosityLevel.MAXIMUM)
+    _config_arg_verbosity: VerbosityLevel = PrivateAttr(default=VerbosityLevel.DEFAULT)
 
     def __init__(self, **kwargs) -> None:
         AbstractKernel.__init__(self, **kwargs)
 
     def setup(self, addons: Optional[List[Type["AbstractAddonManager"]]] = None) -> "AbstractKernel":
         response = super().setup()
-        self._init_addons(addons=addons)
         self._init_command_line_kernel()
+        self._init_addons(addons=addons)
         self._init_resolvers()
         self._init_runners()
         self._init_middlewares()
         self._init_registry()
 
         return response
+
+    def _init_command_line_kernel(self: "AbstractKernel"):
+        super()._init_command_line_kernel()
+        # We can then use config.
+        self.io.verbosity = self._config_arg_verbosity
 
     def _init_addons(self, addons: Optional[List[Type["AbstractAddonManager"]]] = None):
         from wexample_app.service.service_registry import ServiceRegistry
