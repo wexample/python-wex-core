@@ -1,17 +1,29 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from wexample_config.const.types import DictConfig
 from wexample_filestate.const.disk import DiskItemType
 from wexample_filestate_dev.workdir.mixins.with_readme_workdir_mixin import WithReadmeWorkdirMixin
-from wexample_filestate_dev.workdir.mixins.with_version_workdir_mixin import WithVersionWorkdirMixin
+from wexample_wex_core.workdir.mixin.with_app_version_workdir_mixin import WithAppVersionWorkdirMixin
 from wexample_wex_addon_app.const.globals import (
     APP_FILE_APP_CONFIG,
     APP_FILE_APP_ENV, APP_DIR_APP_DATA_NAME,
 )
 from wexample_wex_core.workdir.workdir import Workdir
 
+if TYPE_CHECKING:
+    from wexample_config.config_value.nested_config_value import NestedConfigValue
 
-class ProjectWorkdir(WithReadmeWorkdirMixin, WithVersionWorkdirMixin, Workdir):
+
+class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir):
+    def get_config(self) -> "NestedConfigValue":
+        from wexample_config.config_value.nested_config_value import NestedConfigValue
+
+        config_yml = self.find_by_name_recursive(item_name=APP_FILE_APP_CONFIG)
+        if config_yml:
+            return config_yml.read_as_config()
+
+        return NestedConfigValue()
+
     def prepare_value(self, raw_value: Optional[DictConfig] = None) -> DictConfig:
         from wexample_filestate.config_option.text_filter_config_option import TextFilterConfigOption
 
