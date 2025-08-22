@@ -1,6 +1,5 @@
 click
 pip-tools
 pydantic
-pytest
 wexample-app
 wexample-filestate
