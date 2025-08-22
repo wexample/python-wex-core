@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir):
 
     @classmethod
-    def create_from_config(cls, **kwargs) -> "ProjectWorkdir":
+    def create_from_config(cls, **kwargs) -> ProjectWorkdir:
 
         from wexample_filestate.config_option.class_config_option import (
             ClassConfigOption,
@@ -44,7 +44,7 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
                     return preferred.create_from_config(**kwargs)
         return instance
 
-    def get_config(self) -> "NestedConfigValue":
+    def get_config(self) -> NestedConfigValue:
         from wexample_config.config_value.nested_config_value import NestedConfigValue
 
         config_yml = self.find_by_name_recursive(item_name=APP_FILE_APP_CONFIG)

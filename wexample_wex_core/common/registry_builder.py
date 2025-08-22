@@ -11,11 +11,11 @@ if TYPE_CHECKING:
 
 
 class RegistryBuilder(AbstractKernelChild, ConfigValue):
-    def __init__(self, kernel: "AbstractKernel", **kwargs) -> None:
+    def __init__(self, kernel: AbstractKernel, **kwargs) -> None:
         ConfigValue.__init__(self, raw={}, **kwargs)
         AbstractKernelChild.__init__(self, kernel=kernel)
 
-    def create_registry(self) -> "KernelRegistry":
+    def create_registry(self) -> KernelRegistry:
         from wexample_wex_core.registry.kernel_registry import KernelRegistry
 
         return KernelRegistry(kernel=self.kernel)

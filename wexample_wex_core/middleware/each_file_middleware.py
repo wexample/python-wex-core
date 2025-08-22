@@ -30,9 +30,9 @@ class EachFileMiddleware(AbstractEachPathMiddleware):
 
     def validate_options(
         self,
-        command_wrapper: "CommandMethodWrapper",
-        request: "CommandRequest",
-        function_kwargs: "Kwargs",
+        command_wrapper: CommandMethodWrapper,
+        request: CommandRequest,
+        function_kwargs: Kwargs,
     ) -> bool:
         valid = super().validate_options(
             command_wrapper=command_wrapper,
@@ -53,5 +53,5 @@ class EachFileMiddleware(AbstractEachPathMiddleware):
 
         return valid
 
-    def _should_process_item(self, request: "CommandRequest", item_path: str) -> bool:
+    def _should_process_item(self, request: CommandRequest, item_path: str) -> bool:
         return os.path.isfile(item_path)

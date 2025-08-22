@@ -30,9 +30,9 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
 
     def validate_options(
         self,
-        command_wrapper: "CommandMethodWrapper",
-        request: "CommandRequest",
-        function_kwargs: "Kwargs",
+        command_wrapper: CommandMethodWrapper,
+        request: CommandRequest,
+        function_kwargs: Kwargs,
     ) -> bool:
         if super().validate_options(
             command_wrapper=command_wrapper,
@@ -50,5 +50,5 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
 
         return False
 
-    def _should_process_item(self, request: "CommandRequest", item_path: str) -> bool:
+    def _should_process_item(self, request: CommandRequest, item_path: str) -> bool:
         return os.path.isdir(item_path)

@@ -19,7 +19,7 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
     SHORTCUT_TMP: ClassVar[str] = "tmp"
     FILE_REGISTRY: ClassVar[str] = "registry.yml"
 
-    def __init__(self, kernel: "AbstractKernel", **kwargs) -> None:
+    def __init__(self, kernel: AbstractKernel, **kwargs) -> None:
         ProjectWorkdir.__init__(self, **kwargs)
         AbstractKernelChild.__init__(self, kernel=kernel)
 
@@ -50,7 +50,7 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
         return config
 
     @classmethod
-    def create_from_kernel(cls, kernel: "Kernel", **kwargs) -> "ItemTargetDirectory":
+    def create_from_kernel(cls, kernel: Kernel, **kwargs) -> ItemTargetDirectory:
         return super().create_from_path(
             path=kernel.entrypoint_path, kernel=kernel, io=kernel.io, **kwargs
         )

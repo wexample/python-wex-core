@@ -18,7 +18,7 @@ class AbstractAddonManager(
     BaseModel,
     WithWorkdirMixin,
 ):
-    def __init__(self, kernel: "AbstractKernel", **kwargs) -> None:
+    def __init__(self, kernel: AbstractKernel, **kwargs) -> None:
         import inspect
         import os.path
 

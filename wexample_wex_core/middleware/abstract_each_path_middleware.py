@@ -27,7 +27,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
         super().__init__(**kwargs)
 
-    def _get_option_file_path(self, function_kwargs: "Kwargs") -> str | None:
+    def _get_option_file_path(self, function_kwargs: Kwargs) -> str | None:
         option = self.get_first_option()
         return function_kwargs[option.name]
 
@@ -44,9 +44,9 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
     def validate_options(
         self,
-        command_wrapper: "CommandMethodWrapper",
-        request: "CommandRequest",
-        function_kwargs: "Kwargs",
+        command_wrapper: CommandMethodWrapper,
+        request: CommandRequest,
+        function_kwargs: Kwargs,
     ) -> bool:
         if self.should_exist:
             import os.path
@@ -65,7 +65,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
         return True
 
-    def _should_process_item(self, request: "CommandRequest", item_path: str) -> bool:
+    def _should_process_item(self, request: CommandRequest, item_path: str) -> bool:
         """
         Determine if an item should be processed based on its path.
         This method should be overridden by subclasses to implement specific filtering logic.
@@ -80,7 +80,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         return True
 
     def _should_explore_directory(
-        self, request: "CommandRequest", directory_name: str
+        self, request: CommandRequest, directory_name: str
     ) -> bool:
         """
         Determine if a directory should be explored during recursive traversal.
@@ -97,7 +97,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
     def _process_directory_recursively(
         self,
-        request: "CommandRequest",
+        request: CommandRequest,
         directory_path: str,
         option_name: str,
         current_depth: int = 0,
@@ -154,9 +154,9 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
     def build_execution_contexts(
         self,
-        command_wrapper: "CommandMethodWrapper",
-        request: "CommandRequest",
-        function_kwargs: "Kwargs",
+        command_wrapper: CommandMethodWrapper,
+        request: CommandRequest,
+        function_kwargs: Kwargs,
     ) -> list["ExecutionContext"]:
         # If glob expansion is enabled and the path is a directory,
         # create an execution for each matching item in that directory

@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
-    _registry: "KernelRegistry"
+    _registry: KernelRegistry
     _config_arg_verbosity: VerbosityLevel = PrivateAttr(default=VerbosityLevel.DEFAULT)
 
     def __init__(self, **kwargs) -> None:
@@ -33,7 +33,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
     def setup(
         self, addons: list[type["AbstractAddonManager"]] | None = None
-    ) -> "AbstractKernel":
+    ) -> AbstractKernel:
         response = super().setup()
         self._init_command_line_kernel()
         self._init_addons(addons=addons)
@@ -44,7 +44,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         return response
 
-    def _init_command_line_kernel(self: "AbstractKernel") -> None:
+    def _init_command_line_kernel(self: AbstractKernel) -> None:
         super()._init_command_line_kernel()
         # We can then use config.
         self.io.verbosity = self._config_arg_verbosity
@@ -109,9 +109,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def _get_workdir_state_manager_class(
         self,
         entrypoint_path: str,
-        io_manager: "IoManager",
+        io_manager: IoManager,
         config: Optional["DictConfig"] = None,
-    ) -> "FileStateManager":
+    ) -> FileStateManager:
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
         return KernelWorkdir.create_from_kernel(
@@ -119,7 +119,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         )
 
     def _build_single_command_request_from_arguments(
-        self, arguments: "CommandLineArgumentsList"
+        self, arguments: CommandLineArgumentsList
     ):
         # Core command request takes a request id.
         return [
@@ -146,5 +146,5 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def get_addons(self) -> dict[str, "AbstractAddonManager"]:
         return self.get_registry(REGISTRY_KERNEL_ADDON).get_all()
 
-    def get_configuration_registry(self) -> "KernelRegistry":
+    def get_configuration_registry(self) -> KernelRegistry:
         return self._registry

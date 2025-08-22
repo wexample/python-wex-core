@@ -38,7 +38,7 @@ class ExtendedCommand(Command):
 
         super().__init__(function=command_wrapper.function, *args, **kwargs)
 
-    def execute_request(self, request: "CommandRequest") -> Any:
+    def execute_request(self, request: CommandRequest) -> Any:
         from wexample_app.helpers.response import response_normalize
         from wexample_app.response.multiple_response import MultipleResponse
 
@@ -178,7 +178,7 @@ class ExtendedCommand(Command):
         # Define a coroutine that executes a single pass
         async def execute_single_pass(
             execution_context: ExecutionContext,
-        ) -> "AbstractResponse":
+        ) -> AbstractResponse:
             from wexample_prompt.output.buffer_output_handler import BufferOutputHandler
 
             output = BufferOutputHandler()
@@ -291,7 +291,7 @@ class ExtendedCommand(Command):
 
         return result
 
-    def _build_function_kwargs(self, request: "CommandRequest") -> dict[str, Any]:
+    def _build_function_kwargs(self, request: CommandRequest) -> dict[str, Any]:
         # Allow middleware to add extra options.
         for middleware in self.command_wrapper.middlewares:
             middleware.append_options(

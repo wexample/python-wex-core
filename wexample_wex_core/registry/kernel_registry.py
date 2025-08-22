@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseModel):
     env: str
 
-    def __init__(self, kernel: "Kernel", **kwargs) -> None:
+    def __init__(self, kernel: Kernel, **kwargs) -> None:
         from wexample_app.const.globals import ENV_VAR_NAME_APP_ENV
 
         kwargs["env"] = kernel.get_env_parameter(ENV_VAR_NAME_APP_ENV)

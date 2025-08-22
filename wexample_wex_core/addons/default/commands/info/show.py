@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 @command()
-def default__info__show(context: "ExecutionContext") -> None:
+def default__info__show(context: ExecutionContext) -> None:
     import platform
 
     registry = context.kernel.get_configuration_registry()

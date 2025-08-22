@@ -30,7 +30,7 @@ class AddonCommandResolver(AbstractCommandResolver):
         return COMMAND_TYPE_ADDON
 
     def build_command_path(
-        self, request: "CommandRequest", extension: str
+        self, request: CommandRequest, extension: str
     ) -> str | None:
 
         match = request.match
@@ -49,8 +49,8 @@ class AddonCommandResolver(AbstractCommandResolver):
         )
 
     def get_request_addon_manager(
-        self, request: "CommandRequest"
-    ) -> "AbstractAddonManager":
+        self, request: CommandRequest
+    ) -> AbstractAddonManager:
         match = request.match
         addon_name = string_to_snake_case(match.group(1))
         addon_registry = self.kernel.get_registry("addon")
@@ -64,7 +64,7 @@ class AddonCommandResolver(AbstractCommandResolver):
 
         return cast(AbstractAddonManager, addon_registry.get(addon_name))
 
-    def build_command_function_name(self, request: "CommandRequest") -> str | None:
+    def build_command_function_name(self, request: CommandRequest) -> str | None:
         return string_to_snake_case(
             COMMAND_SEPARATOR_FUNCTION_PARTS.join(
                 self.get_function_name_parts(request.match.groups())

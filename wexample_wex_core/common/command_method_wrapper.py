@@ -16,10 +16,10 @@ class CommandMethodWrapper(BaseModel):
     middlewares: list[AbstractMiddleware] = field(default_factory=list)
     middlewares_attributes: dict[str, Kwargs] = field(default_factory=dict)
 
-    def set_option(self, option: "Option") -> None:
+    def set_option(self, option: Option) -> None:
         self.options.append(option)
 
-    def register_middleware(self, name: str, middleware_kwargs: "Kwargs") -> None:
+    def register_middleware(self, name: str, middleware_kwargs: Kwargs) -> None:
         self.middlewares_attributes[name] = middleware_kwargs
 
     def set_middleware(self, middleware: AbstractMiddleware) -> None:

@@ -9,8 +9,8 @@ if TYPE_CHECKING:
 OPTION_NAME_STOP_ON_FAILURE: str = "stop_on_failure"
 
 
-def option_stop_on_failure() -> "AnyCallable":
-    def decorator(command_wrapper: "CommandMethodWrapper") -> "CommandMethodWrapper":
+def option_stop_on_failure() -> AnyCallable:
+    def decorator(command_wrapper: CommandMethodWrapper) -> CommandMethodWrapper:
         from wexample_wex_core.command.option import Option
 
         command_wrapper.set_option(
