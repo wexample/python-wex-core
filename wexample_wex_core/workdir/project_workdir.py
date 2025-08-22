@@ -25,7 +25,6 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
 
     @classmethod
     def create_from_config(cls, **kwargs) -> ProjectWorkdir:
-
         from wexample_filestate.config_option.class_config_option import (
             ClassConfigOption,
         )
@@ -41,7 +40,16 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
             if preferred:
                 # The loaded class definition is a different one.
                 if not module_are_same(preferred, cls):
+                    if not issubclass(preferred, cls):
+                        io = kwargs.get("io")
+                        if io:
+                            io.warning(
+                                f"Preferred project workdir class '{preferred}' defined in {APP_FILE_APP_CONFIG} "
+                                f"is not a child of {cls.__name__} as expected by parent workdir."
+                            )
+
                     return preferred.create_from_config(**kwargs)
+
         return instance
 
     def get_config(self) -> NestedConfigValue:
