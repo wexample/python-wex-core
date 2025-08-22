@@ -1,4 +1,3 @@
-from typing import Any, Optional, Type
 
 from wexample_helpers.exception.undefined_exception import (
     ExceptionData,

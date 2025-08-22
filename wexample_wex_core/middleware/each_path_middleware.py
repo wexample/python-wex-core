@@ -9,4 +9,3 @@ class EachPathMiddleware(AbstractEachPathMiddleware):
     Uses the default path option from AbstractEachPathMiddleware.
     """
 
-    pass

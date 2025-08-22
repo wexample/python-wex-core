@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Type
+from typing import TYPE_CHECKING
 
 from wexample_config.const.types import DictConfig
 from wexample_filestate.const.disk import DiskItemType

@@ -1,5 +1,5 @@
 import os.path
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any
 
 from wexample_wex_core.exception.path_is_not_file_command_option_exception import (
     PathIsNotFileCommandOptionException,

@@ -1,5 +1,5 @@
 import os.path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any
 
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 

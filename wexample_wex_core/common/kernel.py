@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, Optional, Type, cast
+from typing import TYPE_CHECKING, Optional, cast
 
 from pydantic import PrivateAttr
 from wexample_app.common.abstract_kernel import AbstractKernel
@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from wexample_prompt.common.io_manager import IoManager
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest
-    from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
 
 

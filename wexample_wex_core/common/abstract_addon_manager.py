@@ -1,4 +1,3 @@
-from typing import List, Optional, Type
 
 from pydantic import BaseModel
 from wexample_app.common.abstract_kernel import AbstractKernel

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from wexample_wex_core.const.globals import (
     COMMAND_PATTERN_SERVICE,

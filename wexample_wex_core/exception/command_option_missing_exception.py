@@ -1,8 +1,6 @@
-from typing import Optional
 
 from wexample_helpers.exception.undefined_exception import (
     ExceptionData,
-    UndefinedException,
 )
 from wexample_wex_core.exception.abstract_command_option_exception import (
     AbstractCommandOptionException,

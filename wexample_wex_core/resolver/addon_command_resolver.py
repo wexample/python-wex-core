@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, cast
 
 from wexample_helpers.helpers.string import string_to_snake_case
 from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager

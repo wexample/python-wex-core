@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Type, cast
+from typing import TYPE_CHECKING, cast
 
 from pydantic import BaseModel
 from wexample_helpers.service.mixins.registry_container_mixin import (
