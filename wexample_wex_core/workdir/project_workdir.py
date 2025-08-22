@@ -36,7 +36,7 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
         instance = super().create_from_config(**kwargs)
 
         if isinstance(config, dict):
-            workdir_class = ClassConfigOption.get_snake_short_class_name()
+            ClassConfigOption.get_snake_short_class_name()
             preferred = instance.get_preferred_workdir_class()
             if preferred:
                 # The loaded class definition is a different one.

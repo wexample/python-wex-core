@@ -146,7 +146,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
                         current_depth=current_depth + 1,
                     )
                     result.extend(subdirectory_results)
-        except (PermissionError, FileNotFoundError) as e:
+        except (PermissionError, FileNotFoundError):
             # Skip directories we can't access
             pass
 
