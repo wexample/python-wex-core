@@ -8,6 +8,8 @@ if TYPE_CHECKING:
 
 @command()
 def default__info__show(context: "ExecutionContext") -> None:
+    import platform
+
     registry = context.kernel.get_configuration_registry()
 
     context.io.properties(
@@ -16,5 +18,6 @@ def default__info__show(context: "ExecutionContext") -> None:
             "Location": context.kernel.workdir.get_resolved(),
             "Environment": registry.env,
             "Arguments": context.kernel._sys_argv,
+            "Python version": platform.python_version(),
         },
     )
