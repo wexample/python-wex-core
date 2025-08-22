@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
 
 from wexample_app.runner.python_command_runner import PythonCommandRunner

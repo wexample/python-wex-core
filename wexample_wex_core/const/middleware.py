@@ -1,2 +1,4 @@
+from __future__ import annotations
+
 MIDDLEWARE_OPTION_VALUE_OPTIONAL: str = "optional"
 MIDDLEWARE_OPTION_VALUE_ALLWAYS: str = "allways"

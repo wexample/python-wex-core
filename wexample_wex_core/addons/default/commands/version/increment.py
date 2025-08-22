@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from wexample_helpers.const.types import UPGRADE_TYPE_MINOR

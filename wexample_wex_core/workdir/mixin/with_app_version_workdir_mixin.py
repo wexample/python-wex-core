@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from wexample_filestate_dev.workdir.mixins.with_version_workdir_mixin import (

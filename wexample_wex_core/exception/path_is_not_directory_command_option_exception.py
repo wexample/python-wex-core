@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from wexample_wex_core.exception.abstract_command_option_exception import (
     AbstractCommandOptionException,
 )

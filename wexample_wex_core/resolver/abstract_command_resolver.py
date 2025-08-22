@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 from wexample_app.resolver.abstract_command_resolver import (

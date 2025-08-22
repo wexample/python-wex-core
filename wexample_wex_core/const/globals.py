@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 CORE_COMMAND_NAME = "wex"
 WORKDIR_SETUP_DIR = f".{CORE_COMMAND_NAME}"
 
