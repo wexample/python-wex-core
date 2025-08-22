@@ -26,7 +26,7 @@ class MiddlewaresRegistry(RegistryContainerMixin, BaseModel):
     def _init_middlewares(self) -> None:
         self.register_items("middlewares", self._get_middlewares_classes())
 
-    def _get_middlewares_classes(self) -> list[type["AbstractMiddleware"]]:
+    def _get_middlewares_classes(self) -> list[type[AbstractMiddleware]]:
         from wexample_wex_core.middleware.each_directory_middleware import (
             EachDirectoryMiddleware,
         )

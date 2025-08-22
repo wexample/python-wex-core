@@ -36,13 +36,13 @@ class AbstractMiddleware(
     def get_class_name_suffix(cls) -> str | None:
         return "Middleware"
 
-    def get_first_option(self) -> Optional["Option"]:
+    def get_first_option(self) -> Option | None:
         """Get the path option from the normalized options."""
         if self.normalized_options:
             return self.normalized_options[0]
         return None
 
-    def build_options(self) -> list["Option"]:
+    def build_options(self) -> list[Option]:
         from wexample_wex_core.command.option import Option
 
         """Convert options from various formats to Option objects."""
@@ -119,7 +119,7 @@ class AbstractMiddleware(
         command_wrapper: CommandMethodWrapper,
         request: CommandRequest,
         function_kwargs: Kwargs,
-    ) -> list["ExecutionContext"]:
+    ) -> list[ExecutionContext]:
         from wexample_wex_core.context.execution_context import ExecutionContext
 
         self.validate_options(

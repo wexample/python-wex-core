@@ -53,7 +53,7 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
 
         return NestedConfigValue()
 
-    def get_preferred_workdir_class(self) -> type["ProjectWorkdir"] | None:
+    def get_preferred_workdir_class(self) -> type[ProjectWorkdir] | None:
         from wexample_helpers.helpers.module import module_load_class_from_file
 
         path = self.get_path()

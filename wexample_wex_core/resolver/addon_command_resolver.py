@@ -29,9 +29,7 @@ class AddonCommandResolver(AbstractCommandResolver):
     def get_type(cls) -> str:
         return COMMAND_TYPE_ADDON
 
-    def build_command_path(
-        self, request: CommandRequest, extension: str
-    ) -> str | None:
+    def build_command_path(self, request: CommandRequest, extension: str) -> str | None:
 
         match = request.match
 

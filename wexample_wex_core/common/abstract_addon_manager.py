@@ -38,5 +38,5 @@ class AbstractAddonManager(
     def get_class_name_suffix(cls) -> str | None:
         return "AddonManager"
 
-    def get_middlewares_classes(self) -> list[type["AbstractMiddleware"]]:
+    def get_middlewares_classes(self) -> list[type[AbstractMiddleware]]:
         return []

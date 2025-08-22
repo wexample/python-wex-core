@@ -32,7 +32,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         AbstractKernel.__init__(self, **kwargs)
 
     def setup(
-        self, addons: list[type["AbstractAddonManager"]] | None = None
+        self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> AbstractKernel:
         response = super().setup()
         self._init_command_line_kernel()
@@ -50,7 +50,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self.io.verbosity = self._config_arg_verbosity
 
     def _init_addons(
-        self, addons: list[type["AbstractAddonManager"]] | None = None
+        self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> None:
         from wexample_app.service.service_registry import ServiceRegistry
 
@@ -76,7 +76,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 kernel=self
             )
 
-    def _get_command_resolvers(self) -> list[type["AbstractCommandResolver"]]:
+    def _get_command_resolvers(self) -> list[type[AbstractCommandResolver]]:
         from wexample_wex_core.resolver.service_command_resolver import (
             ServiceCommandResolver,
         )
@@ -86,7 +86,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             ServiceCommandResolver,
         ]
 
-    def _get_command_runners(self) -> list[type["AbstractCommandRunner"]]:
+    def _get_command_runners(self) -> list[type[AbstractCommandRunner]]:
         from wexample_wex_core.runner.core_python_command_runner import (
             CorePythonCommandRunner,
         )
@@ -110,7 +110,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self,
         entrypoint_path: str,
         io_manager: IoManager,
-        config: Optional["DictConfig"] = None,
+        config: DictConfig | None = None,
     ) -> FileStateManager:
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
@@ -131,7 +131,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             )
         ]
 
-    def _get_command_request_class(self) -> type["CommandRequest"]:
+    def _get_command_request_class(self) -> type[CommandRequest]:
         from wexample_wex_core.common.command_request import CommandRequest
 
         return CommandRequest
@@ -143,7 +143,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             {"arg": "vvv", "attr": "verbosity", "value": VerbosityLevel.MAXIMUM},
         ]
 
-    def get_addons(self) -> dict[str, "AbstractAddonManager"]:
+    def get_addons(self) -> dict[str, AbstractAddonManager]:
         return self.get_registry(REGISTRY_KERNEL_ADDON).get_all()
 
     def get_configuration_registry(self) -> KernelRegistry:

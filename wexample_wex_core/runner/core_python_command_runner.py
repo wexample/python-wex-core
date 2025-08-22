@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class CorePythonCommandRunner(PythonCommandRunner):
-    def build_runnable_command(self, request: CommandRequest) -> Optional["Command"]:
+    def build_runnable_command(self, request: CommandRequest) -> Command | None:
         from wexample_wex_core.command.extended_command import ExtendedCommand
         from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 

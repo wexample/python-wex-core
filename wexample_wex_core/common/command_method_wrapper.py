@@ -35,21 +35,21 @@ class CommandMethodWrapper(BaseModel):
 
         return options
 
-    def find_option_by_name(self, name: str) -> Optional["Option"]:
+    def find_option_by_name(self, name: str) -> Option | None:
         """Find an option by its name."""
         for option in self.options:
             if option.name == name:
                 return option
         return None
 
-    def find_option_by_kebab_name(self, kabab_name: str) -> Optional["Option"]:
+    def find_option_by_kebab_name(self, kabab_name: str) -> Option | None:
         """Find an option by its name."""
         for option in self.options:
             if option.kebab_name == kabab_name:
                 return option
         return None
 
-    def find_option_by_short_name(self, short_name: str) -> Optional["Option"]:
+    def find_option_by_short_name(self, short_name: str) -> Option | None:
         """Find an option by its short name."""
         for option in self.options:
             if option.short_name == short_name:

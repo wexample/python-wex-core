@@ -157,7 +157,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         command_wrapper: CommandMethodWrapper,
         request: CommandRequest,
         function_kwargs: Kwargs,
-    ) -> list["ExecutionContext"]:
+    ) -> list[ExecutionContext]:
         # If glob expansion is enabled and the path is a directory,
         # create an execution for each matching item in that directory
         if self.expand_glob:
