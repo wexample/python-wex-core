@@ -20,9 +20,9 @@ class CommandUnexpectedArgumentException(NotAllowedItemException):
     def __init__(
         self,
         argument: str,
-        allowed_arguments: List[str],
-        cause: Optional[Exception] = None,
-        previous: Optional[Exception] = None,
+        allowed_arguments: list[str],
+        cause: Exception | None = None,
+        previous: Exception | None = None,
     ) -> None:
         # Call parent constructor with appropriate parameters
         super().__init__(

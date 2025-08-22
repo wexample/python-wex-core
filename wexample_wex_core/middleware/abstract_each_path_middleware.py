@@ -25,11 +25,11 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
         super().__init__(**kwargs)
 
-    def _get_option_file_path(self, function_kwargs: "Kwargs") -> Optional[str]:
+    def _get_option_file_path(self, function_kwargs: "Kwargs") -> str | None:
         option = self.get_first_option()
         return function_kwargs[option.name]
 
-    def _get_default_option(self) -> Dict[str, Any]:
+    def _get_default_option(self) -> dict[str, Any]:
         from wexample_helpers.const.globals import PATH_NAME_PATH
 
         """Get the default path option definition."""
@@ -99,7 +99,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         directory_path: str,
         option_name: str,
         current_depth: int = 0,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """
         Process a directory recursively, collecting paths that match the criteria.
 
@@ -155,7 +155,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         command_wrapper: "CommandMethodWrapper",
         request: "CommandRequest",
         function_kwargs: "Kwargs",
-    ) -> List["ExecutionContext"]:
+    ) -> list["ExecutionContext"]:
         # If glob expansion is enabled and the path is a directory,
         # create an execution for each matching item in that directory
         if self.expand_glob:

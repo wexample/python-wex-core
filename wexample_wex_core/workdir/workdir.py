@@ -5,7 +5,7 @@ from wexample_filestate.file_state_manager import FileStateManager
 
 
 class Workdir(FileStateManager):
-    def prepare_value(self, raw_value: Optional[DictConfig] = None) -> DictConfig:
+    def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_filestate.const.disk import DiskItemType
         from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
 

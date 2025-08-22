@@ -17,9 +17,9 @@ class AddonNotRegisteredException(NotAllowedItemException):
     def __init__(
         self,
         addon_name: str,
-        available_addons: Optional[List[str]] = None,
-        cause: Optional[Exception] = None,
-        previous: Optional[Exception] = None,
+        available_addons: list[str] | None = None,
+        cause: Exception | None = None,
+        previous: Exception | None = None,
     ) -> None:
         # Call parent constructor with appropriate parameters
         super().__init__(

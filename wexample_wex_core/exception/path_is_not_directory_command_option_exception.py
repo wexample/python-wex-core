@@ -14,8 +14,8 @@ class PathIsNotDirectoryCommandOptionException(AbstractCommandOptionException):
         self,
         option_name: str,
         directory_path: str,
-        cause: Optional[Exception] = None,
-        previous: Optional[Exception] = None,
+        cause: Exception | None = None,
+        previous: Exception | None = None,
     ) -> None:
         super().__init__(
             option_name=option_name,

@@ -154,8 +154,8 @@ class ExtendedCommand(Command):
         )
 
     async def _execute_passes_parallel(
-        self, execution_contexts: List[ExecutionContext]
-    ) -> List[Any]:
+        self, execution_contexts: list[ExecutionContext]
+    ) -> list[Any]:
         """Execute multiple passes in parallel using asyncio.
 
         Args:
@@ -207,11 +207,11 @@ class ExtendedCommand(Command):
 
         return responses
 
-    def _parse_arguments(self, arguments: List[str]) -> ParsedArgs:
+    def _parse_arguments(self, arguments: list[str]) -> ParsedArgs:
         from wexample_helpers.helpers.cli import cli_argument_convert_value
 
         """Parse raw command line arguments into a dictionary of option name to value."""
-        result: Dict[str, Any] = {}
+        result: dict[str, Any] = {}
         skip_next = False
 
         for i, arg in enumerate(arguments):
@@ -289,7 +289,7 @@ class ExtendedCommand(Command):
 
         return result
 
-    def _build_function_kwargs(self, request: "CommandRequest") -> Dict[str, Any]:
+    def _build_function_kwargs(self, request: "CommandRequest") -> dict[str, Any]:
         # Allow middleware to add extra options.
         for middleware in self.command_wrapper.middlewares:
             middleware.append_options(

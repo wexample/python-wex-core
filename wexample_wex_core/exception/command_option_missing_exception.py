@@ -23,8 +23,8 @@ class CommandOptionMissingException(AbstractCommandOptionException):
     def __init__(
         self,
         option_name: str,
-        cause: Optional[Exception] = None,
-        previous: Optional[Exception] = None,
+        cause: Exception | None = None,
+        previous: Exception | None = None,
     ) -> None:
         # Create structured data using Pydantic model
         data_model = CommandOptionMissingData(option_name=option_name)

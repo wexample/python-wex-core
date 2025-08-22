@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from wexample_helpers.const.types import AnyCallable
 
 
-def command(description: Optional[str] = None):
+def command(description: str | None = None):
     def decorator(function: "AnyCallable"):
         return CommandMethodWrapper(function=function, description=description)
 

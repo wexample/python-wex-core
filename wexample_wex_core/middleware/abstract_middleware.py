@@ -18,12 +18,12 @@ if TYPE_CHECKING:
 class AbstractMiddleware(
     HasSnakeShortClassNameClassMixin, HasTwoStepInit, HasClassDependencies, BaseModel
 ):
-    options: List[Union[Dict[str, Any], Option]] = Field(default_factory=list)
-    normalized_options: List[Option] = Field(default_factory=list)
-    stop_on_failure: Union[None, bool, str] = False
-    max_iterations: Optional[int] = None
-    parallel: Union[None, bool, str] = False
-    show_progress: Union[None, bool, str] = False
+    options: list[dict[str, Any] | Option] = Field(default_factory=list)
+    normalized_options: list[Option] = Field(default_factory=list)
+    stop_on_failure: None | bool | str = False
+    max_iterations: int | None = None
+    parallel: None | bool | str = False
+    show_progress: None | bool | str = False
 
     def __init__(self, **kwargs: Kwargs) -> None:
         super().__init__(**kwargs)
@@ -31,7 +31,7 @@ class AbstractMiddleware(
         self.normalized_options = self.build_options()
 
     @classmethod
-    def get_class_name_suffix(cls) -> Optional[str]:
+    def get_class_name_suffix(cls) -> str | None:
         return "Middleware"
 
     def get_first_option(self) -> Optional["Option"]:
@@ -40,7 +40,7 @@ class AbstractMiddleware(
             return self.normalized_options[0]
         return None
 
-    def build_options(self) -> List["Option"]:
+    def build_options(self) -> list["Option"]:
         from wexample_wex_core.command.option import Option
 
         """Convert options from various formats to Option objects."""
@@ -117,7 +117,7 @@ class AbstractMiddleware(
         command_wrapper: "CommandMethodWrapper",
         request: "CommandRequest",
         function_kwargs: "Kwargs",
-    ) -> List["ExecutionContext"]:
+    ) -> list["ExecutionContext"]:
         from wexample_wex_core.context.execution_context import ExecutionContext
 
         self.validate_options(

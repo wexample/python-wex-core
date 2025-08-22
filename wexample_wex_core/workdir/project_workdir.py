@@ -51,7 +51,7 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
 
         return NestedConfigValue()
 
-    def get_preferred_workdir_class(self) -> Optional[Type["ProjectWorkdir"]]:
+    def get_preferred_workdir_class(self) -> type["ProjectWorkdir"] | None:
         from wexample_helpers.helpers.module import module_load_class_from_file
 
         path = self.get_path()
@@ -86,7 +86,7 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
                 )
         return None
 
-    def prepare_value(self, raw_value: Optional[DictConfig] = None) -> DictConfig:
+    def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_filestate.config_option.text_filter_config_option import (
             TextFilterConfigOption,
         )

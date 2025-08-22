@@ -12,9 +12,9 @@ class AbstractCommandOptionException(UndefinedException):
         self,
         option_name: str,
         message: str,
-        data: Optional[Dict[str, Any]] = None,
-        cause: Optional[Exception] = None,
-        previous: Optional[Exception] = None,
+        data: dict[str, Any] | None = None,
+        cause: Exception | None = None,
+        previous: Exception | None = None,
     ) -> None:
         # Merge provided data with base data
         merged_data = {option_name: option_name}

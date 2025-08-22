@@ -21,10 +21,10 @@ class ServiceCommandResolver(AbstractCommandResolver):
 
     def build_command_path(
         self, request: "CommandRequest", extension: str
-    ) -> Optional[str]:
+    ) -> str | None:
         return f"{self.kernel.workdir.get_resolved()}cli/{request.name}.{extension}"
 
-    def build_command_function_name(self, request: "CommandRequest") -> Optional[str]:
+    def build_command_function_name(self, request: "CommandRequest") -> str | None:
         import re
 
         return re.sub(r"[^a-zA-Z0-9_]", "", request.name.replace("/", "__"))

@@ -29,7 +29,7 @@ class AddonCommandResolver(AbstractCommandResolver):
 
     def build_command_path(
         self, request: "CommandRequest", extension: str
-    ) -> Optional[str]:
+    ) -> str | None:
 
         match = request.match
 
@@ -62,7 +62,7 @@ class AddonCommandResolver(AbstractCommandResolver):
 
         return cast(AbstractAddonManager, addon_registry.get(addon_name))
 
-    def build_command_function_name(self, request: "CommandRequest") -> Optional[str]:
+    def build_command_function_name(self, request: "CommandRequest") -> str | None:
         return string_to_snake_case(
             COMMAND_SEPARATOR_FUNCTION_PARTS.join(
                 self.get_function_name_parts(request.match.groups())

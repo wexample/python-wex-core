@@ -21,7 +21,7 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
         ProjectWorkdir.__init__(self, **kwargs)
         AbstractKernelChild.__init__(self, kernel=kernel)
 
-    def prepare_value(self, raw_value: Optional[DictConfig] = None) -> DictConfig:
+    def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
 
         config = super().prepare_value(raw_value=raw_value)

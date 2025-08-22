@@ -18,7 +18,7 @@ class ExecutionContext(
 ):
     command_wrapper: CommandMethodWrapper
     function_kwargs: Kwargs = Field(default_factory=dict)
-    middleware: Optional[AbstractMiddleware]
+    middleware: AbstractMiddleware | None
     request: CommandRequest
 
     def __init__(self, **kwargs) -> None:

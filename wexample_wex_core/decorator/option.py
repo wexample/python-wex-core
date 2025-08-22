@@ -7,9 +7,9 @@ if TYPE_CHECKING:
 
 def option(
     name: str,
-    type: Type,
-    short_name: Optional[str] = None,
-    description: Optional[str] = None,
+    type: type,
+    short_name: str | None = None,
+    description: str | None = None,
     required: bool = False,
     default: Any = None,
     is_flag: bool = False,

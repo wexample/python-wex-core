@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class EachDirectoryMiddleware(AbstractEachPathMiddleware):
-    def _get_default_option(self) -> Dict[str, Any]:
+    def _get_default_option(self) -> dict[str, Any]:
         from wexample_file.const.globals import PATH_NAME_DIRECTORY
 
         """Get the default directory option definition."""

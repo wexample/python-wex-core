@@ -6,10 +6,10 @@ from wexample_helpers.helpers.string import string_to_kebab_case
 
 class Option(BaseModel):
     name: str
-    kebab_name: Optional[str] = None
-    short_name: Optional[str] = None
-    type: Type
-    description: Optional[str] = None
+    kebab_name: str | None = None
+    short_name: str | None = None
+    type: type
+    description: str | None = None
     required: bool = False
     default: Any = None
     is_flag: bool = False

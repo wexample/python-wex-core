@@ -23,9 +23,9 @@ class CommandArgumentConversionException(UndefinedException):
         self,
         argument_name: str,
         value: str,
-        target_type: Type,
-        cause: Optional[Exception] = None,
-        previous: Optional[Exception] = None,
+        target_type: type,
+        cause: Exception | None = None,
+        previous: Exception | None = None,
     ) -> None:
         # Create structured data using Pydantic model
         data_model = CommandArgumentConversionData(
