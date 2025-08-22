@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from wexample_app.runner.python_command_runner import PythonCommandRunner
 from wexample_wex_core.exception.command_function_build_failed_exception import (

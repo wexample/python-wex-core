@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import field
-from typing import Optional
 
 from pydantic import BaseModel
 from wexample_helpers.const.types import AnyCallable, Kwargs
