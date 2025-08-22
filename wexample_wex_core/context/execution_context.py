@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, Field
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
 from wexample_helpers.classes.mixin.printable_mixin import PrintableMixin
