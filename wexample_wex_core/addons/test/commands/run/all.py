@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from typing import TYPE_CHECKING
 
@@ -8,10 +10,9 @@ if TYPE_CHECKING:
 
 
 @command()
-def test__run__all(context: "ExecutionContext") -> None:
+def test__run__all(context: ExecutionContext) -> None:
     import pytest
-    from wexample_wex_core.common.abstract_addon_manager import \
-        AbstractAddonManager
+    from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
 
     # Change to project root directory
     workdir = context.kernel.workdir.get_resolved()
