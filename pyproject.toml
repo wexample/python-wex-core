@@ -22,7 +22,6 @@ dependencies = [
     "click",
     "pip-tools",
     "pydantic",
-    "pytest",
     "wexample-app",
     "wexample-filestate",
 ]
@@ -36,3 +35,6 @@ text = "MIT"
 
 [project.urls]
 homepage = "https://github.com/wexample/wexample-wex-core"
+
+[project.optional-dependencies]
+dev = ["pytest"]
