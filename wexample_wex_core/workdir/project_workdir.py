@@ -52,6 +52,13 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
 
         return instance
 
+    def get_version(self) -> str:
+        return (
+            self.get_config()
+            .get_config_item("version")
+            .get_str_or_default(default=self._get_version_default_content())
+        )
+
     def get_config(self) -> NestedConfigValue:
         from wexample_config.config_value.nested_config_value import NestedConfigValue
 
