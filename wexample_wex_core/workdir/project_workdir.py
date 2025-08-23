@@ -52,7 +52,14 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
 
         return instance
 
-    def get_version(self) -> str:
+    def get_project_name(self) -> str:
+        return (
+            self.get_config()
+            .get_config_item("name")
+            .get_str_or_default(default=self.get_name())
+        )
+
+    def get_project_version(self) -> str:
         return (
             self.get_config()
             .get_config_item("version")
@@ -66,7 +73,7 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
         if config_yml:
             return config_yml.read_as_config()
 
-        return NestedConfigValue()
+        return NestedConfigValue(raw={})
 
     def get_preferred_workdir_class(self) -> type[ProjectWorkdir] | None:
         from wexample_helpers.helpers.module import module_load_class_from_file
