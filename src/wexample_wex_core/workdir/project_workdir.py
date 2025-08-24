@@ -53,11 +53,13 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
         return instance
 
     def get_project_name(self) -> str:
-        return (
-            self.get_config()
-            .get_config_item("name")
-            .get_str_or_default(default=self.get_name())
-        )
+        name = self.get_config().get_config_item("name")
+        # Enforce that a project must have a non-empty name; include path for debug
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError(
+                f"Project at '{self.get_path()}' must define a non-empty 'name' in {APP_FILE_APP_CONFIG}."
+            )
+        return name
 
     def get_project_version(self) -> str:
         return (
