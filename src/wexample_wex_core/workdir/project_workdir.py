@@ -11,6 +11,7 @@ from wexample_wex_addon_app.const.globals import (
     APP_DIR_APP_CONFIG,
     APP_FILE_APP_CONFIG,
 )
+from wexample_wex_addon_app.workdir.mixin.as_suite_package_item import AsSuitePackageItem
 from wexample_wex_core.workdir.mixin.with_app_version_workdir_mixin import (
     WithAppVersionWorkdirMixin,
 )
@@ -21,7 +22,12 @@ if TYPE_CHECKING:
     from wexample_config.config_value.nested_config_value import NestedConfigValue
 
 
-class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir):
+class ProjectWorkdir(
+    AsSuitePackageItem,
+    WithReadmeWorkdirMixin,
+    WithAppVersionWorkdirMixin,
+    Workdir
+):
 
     @classmethod
     def create_from_config(cls, **kwargs) -> ProjectWorkdir:
@@ -142,7 +148,15 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
 
         return raw_value
 
-    def get_env(self) -> EnvFile:
+    def get_env_parameter(self, key: str, default: str | None = None) -> str | None:
+        return self.get_env_parameters().get_config_item(key=key, default=default).get_str_or_none()
+
+    def get_env_parameters(self) -> NestedConfigValue:
         from wexample_filestate.item.file.env_file import EnvFile
 
-        return self.find_by_name_or_fail(APP_DIR_APP_CONFIG).find_by_name_or_fail(EnvFile.EXTENSION_DOT_ENV)
+        config_dir = self.find_by_name(APP_DIR_APP_CONFIG)
+        if config_dir:
+            dot_env = config_dir.find_by_name(EnvFile.EXTENSION_DOT_ENV)
+            if dot_env:
+                return dot_env.read_as_config()
+        return NestedConfigValue(raw={})

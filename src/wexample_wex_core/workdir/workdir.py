@@ -33,7 +33,7 @@ class Workdir(FileStateManager):
             "children": [
                 {
                     # .env
-                    # "class": EnvFile,
+                    "class": EnvFile,
                     "name": EnvFile.EXTENSION_DOT_ENV,
                     "type": DiskItemType.FILE,
                     "should_exist": True,
