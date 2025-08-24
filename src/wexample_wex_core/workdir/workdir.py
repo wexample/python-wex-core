@@ -58,6 +58,17 @@ class Workdir(FileStateManager):
                     "type": DiskItemType.DIRECTORY,
                     "should_exist": True,
                 },
+                {
+                    "name": ".gitignore",
+                    "type": DiskItemType.FILE,
+                    "should_exist": True,
+                    "should_contain_lines": [
+                        EnvFile.EXTENSION_DOT_ENV
+                    ],
+                    "text_filter": [
+                        TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE
+                    ],
+                }
             ]
         }
 
