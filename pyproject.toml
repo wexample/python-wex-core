@@ -36,9 +36,9 @@ homepage = "https://github.com/wexample/wexample-wex-core"
 dev = ["pytest"]
 
 [tool.pdm.build]
-includes = ["src/python_package_workdir/py.typed"]
+includes = ["src/wexample_wex_core/py.typed"]
 package-dir = "src"
 
 [[tool.pdm.build.packages]]
-include = "python_package_workdir"
+include = "wexample_wex_core"
 from = "src"
