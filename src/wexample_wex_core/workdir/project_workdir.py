@@ -8,9 +8,8 @@ from wexample_filestate_dev.workdir.mixins.with_readme_workdir_mixin import (
     WithReadmeWorkdirMixin,
 )
 from wexample_wex_addon_app.const.globals import (
-    APP_DIR_APP_DATA_NAME,
+    APP_DIR_APP_CONFIG,
     APP_FILE_APP_CONFIG,
-    APP_FILE_APP_ENV,
 )
 from wexample_wex_core.workdir.mixin.with_app_version_workdir_mixin import (
     WithAppVersionWorkdirMixin,
@@ -18,6 +17,7 @@ from wexample_wex_core.workdir.mixin.with_app_version_workdir_mixin import (
 from wexample_wex_core.workdir.workdir import Workdir
 
 if TYPE_CHECKING:
+    from wexample_filestate.item.file.env_file import EnvFile
     from wexample_config.config_value.nested_config_value import NestedConfigValue
 
 
@@ -116,7 +116,6 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
         from wexample_filestate.config_option.text_filter_config_option import (
             TextFilterConfigOption,
         )
-        from wexample_filestate.item.file.yaml_file import YamlFile
 
         raw_value = super().prepare_value(raw_value)
 
@@ -141,40 +140,9 @@ class ProjectWorkdir(WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
             }
         )
 
-        children.append(
-            {
-                "name": APP_DIR_APP_DATA_NAME,
-                "type": DiskItemType.DIRECTORY,
-                "should_exist": True,
-                "children": [
-                    {
-                        # .env
-                        "name": APP_FILE_APP_ENV,
-                        "type": DiskItemType.FILE,
-                        "should_exist": True,
-                        "text_filter": [
-                            TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE
-                        ],
-                    },
-                    {
-                        # config.yml
-                        "name": APP_FILE_APP_CONFIG,
-                        "type": DiskItemType.FILE,
-                        "should_exist": True,
-                        "class": YamlFile,
-                        "text_filter": [
-                            TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE
-                        ],
-                        "yaml_filter": ["sort_recursive"],
-                    },
-                    {
-                        # tmp
-                        "name": "tmp",
-                        "type": DiskItemType.DIRECTORY,
-                        "should_exist": True,
-                    },
-                ],
-            }
-        )
-
         return raw_value
+
+    def get_env(self) -> EnvFile:
+        from wexample_filestate.item.file.env_file import EnvFile
+
+        return self.find_by_name_or_fail(APP_DIR_APP_CONFIG).find_by_name_or_fail(EnvFile.EXTENSION_DOT_ENV)
