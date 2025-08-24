@@ -18,7 +18,6 @@ from wexample_wex_core.workdir.mixin.with_app_version_workdir_mixin import (
 from wexample_wex_core.workdir.workdir import Workdir
 
 if TYPE_CHECKING:
-    from wexample_filestate.item.file.env_file import EnvFile
     from wexample_config.config_value.nested_config_value import NestedConfigValue
 
 
