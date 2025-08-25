@@ -10,7 +10,7 @@ from wexample_filestate.const.disk import DiskItemType
 from wexample_filestate.workdir.mixin.with_readme_workdir_mixin import (
     WithReadmeWorkdirMixin,
 )
-from wexample_wex_addon_app.workdir.mixin.as_suite_package_item import (
+from wexample_wex_core.workdir.mixin.as_suite_package_item import (
     AsSuitePackageItem,
 )
 from wexample_wex_core.workdir.mixin.with_app_version_workdir_mixin import (
