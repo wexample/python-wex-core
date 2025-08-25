@@ -32,4 +32,3 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
 
     def save_dependency(self, package: FrameworkPackageWorkdir) -> None:
         """Register a dependency into the configuration file."""
-        pass

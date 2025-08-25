@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
-    from wexample_wex_core.workdir.framework_package_workdir import FrameworkPackageWorkdir
+    from wexample_wex_core.workdir.framework_package_workdir import (
+        FrameworkPackageWorkdir,
+    )
 
 
 class FrameworkPackageSuiteWorkdir(ProjectWorkdir):

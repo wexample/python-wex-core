@@ -46,7 +46,7 @@ class AddonCommandResolver(AbstractCommandResolver):
         )
 
     def get_request_addon_manager(
-            self, request: CommandRequest
+        self, request: CommandRequest
     ) -> AbstractAddonManager:
         match = request.match
         addon_name = string_to_snake_case(match.group(1))
