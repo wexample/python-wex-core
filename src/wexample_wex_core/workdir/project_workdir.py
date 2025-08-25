@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from wexample_config.const.types import DictConfig
 from wexample_filestate.const.disk import DiskItemType
-from wexample_filestate_dev.workdir.mixins.with_readme_workdir_mixin import (
+from wexample_filestate.workdir.mixin.with_readme_workdir_mixin import (
     WithReadmeWorkdirMixin,
 )
 from wexample_wex_addon_app.const.globals import (
