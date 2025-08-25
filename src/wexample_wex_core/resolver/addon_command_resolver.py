@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from wexample_helpers.helpers.string import string_to_snake_case
-from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
 from wexample_wex_core.const.globals import (
     COMMAND_PATTERN_ADDON,
     COMMAND_SEPARATOR_FUNCTION_PARTS,
@@ -47,7 +46,7 @@ class AddonCommandResolver(AbstractCommandResolver):
         )
 
     def get_request_addon_manager(
-        self, request: CommandRequest
+            self, request: CommandRequest
     ) -> AbstractAddonManager:
         match = request.match
         addon_name = string_to_snake_case(match.group(1))
@@ -60,7 +59,7 @@ class AddonCommandResolver(AbstractCommandResolver):
                 addon_name=addon_name, available_addons=available_addons
             )
 
-        return cast(AbstractAddonManager, addon_registry.get(addon_name))
+        return addon_registry.get(addon_name)
 
     def build_command_function_name(self, request: CommandRequest) -> str | None:
         return string_to_snake_case(
