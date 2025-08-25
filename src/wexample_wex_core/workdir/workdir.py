@@ -15,7 +15,7 @@ class Workdir(FileStateManager):
         from wexample_filestate.const.disk import DiskItemType
         from wexample_filestate.item.file.env_file import EnvFile
         from wexample_filestate.item.file.yaml_file import YamlFile
-        from wexample_wex_addon_app.const.globals import (
+        from wexample_app.const.globals import (
             APP_FILE_APP_CONFIG,
         )
         from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR

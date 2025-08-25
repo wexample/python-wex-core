@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from wexample_app.const.globals import (
+    APP_FILE_APP_CONFIG,
+)
 from wexample_config.const.types import DictConfig
 from wexample_filestate.const.disk import DiskItemType
 from wexample_filestate.workdir.mixin.with_readme_workdir_mixin import (
@@ -9,7 +12,6 @@ from wexample_filestate.workdir.mixin.with_readme_workdir_mixin import (
 )
 from wexample_wex_addon_app.const.globals import (
     APP_DIR_APP_CONFIG,
-    APP_FILE_APP_CONFIG,
 )
 from wexample_wex_addon_app.workdir.mixin.as_suite_package_item import (
     AsSuitePackageItem,
