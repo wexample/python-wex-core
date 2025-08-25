@@ -10,6 +10,7 @@ from wexample_filestate.const.disk import DiskItemType
 from wexample_filestate.workdir.mixin.with_readme_workdir_mixin import (
     WithReadmeWorkdirMixin,
 )
+from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
 from wexample_wex_core.workdir.mixin.as_suite_package_item import (
     AsSuitePackageItem,
 )
@@ -81,7 +82,9 @@ class ProjectWorkdir(
         return NestedConfigValue(raw={})
 
     def get_preferred_workdir_class(self) -> type[ProjectWorkdir] | None:
-        from wexample_helpers.helpers.module import module_load_class_from_file
+        from wexample_helpers.helpers.module import (
+            module_load_class_from_file_with_package_root,
+        )
 
         path = self.get_path()
         manager_config = self.get_config().search("files_state.manager")
@@ -95,9 +98,11 @@ class ProjectWorkdir(
 
             if file_abs_path.exists():
                 # Dynamically load the module and fetch the class
-                class_module = module_load_class_from_file(
+                class_module = module_load_class_from_file_with_package_root(
                     file_path=file_abs_path,
                     class_name=class_name,
+                    # Use the .wex dir as package root so relative imports resolve
+                    package_root=path / WORKDIR_SETUP_DIR,
                 )
 
                 # Good format
