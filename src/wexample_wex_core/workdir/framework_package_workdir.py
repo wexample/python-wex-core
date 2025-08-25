@@ -25,3 +25,11 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         """When package is dependent from another one (is using it in its codebase),
         list the packages inheritance stack to find the original package declaring the explicit dependency"""
         return []
+
+    def depends_from(self, package: FrameworkPackageWorkdir) -> bool:
+        """Check if current package depends on given one."""
+        return False
+
+    def save_dependency(self, package: FrameworkPackageWorkdir) -> None:
+        """Register a dependency into the configuration file."""
+        pass

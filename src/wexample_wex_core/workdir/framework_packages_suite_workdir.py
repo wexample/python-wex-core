@@ -25,6 +25,9 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
             return pip_dir.get_children_list()
         return []
 
+    def get_dependents(self, package: FrameworkPackageWorkdir) -> list[FrameworkPackageWorkdir]:
+        return []
+
     def get_package(self, package_name: str) -> FrameworkPackageWorkdir | None:
         for package in self.get_packages():
             if package.get_package_name() == package_name:
