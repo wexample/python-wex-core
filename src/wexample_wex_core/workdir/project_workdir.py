@@ -10,9 +10,6 @@ from wexample_filestate.const.disk import DiskItemType
 from wexample_filestate.workdir.mixin.with_readme_workdir_mixin import (
     WithReadmeWorkdirMixin,
 )
-from wexample_wex_addon_app.const.globals import (
-    APP_DIR_APP_CONFIG,
-)
 from wexample_wex_addon_app.workdir.mixin.as_suite_package_item import (
     AsSuitePackageItem,
 )
@@ -157,8 +154,9 @@ class ProjectWorkdir(
 
     def get_env_parameters(self) -> NestedConfigValue:
         from wexample_filestate.item.file.env_file import EnvFile
+        from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
 
-        config_dir = self.find_by_name(APP_DIR_APP_CONFIG)
+        config_dir = self.find_by_name(WORKDIR_SETUP_DIR)
         if config_dir:
             dot_env = config_dir.find_by_name(EnvFile.EXTENSION_DOT_ENV)
             if dot_env:
