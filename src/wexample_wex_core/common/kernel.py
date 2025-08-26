@@ -114,9 +114,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     ) -> FileStateManager:
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
-        return KernelWorkdir.create_from_kernel(
-            kernel=self, config=config or {}, io=io
-        )
+        return KernelWorkdir.create_from_kernel(kernel=self, config=config or {}, io=io)
 
     def _build_single_command_request_from_arguments(
         self, arguments: CommandLineArgumentsList
