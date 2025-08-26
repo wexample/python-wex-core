@@ -150,14 +150,30 @@ class ProjectWorkdir(
 
         return raw_value
 
-    def get_env_parameter(self, key: str, default: str | None = None) -> str | None:
-        return (
-            self.get_env_parameters()
-            .get_config_item(key=key, default=default)
+    def get_env_parameter(
+            self,
+            key: str,
+            default: str | None = None
+    ) -> str | None:
+        # Search in .env.
+        value = (
+            self.get_env_config()
+            .get_config_item(
+                key=key,
+                default=default
+            )
             .get_str_or_none()
         )
 
-    def get_env_parameters(self) -> NestedConfigValue:
+        if value is None:
+            return super().get_env_parameter(
+                key=key,
+                default=default,
+            )
+
+        return value
+
+    def get_env_config(self) -> NestedConfigValue:
         from wexample_filestate.item.file.env_file import EnvFile
         from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
 
