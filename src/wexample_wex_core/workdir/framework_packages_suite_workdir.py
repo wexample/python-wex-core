@@ -17,17 +17,21 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
     def build_dependencies_map(self) -> dict[str, list[str]]:
         dependencies = {}
         for package in self.get_packages():
-            dependencies[package.get_package_name()] = self.filter_local_packages(package.get_dependencies())
+            dependencies[package.get_package_name()] = self.filter_local_packages(
+                package.get_dependencies()
+            )
 
         return dependencies
 
     def get_packages(self) -> list[FrameworkPackageWorkdir]:
-        pip_dir = self.find_by_name(item_name='pip')
+        pip_dir = self.find_by_name(item_name="pip")
         if pip_dir:
             return pip_dir.get_children_list()
         return []
 
-    def get_dependents(self, package: FrameworkPackageWorkdir) -> list[FrameworkPackageWorkdir]:
+    def get_dependents(
+        self, package: FrameworkPackageWorkdir
+    ) -> list[FrameworkPackageWorkdir]:
         return []
 
     def get_package(self, package_name: str) -> FrameworkPackageWorkdir | None:
@@ -57,11 +61,12 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         return filtered
 
     def build_dependencies_stack(
-            self,
-            package: FrameworkPackageWorkdir,
-            dependency: FrameworkPackageWorkdir,
-            dependencies_map: dict[str, list[str]],
+        self,
+        package: FrameworkPackageWorkdir,
+        dependency: FrameworkPackageWorkdir,
+        dependencies_map: dict[str, list[str]],
     ) -> list[FrameworkPackageWorkdir]:
         """When a package depends on another (uses it in its codebase),
-        return the dependency chain to locate the original package that declares the explicit dependency."""
+        return the dependency chain to locate the original package that declares the explicit dependency.
+        """
         return []

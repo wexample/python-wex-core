@@ -150,18 +150,11 @@ class ProjectWorkdir(
 
         return raw_value
 
-    def get_env_parameter(
-            self,
-            key: str,
-            default: str | None = None
-    ) -> str | None:
+    def get_env_parameter(self, key: str, default: str | None = None) -> str | None:
         # Search in .env.
         value = (
             self.get_env_config()
-            .get_config_item(
-                key=key,
-                default=default
-            )
+            .get_config_item(key=key, default=default)
             .get_str_or_none()
         )
 

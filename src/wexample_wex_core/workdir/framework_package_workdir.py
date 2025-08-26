@@ -14,16 +14,18 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
     def get_dependencies(self) -> list[str]:
         pass
 
-    def imports_package_in_codebase(self, searched_package: FrameworkPackageWorkdir) -> bool:
+    def imports_package_in_codebase(
+        self, searched_package: FrameworkPackageWorkdir
+    ) -> bool:
         """Check whether the given package is used in this package's codebase."""
         return False
 
     def build_dependencies_stack(
-            self,
-            package: FrameworkPackageWorkdir,
-            dependency: FrameworkPackageWorkdir) -> list[FrameworkPackageWorkdir]:
+        self, package: FrameworkPackageWorkdir, dependency: FrameworkPackageWorkdir
+    ) -> list[FrameworkPackageWorkdir]:
         """When package is dependent from another one (is using it in its codebase),
-        list the packages inheritance stack to find the original package declaring the explicit dependency"""
+        list the packages inheritance stack to find the original package declaring the explicit dependency
+        """
         return []
 
     def depends_from(self, package: FrameworkPackageWorkdir) -> bool:

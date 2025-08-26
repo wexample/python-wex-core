@@ -21,11 +21,11 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         pass
 
     def build_execution_context(
-            self,
-            middleware: AbstractMiddleware | None,
-            command_wrapper: CommandMethodWrapper,
-            request: CommandRequest,
-            function_kwargs: Kwargs,
+        self,
+        middleware: AbstractMiddleware | None,
+        command_wrapper: CommandMethodWrapper,
+        request: CommandRequest,
+        function_kwargs: Kwargs,
     ) -> ExecutionContext:
         from wexample_wex_core.context.execution_context import ExecutionContext
 
