@@ -31,7 +31,7 @@ class AbstractAddonManager(
         WithWorkdirMixin._init_workdir(
             self,
             entrypoint_path=os.path.dirname(manager_file),
-            io_manager=self.kernel.io,
+            io=self.kernel.io,
         )
 
     @classmethod

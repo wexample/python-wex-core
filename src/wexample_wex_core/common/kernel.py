@@ -47,7 +47,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def _init_command_line_kernel(self: AbstractKernel) -> None:
         super()._init_command_line_kernel()
         # We can then use config.
-        self.io.verbosity = self._config_arg_verbosity
+        self.io.default_context_verbosity = self._config_arg_verbosity
 
     def _init_addons(
         self, addons: list[type[AbstractAddonManager]] | None = None
@@ -109,13 +109,13 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def _get_workdir_state_manager_class(
         self,
         entrypoint_path: str,
-        io_manager: IoManager,
+        io: IoManager,
         config: DictConfig | None = None,
     ) -> FileStateManager:
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
         return KernelWorkdir.create_from_kernel(
-            kernel=self, config=config or {}, io_manager=io_manager
+            kernel=self, config=config or {}, io=io
         )
 
     def _build_single_command_request_from_arguments(

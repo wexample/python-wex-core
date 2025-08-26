@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from wexample_app.common.abstract_kernel import AbstractKernel
     from wexample_filestate.item.item_target_directory import ItemTargetDirectory
     from wexample_wex_core.common.kernel import Kernel
+    from wexample_prompt.common.io_manager import IoManager
 
 
 class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
@@ -50,7 +51,7 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
         return config
 
     @classmethod
-    def create_from_kernel(cls, kernel: Kernel, **kwargs) -> ItemTargetDirectory:
+    def create_from_kernel(cls, kernel: Kernel, io:IoManager, **kwargs) -> ItemTargetDirectory:
         return super().create_from_path(
-            path=kernel.entrypoint_path, kernel=kernel, io=kernel.io, **kwargs
+            path=kernel.entrypoint_path, kernel=kernel, io=io, **kwargs
         )
