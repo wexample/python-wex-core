@@ -15,13 +15,13 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         pass
 
     def imports_package_in_codebase(
-            self, searched_package: FrameworkPackageWorkdir
+        self, searched_package: FrameworkPackageWorkdir
     ) -> bool:
         """Check whether the given package is used in this package's codebase."""
         return False
 
     def build_dependencies_stack(
-            self, package: FrameworkPackageWorkdir, dependency: FrameworkPackageWorkdir
+        self, package: FrameworkPackageWorkdir, dependency: FrameworkPackageWorkdir
     ) -> list[FrameworkPackageWorkdir]:
         """When package is dependent from another one (is using it in its codebase),
         list the packages inheritance stack to find the original package declaring the explicit dependency
@@ -38,17 +38,12 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
     def publish(self) -> None:
         """Push the package to the packages manager service (npm, pipy, packagist, etc.)"""
 
-    def bump(
-            self,
-            **kwargs
-    ) -> None:
+    def bump(self, **kwargs) -> None:
         from wexample_helpers.helpers.version import version_increment
+
         version = self.get_project_version()
 
-        new_version = version_increment(
-            version=self.get_project_version(),
-            **kwargs
-        )
+        new_version = version_increment(version=self.get_project_version(), **kwargs)
 
         self.get_config_file().write_config_value("version", new_version)
 
