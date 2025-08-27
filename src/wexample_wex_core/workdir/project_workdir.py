@@ -20,6 +20,7 @@ from wexample_wex_core.workdir.mixin.with_app_version_workdir_mixin import (
 from wexample_wex_core.workdir.workdir import Workdir
 
 if TYPE_CHECKING:
+    from wexample_filestate.item.file.yaml_file import YamlFile
     from wexample_config.config_value.nested_config_value import NestedConfigValue
 
 
@@ -72,12 +73,17 @@ class ProjectWorkdir(
             .get_str_or_default(default=self._get_version_default_content())
         )
 
+    def get_config_file(self) -> YamlFile:
+        config_file = self.find_by_name_recursive(item_name=APP_FILE_APP_CONFIG)
+        assert config_file is not None
+        return config_file
+
     def get_config(self) -> NestedConfigValue:
         from wexample_config.config_value.nested_config_value import NestedConfigValue
 
-        config_yml = self.find_by_name_recursive(item_name=APP_FILE_APP_CONFIG)
-        if config_yml:
-            return config_yml.read_as_config()
+        config_file = self.get_config_file()
+        if config_file:
+            return config_file.read_config()
 
         return NestedConfigValue(raw={})
 
@@ -109,12 +115,12 @@ class ProjectWorkdir(
                 if issubclass(class_module, ProjectWorkdir):
                     return class_module
                 else:
-                    self.io.warning(
+                    self.warning(
                         f"Custom class '{class_name}' defined in {APP_FILE_APP_CONFIG} was found at {file_abs_path}, "
                         f"but it must be a subclass of {ProjectWorkdir.__name__}."
                     )
             else:
-                self.io.warning(
+                self.warning(
                     f"Custom manager file '{file_relative}' configured in {APP_FILE_APP_CONFIG} "
                     f"does not exist at {file_abs_path}."
                 )
@@ -174,5 +180,5 @@ class ProjectWorkdir(
         if config_dir:
             dot_env = config_dir.find_by_name(EnvFile.EXTENSION_DOT_ENV)
             if dot_env:
-                return dot_env.read_as_config()
+                return dot_env.read_config()
         return NestedConfigValue(raw={})
