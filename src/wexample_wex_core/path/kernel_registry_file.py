@@ -24,6 +24,6 @@ class KernelRegistryFile(YamlFile):
 
     def create_registry_from_content(self, kernel: Kernel) -> KernelRegistry:
         registry = self.create_registry(kernel=kernel)
-        registry.hydrate(data=self.read())
+        registry.hydrate(data=self.read_parsed())
 
         return registry
