@@ -10,13 +10,13 @@ from wexample_helpers.helpers.string import string_ensure_end_with_new_line
 
 class WithAppVersionWorkdirMixin(WithVersionWorkdirMixin):
     def _get_version_default_content(self) -> Any:
-        from wexample_config.config_value.config_value import ConfigValue
+        from wexample_filestate.config_value.content_config_value import ContentConfigValue
         from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
-        class VersionBuilder(ConfigValue):
+        class VersionBuilder(ContentConfigValue):
             workdir: ProjectWorkdir
 
-            def get_str(self, type_check: bool = True) -> str:
+            def build_content(self, type_check: bool = True) -> str:
                 return string_ensure_end_with_new_line(
                     self.workdir.get_config()
                     .get_config_item(key="version", default=self.raw)
