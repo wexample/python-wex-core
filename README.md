@@ -12,8 +12,8 @@ Version: 6.0.41
 
 - click
 - pydantic>=2,<3
-- wexample-app==0.0.46
-- wexample-filestate==0.0.46
+- wexample-app==0.0.47
+- wexample-filestate==0.0.47
 
 ## Installation
 

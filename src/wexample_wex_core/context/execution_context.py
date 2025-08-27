@@ -37,7 +37,9 @@ class ExecutionContext(
         self.function_kwargs["context"] = self
 
     def create_progress_range(self, **kwargs) -> ProgressHandle:
-        self._current_progress = self.get_or_create_progress().create_range_handle(**kwargs)
+        self._current_progress = self.get_or_create_progress().create_range_handle(
+            **kwargs
+        )
         return self._current_progress
 
     def get_or_create_progress(self, **kwargs) -> ProgressHandle:
