@@ -30,7 +30,7 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         return []
 
     def get_dependents(
-            self, package: FrameworkPackageWorkdir
+        self, package: FrameworkPackageWorkdir
     ) -> list[FrameworkPackageWorkdir]:
         return []
 
@@ -61,10 +61,10 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         return filtered
 
     def build_dependencies_stack(
-            self,
-            package: FrameworkPackageWorkdir,
-            dependency: FrameworkPackageWorkdir,
-            dependencies_map: dict[str, list[str]],
+        self,
+        package: FrameworkPackageWorkdir,
+        dependency: FrameworkPackageWorkdir,
+        dependencies_map: dict[str, list[str]],
     ) -> list[FrameworkPackageWorkdir]:
         """When a package depends on another (uses it in its codebase),
         return the dependency chain to locate the original package that declares the explicit dependency.
@@ -77,14 +77,12 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
     def publish_packages(self) -> None:
         packages = self.get_packages()
         progress = self.io.progress(
-            label="Publishing packages...",
-            total=len(packages)
+            label="Publishing packages...", total=len(packages)
         ).get_handle()
 
         for package in packages:
             progress.advance(
-                label=f'Publishing {package.get_package_name()}...',
-                step=1
+                label=f"Publishing {package.get_package_name()}...", step=1
             )
             package.publish()
 

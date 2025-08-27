@@ -10,7 +10,9 @@ from wexample_helpers.helpers.string import string_ensure_end_with_new_line
 
 class WithAppVersionWorkdirMixin(WithVersionWorkdirMixin):
     def _get_version_default_content(self) -> Any:
-        from wexample_filestate.config_value.content_config_value import ContentConfigValue
+        from wexample_filestate.config_value.content_config_value import (
+            ContentConfigValue,
+        )
         from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
         class VersionBuilder(ContentConfigValue):
