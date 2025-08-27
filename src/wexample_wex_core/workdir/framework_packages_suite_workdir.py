@@ -81,7 +81,9 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         ).get_handle()
 
         for package in packages:
-            progress.advance(label=f"Publishing {package.get_package_name()}...", step=1)
+            progress.advance(
+                label=f"Publishing {package.get_package_name()}...", step=1
+            )
             package.publish()
 
         progress.finish()
