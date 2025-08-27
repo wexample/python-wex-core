@@ -41,7 +41,7 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
     def bump(
             self,
             **kwargs
-    ):
+    ) -> None:
         from wexample_helpers.helpers.version import version_increment
         version = self.get_project_version()
 

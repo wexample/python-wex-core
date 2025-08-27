@@ -2,7 +2,7 @@
 
 Wex core
 
-Version: 6.0.40
+Version: 6.0.41
 
 ## Requirements
 
