@@ -74,7 +74,7 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
     def get_ordered_packages(self) -> list[FrameworkPackageWorkdir]:
         return self.get_packages()
 
-    def publish_packages(self):
+    def publish_packages(self) -> None:
         packages = self.get_packages()
         progress = self.io.progress(
             label="Publishing packages...",
