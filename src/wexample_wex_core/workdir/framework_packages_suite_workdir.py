@@ -77,7 +77,6 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
 
     def publish_packages(
         self,
-        commit_and_push: bool = False,
         progress: ProgressHandle | None = None,
     ) -> None:
         packages = self.get_packages()
@@ -91,7 +90,6 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
 
         for package in packages:
             package.publish(
-                commit_and_push=commit_and_push,
                 progress=progress.create_range_handle(
                     to=progress.response.current + 1,
                 ),

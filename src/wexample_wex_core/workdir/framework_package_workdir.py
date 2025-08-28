@@ -41,7 +41,16 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
 
     def publish(
         self,
-        commit_and_push: bool = False,
+        progress: ProgressHandle | None = None,
+    ) -> None:
+        pass
+
+    def has_working_changes(self) -> bool:
+        from wexample_helpers_git.helpers.git import git_has_working_changes
+        return git_has_working_changes(cwd=self.get_path(), inherit_stdio=True)
+
+    def commit_and_push(
+        self,
         progress: ProgressHandle | None = None,
     ) -> None:
         """Publish workflow for the package (git commit & push)."""
@@ -54,9 +63,6 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
             git_pull_rebase_autostash,
             git_push_follow_tags,
         )
-
-        if not commit_and_push:
-            return
 
         cwd = self.get_path()
         # Prepare progress handle
