@@ -39,45 +39,39 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         """Push the package to the packages manager service (npm, pipy, packagist, etc.)"""
 
     def bump(self, interactive: bool = False, **kwargs) -> None:
+        """Create a version-x.y.z branch, update the version number in config. Don't commit changes."""
         from wexample_helpers.helpers.version import version_increment
 
-        version = self.get_project_version()
-        new_version = version_increment(version=self.get_project_version(), **kwargs)
+        current_version = self.get_project_version()
+        new_version = version_increment(version=current_version, **kwargs)
         branch_name = f"version-{new_version}"
 
         def _bump():
             from wexample_helpers.helpers.shell import shell_run
 
-            # Change version number
+            # Create or switch to branch first, so changes are committed on it.
+            try:
+                # Try to create and switch (git switch -c is safer, fallback to checkout -b)
+                try:
+                    shell_run(["git", "switch", "-c", branch_name], inherit_stdio=True, cwd=self.get_path())
+                except Exception:
+                    # If switch -c is unavailable or branch exists, try checkout -b
+                    shell_run(["git", "checkout", "-b", branch_name], inherit_stdio=True, cwd=self.get_path())
+            except Exception:
+                # If branch already exists, just switch to it.
+                shell_run(["git", "switch", branch_name], inherit_stdio=True, cwd=self.get_path())
+
+            # Change version number on this branch
             self.get_config_file().write_config_value("version", new_version)
 
-            # Create branch and checkout.
-            shell_run([
-                "git",
-                "branch",
-                branch_name
-            ],
-                inherit_stdio=True,
-                cwd=self.get_path()
-            )
-
-            shell_run([
-                "git",
-                "checkout",
-                branch_name
-            ],
-                inherit_stdio=True,
-                cwd=self.get_path()
-            )
-
             self.success(
-                f'Updated {self.get_package_name()} from version "{version}" to "{new_version}"'
+                f'Bumped {self.get_package_name()} from "{current_version}" to "{new_version}" and switched to branch "{branch_name}"'
             )
 
         if interactive:
             confirm = self.confirm(
-                f"Do you want to create a new version for package {self.get_package_name()} in  {self.get_path()} ?"
-                f"This will create a new branch \"{branch_name}\""
+                f"Do you want to create a new version for package {self.get_package_name()} in {self.get_path()}? "
+                f"This will create/switch to branch \"{branch_name}\"."
             )
 
             if confirm.get_answer():
