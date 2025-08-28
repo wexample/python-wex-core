@@ -49,11 +49,11 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         from wexample_helpers_git.helpers.git import git_has_working_changes
         return git_has_working_changes(cwd=self.get_path(), inherit_stdio=True)
 
-    def commit_and_push(
+    def commit_changes(
         self,
         progress: ProgressHandle | None = None,
     ) -> None:
-        """Publish workflow for the package (git commit & push)."""
+        """Commit local changes (if any), without pushing."""
         from wexample_helpers_git.helpers.git import (
             git_commit_all_with_message,
             git_current_branch,
@@ -61,14 +61,12 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
             git_has_index_changes,
             git_has_working_changes,
             git_pull_rebase_autostash,
-            git_push_follow_tags,
         )
 
         cwd = self.get_path()
-        # Prepare progress handle
         progress = (
             progress
-            or self.io.progress(label="Publishing package...", total=4).get_handle()
+            or self.io.progress(label="Committing changes...", total=3).get_handle()
         )
 
         git_current_branch(cwd=cwd, inherit_stdio=False)
@@ -78,7 +76,6 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         git_pull_rebase_autostash(cwd=cwd, inherit_stdio=True)
         progress.advance(step=1, label="Pulled latest (rebase)")
 
-        # Commit only if there are changes (either staged or unstaged tracked files)
         has_working_changes = git_has_working_changes(cwd=cwd)
         has_index_changes = git_has_index_changes(cwd=cwd)
 
@@ -88,14 +85,51 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
                 cwd=cwd,
                 inherit_stdio=True,
             )
-            progress.advance(step=1, label="Committed changes")
+            progress.finish(label="Committed changes")
         else:
-            progress.advance(step=1, label="No changes to commit")
+            progress.finish(label="No changes to commit")
 
-        # Push to upstream, following tags if any were created externally
+    def push_changes(
+        self,
+        progress: ProgressHandle | None = None,
+    ) -> None:
+        """Push current branch to upstream (following tags), without committing."""
+        from wexample_helpers_git.helpers.git import (
+            git_current_branch,
+            git_ensure_upstream,
+            git_push_follow_tags,
+        )
+
+        cwd = self.get_path()
+        progress = (
+            progress
+            or self.io.progress(label="Pushing changes...", total=1).get_handle()
+        )
+
+        git_current_branch(cwd=cwd, inherit_stdio=False)
+        git_ensure_upstream(cwd=cwd, default_remote="origin", inherit_stdio=True)
         git_push_follow_tags(cwd=cwd, inherit_stdio=True)
-
         progress.finish(label="Pushed")
+
+    def add_publication_tag(self):
+        from wexample_helpers.helpers.shell import shell_run
+
+        tag = f"{self.get_package_name()}/{self.get_project_version()}"
+
+        shell_run(
+            [
+                "git",
+                "tag",
+                "-a",
+                tag,
+                "-m",
+                f"Release {tag}"
+            ],
+            inherit_stdio=True,
+            cwd=self.get_path(),
+        )
+
+        self.push_changes()
 
     def bump(self, interactive: bool = False, **kwargs) -> None:
         """Create a version-x.y.z branch, update the version number in config. Don't commit changes."""

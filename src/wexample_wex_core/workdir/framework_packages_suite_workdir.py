@@ -94,6 +94,9 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
                     to=progress.response.current + 1,
                 ),
             )
+
+            package.add_publication_tag()
+
             progress.advance(step=1)
 
         progress.finish()
