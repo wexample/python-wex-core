@@ -111,25 +111,24 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         git_push_follow_tags(cwd=cwd, inherit_stdio=True)
         progress.finish(label="Pushed")
 
-    def add_publication_tag(self):
-        from wexample_helpers.helpers.shell import shell_run
-
-        tag = f"{self.get_package_name()}/{self.get_project_version()}"
-
-        shell_run(
-            [
-                "git",
-                "tag",
-                "-a",
-                tag,
-                "-m",
-                f"Release {tag}"
-            ],
-            inherit_stdio=True,
-            cwd=self.get_path(),
+    def add_publication_tag(self) -> None:
+        from wexample_helpers_git.helpers.git import (
+            git_tag_exists,
+            git_tag_annotated,
+            git_push_tag,
         )
 
-        self.push_changes()
+        cwd = self.get_path()
+        tag = f"{self.get_package_name()}/v{self.get_project_version()}"
+
+        # Create the annotated tag if it does not already exist locally.
+        if not git_tag_exists(tag, cwd=cwd, inherit_stdio=False):
+            git_tag_annotated(tag, f"Release {tag}", cwd=cwd, inherit_stdio=True)
+        else:
+            self.io.warning(f"Tag {tag} already exists locally; pushing it.")
+
+        # Push the tag explicitly to the remote to ensure it's published.
+        git_push_tag(tag, cwd=cwd, inherit_stdio=True)
 
     def bump(self, interactive: bool = False, **kwargs) -> None:
         """Create a version-x.y.z branch, update the version number in config. Don't commit changes."""
