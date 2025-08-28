@@ -19,13 +19,13 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         pass
 
     def imports_package_in_codebase(
-            self, searched_package: FrameworkPackageWorkdir
+        self, searched_package: FrameworkPackageWorkdir
     ) -> bool:
         """Check whether the given package is used in this package's codebase."""
         return False
 
     def build_dependencies_stack(
-            self, package: FrameworkPackageWorkdir, dependency: FrameworkPackageWorkdir
+        self, package: FrameworkPackageWorkdir, dependency: FrameworkPackageWorkdir
     ) -> list[FrameworkPackageWorkdir]:
         """When package is dependent from another one (is using it in its codebase),
         list the packages inheritance stack to find the original package declaring the explicit dependency
@@ -39,7 +39,11 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
     def save_dependency(self, package: FrameworkPackageWorkdir) -> None:
         """Register a dependency into the configuration file."""
 
-    def publish(self, commit_and_push: bool = False, progress: ProgressHandle | None = None, ) -> None:
+    def publish(
+        self,
+        commit_and_push: bool = False,
+        progress: ProgressHandle | None = None,
+    ) -> None:
         """Publish workflow for the package (git commit & push)."""
         from wexample_helpers_git.helpers.git import (
             git_commit_all_with_message,
@@ -56,9 +60,10 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
 
         cwd = self.get_path()
         # Prepare progress handle
-        progress = progress or self.io.progress(
-            label="Publishing package...", total=4
-        ).get_handle()
+        progress = (
+            progress
+            or self.io.progress(label="Publishing package...", total=4).get_handle()
+        )
 
         git_current_branch(cwd=cwd, inherit_stdio=False)
         git_ensure_upstream(cwd=cwd, default_remote="origin", inherit_stdio=True)
