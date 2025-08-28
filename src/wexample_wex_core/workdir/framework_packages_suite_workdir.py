@@ -75,32 +75,6 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
     def get_ordered_packages(self) -> list[FrameworkPackageWorkdir]:
         return self.get_packages()
 
-    def publish_packages(
-        self,
-        progress: ProgressHandle | None = None,
-    ) -> None:
-        packages = self.get_packages()
-
-        progress = (
-            progress
-            or self.io.progress(
-                label="Publishing packages...", total=len(packages)
-            ).get_handle()
-        )
-
-        for package in packages:
-            package.publish(
-                progress=progress.create_range_handle(
-                    to=progress.response.current + 1,
-                ),
-            )
-
-            package.add_publication_tag()
-
-            progress.advance(step=1)
-
-        progress.finish()
-
     def packages_propagate_versions(
         self, progress: ProgressHandle | None = None
     ) -> None:
