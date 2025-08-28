@@ -42,12 +42,12 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
     def publish(self, commit_and_push: bool = False, progress: ProgressHandle | None = None, ) -> None:
         """Publish workflow for the package (git commit & push)."""
         from wexample_helpers_git.helpers.git import (
+            git_commit_all_with_message,
             git_current_branch,
             git_ensure_upstream,
-            git_pull_rebase_autostash,
-            git_has_working_changes,
             git_has_index_changes,
-            git_commit_all_with_message,
+            git_has_working_changes,
+            git_pull_rebase_autostash,
             git_push_follow_tags,
         )
 
