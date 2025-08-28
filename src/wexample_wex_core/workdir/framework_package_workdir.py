@@ -47,6 +47,7 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
 
     def has_working_changes(self) -> bool:
         from wexample_helpers_git.helpers.git import git_has_working_changes
+
         return git_has_working_changes(cwd=self.get_path(), inherit_stdio=True)
 
     def commit_changes(
@@ -113,9 +114,9 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
 
     def add_publication_tag(self) -> None:
         from wexample_helpers_git.helpers.git import (
-            git_tag_exists,
-            git_tag_annotated,
             git_push_tag,
+            git_tag_annotated,
+            git_tag_exists,
         )
 
         cwd = self.get_path()
@@ -142,7 +143,9 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
             from wexample_helpers_git.helpers.git import git_create_or_switch_branch
 
             # Create or switch to branch first, so changes are committed on it.
-            git_create_or_switch_branch(branch_name, cwd=self.get_path(), inherit_stdio=True)
+            git_create_or_switch_branch(
+                branch_name, cwd=self.get_path(), inherit_stdio=True
+            )
 
             # Change version number on this branch
             self.get_config_file().write_config_value("version", new_version)
@@ -188,4 +191,6 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         if last_tag is None:
             return True
         # Limit diff to current package folder, run from package cwd using '.'
-        return git_has_changes_since_tag(last_tag, ".", cwd=self.get_path(), inherit_stdio=False)
+        return git_has_changes_since_tag(
+            last_tag, ".", cwd=self.get_path(), inherit_stdio=False
+        )

@@ -100,7 +100,7 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         progress.finish()
 
     # Publication planning helpers
-    def compute_packages_to_publish(self) -> list["FrameworkPackageWorkdir"]:
+    def compute_packages_to_publish(self) -> list[FrameworkPackageWorkdir]:
         """Return packages that changed since their last publication tag.
 
         If a package has no previous tag, it is considered to be published.
@@ -122,13 +122,18 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         yes: bool,
         max_loops: int = 3,
         progress: ProgressHandle | None = None,
-    ) -> list["FrameworkPackageWorkdir"]:
+    ) -> list[FrameworkPackageWorkdir]:
         """Iteratively run rectify + version propagation until the set of packages to publish stabilizes."""
         from wexample_wex_addon_app.commands.files_state.rectify import (
             app__files_state__rectify,
         )
 
-        progress = progress or self.io.progress(label="Stabilizing plan...", total=max_loops).get_handle()
+        progress = (
+            progress
+            or self.io.progress(
+                label="Stabilizing plan...", total=max_loops
+            ).get_handle()
+        )
         to_publish = self.compute_packages_to_publish()
         loop = 0
         while to_publish and loop < max_loops:
@@ -145,7 +150,9 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
             self.packages_propagate_versions()
 
             new_to_publish = self.compute_packages_to_publish()
-            if {p.get_package_name() for p in new_to_publish} == {p.get_package_name() for p in to_publish}:
+            if {p.get_package_name() for p in new_to_publish} == {
+                p.get_package_name() for p in to_publish
+            }:
                 break
             to_publish = new_to_publish
 
