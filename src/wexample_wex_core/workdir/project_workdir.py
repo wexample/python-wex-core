@@ -67,11 +67,12 @@ class ProjectWorkdir(
         return name
 
     def get_project_version(self) -> str:
-        return (
-            self.get_config()
-            .get_config_item("version")
-            .get_str_or_default(default=self._get_version_default_content())
-        )
+        version = self.get_config_file().read_config().get_config_item('version').get_str_or_none()
+        if version is None:
+            raise ValueError(
+                f"Project at '{self.get_path()}' must define a non-empty 'version' number in {APP_FILE_APP_CONFIG}."
+            )
+        return version
 
     def get_config_file(self) -> YamlFile:
         config_file = self.find_by_name_recursive(item_name=APP_FILE_APP_CONFIG)
