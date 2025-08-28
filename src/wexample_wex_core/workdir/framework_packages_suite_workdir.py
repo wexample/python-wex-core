@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from wexample_prompt.common.progress.progress_handle import ProgressHandle
+
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
@@ -30,7 +32,7 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         return []
 
     def get_dependents(
-        self, package: FrameworkPackageWorkdir
+            self, package: FrameworkPackageWorkdir
     ) -> list[FrameworkPackageWorkdir]:
         return []
 
@@ -61,10 +63,10 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         return filtered
 
     def build_dependencies_stack(
-        self,
-        package: FrameworkPackageWorkdir,
-        dependency: FrameworkPackageWorkdir,
-        dependencies_map: dict[str, list[str]],
+            self,
+            package: FrameworkPackageWorkdir,
+            dependency: FrameworkPackageWorkdir,
+            dependencies_map: dict[str, list[str]],
     ) -> list[FrameworkPackageWorkdir]:
         """When a package depends on another (uses it in its codebase),
         return the dependency chain to locate the original package that declares the explicit dependency.
@@ -74,16 +76,49 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
     def get_ordered_packages(self) -> list[FrameworkPackageWorkdir]:
         return self.get_packages()
 
-    def publish_packages(self) -> None:
+    def publish_packages(
+            self,
+            commit_and_push: bool = False,
+            progress: ProgressHandle | None = None,
+    ) -> None:
         packages = self.get_packages()
-        progress = self.io.progress(
+
+        progress = progress or self.io.progress(
             label="Publishing packages...", total=len(packages)
         ).get_handle()
 
         for package in packages:
-            progress.advance(
-                label=f"Publishing {package.get_package_name()}...", step=1
+            package.publish(
+                commit_and_push=commit_and_push,
+                progress=progress.create_range_handle(
+                    label=f"Publishing {package.get_package_name()}...",
+                    to=progress.response.current + 1
+                )
             )
-            package.publish()
+            progress.advance(step=1)
 
+        progress.finish()
+
+    def packages_propagate_versions(
+            self, progress: ProgressHandle | None = None
+    ) -> None:
+        ordered_packages = self.get_ordered_packages()
+
+        progress = (
+                progress
+                or self.io.progress(
+            label=f"Starting...", total=len(ordered_packages)
+        ).get_handle()
+        )
+
+        for package in ordered_packages:
+            progress.advance(
+                label=f'Propagating package "{package.get_package_name()}" version "{package.get_project_version()}"',
+                step=1,
+            )
+            self.io.indentation_up()
+            for dependent in self.get_dependents(package):
+                self.io.log(f"Applying to {dependent.get_package_name()}")
+                dependent.save_dependency(package)
+            self.io.indentation_down()
         progress.finish()

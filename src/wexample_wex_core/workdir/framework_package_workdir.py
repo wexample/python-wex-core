@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
+
+if TYPE_CHECKING:
+    from wexample_prompt.common.progress.progress_handle import ProgressHandle
 
 
 class FrameworkPackageWorkdir(ProjectWorkdir):
@@ -15,13 +19,13 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         pass
 
     def imports_package_in_codebase(
-        self, searched_package: FrameworkPackageWorkdir
+            self, searched_package: FrameworkPackageWorkdir
     ) -> bool:
         """Check whether the given package is used in this package's codebase."""
         return False
 
     def build_dependencies_stack(
-        self, package: FrameworkPackageWorkdir, dependency: FrameworkPackageWorkdir
+            self, package: FrameworkPackageWorkdir, dependency: FrameworkPackageWorkdir
     ) -> list[FrameworkPackageWorkdir]:
         """When package is dependent from another one (is using it in its codebase),
         list the packages inheritance stack to find the original package declaring the explicit dependency
@@ -35,8 +39,22 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
     def save_dependency(self, package: FrameworkPackageWorkdir) -> None:
         """Register a dependency into the configuration file."""
 
-    def publish(self) -> None:
+    def publish(self, commit_and_push: bool = False, progress: ProgressHandle | None = None, ) -> None:
         """Push the package to the packages manager service (npm, pipy, packagist, etc.)"""
+        from wexample_helpers.helpers.shell import shell_run
+
+        if commit_and_push:
+            shell_run([
+                'git',
+                'commit',
+                '-am',
+                f'"Publishing version {self.get_project_version()}"',
+            ], inherit_stdio=True, cwd=self.get_path())
+
+            shell_run([
+                'git',
+                'push',
+            ], inherit_stdio=True, cwd=self.get_path())
 
     def bump(self, interactive: bool = False, **kwargs) -> None:
         """Create a version-x.y.z branch, update the version number in config. Don't commit changes."""
