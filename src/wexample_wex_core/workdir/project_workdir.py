@@ -67,7 +67,12 @@ class ProjectWorkdir(
         return name
 
     def get_project_version(self) -> str:
-        version = self.get_config_file().read_config().get_config_item('version').get_str_or_none()
+        version = (
+            self.get_config_file()
+            .read_config()
+            .get_config_item("version")
+            .get_str_or_none()
+        )
         if version is None:
             raise ValueError(
                 f"Project at '{self.get_path()}' must define a non-empty 'version' number in {APP_FILE_APP_CONFIG}."
