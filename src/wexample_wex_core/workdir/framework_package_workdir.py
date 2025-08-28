@@ -15,13 +15,13 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         pass
 
     def imports_package_in_codebase(
-            self, searched_package: FrameworkPackageWorkdir
+        self, searched_package: FrameworkPackageWorkdir
     ) -> bool:
         """Check whether the given package is used in this package's codebase."""
         return False
 
     def build_dependencies_stack(
-            self, package: FrameworkPackageWorkdir, dependency: FrameworkPackageWorkdir
+        self, package: FrameworkPackageWorkdir, dependency: FrameworkPackageWorkdir
     ) -> list[FrameworkPackageWorkdir]:
         """When package is dependent from another one (is using it in its codebase),
         list the packages inheritance stack to find the original package declaring the explicit dependency
@@ -46,20 +46,32 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         new_version = version_increment(version=current_version, **kwargs)
         branch_name = f"version-{new_version}"
 
-        def _bump():
+        def _bump() -> None:
             from wexample_helpers.helpers.shell import shell_run
 
             # Create or switch to branch first, so changes are committed on it.
             try:
                 # Try to create and switch (git switch -c is safer, fallback to checkout -b)
                 try:
-                    shell_run(["git", "switch", "-c", branch_name], inherit_stdio=True, cwd=self.get_path())
+                    shell_run(
+                        ["git", "switch", "-c", branch_name],
+                        inherit_stdio=True,
+                        cwd=self.get_path(),
+                    )
                 except Exception:
                     # If switch -c is unavailable or branch exists, try checkout -b
-                    shell_run(["git", "checkout", "-b", branch_name], inherit_stdio=True, cwd=self.get_path())
+                    shell_run(
+                        ["git", "checkout", "-b", branch_name],
+                        inherit_stdio=True,
+                        cwd=self.get_path(),
+                    )
             except Exception:
                 # If branch already exists, just switch to it.
-                shell_run(["git", "switch", branch_name], inherit_stdio=True, cwd=self.get_path())
+                shell_run(
+                    ["git", "switch", branch_name],
+                    inherit_stdio=True,
+                    cwd=self.get_path(),
+                )
 
             # Change version number on this branch
             self.get_config_file().write_config_value("version", new_version)
@@ -71,7 +83,7 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         if interactive:
             confirm = self.confirm(
                 f"Do you want to create a new version for package {self.get_package_name()} in {self.get_path()}? "
-                f"This will create/switch to branch \"{branch_name}\"."
+                f'This will create/switch to branch "{branch_name}".'
             )
 
             if confirm.get_answer():
