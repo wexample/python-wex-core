@@ -40,21 +40,52 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         """Register a dependency into the configuration file."""
 
     def publish(self, commit_and_push: bool = False, progress: ProgressHandle | None = None, ) -> None:
-        """Push the package to the packages manager service (npm, pipy, packagist, etc.)"""
+        """Publish workflow for the package (git commit & push).
+
+        Behavior:
+        - Stops on the first error (relies on shell_run raising on non-zero exit).
+        - Ensures an upstream is set for the current branch (defaults to origin/<branch> if missing).
+        - Pulls latest changes with rebase/autostash before committing.
+        - Commits only when there are actual changes (avoids empty commits).
+        - Pushes to the configured upstream and follows tags.
+        """
         from wexample_helpers.helpers.shell import shell_run
+        from wexample_helpers_git.helpers.git import (
+            git_current_branch,
+            git_ensure_upstream,
+            git_pull_rebase_autostash,
+            git_has_working_changes,
+            git_has_index_changes,
+            git_commit_all_with_message,
+            git_push_follow_tags,
+        )
 
-        if commit_and_push:
-            shell_run([
-                'git',
-                'commit',
-                '-am',
-                f'"Publishing version {self.get_project_version()}"',
-            ], inherit_stdio=True, cwd=self.get_path())
+        if not commit_and_push:
+            return
 
-            shell_run([
-                'git',
-                'push',
-            ], inherit_stdio=True, cwd=self.get_path())
+        cwd = self.get_path()
+
+        # 1) Determine current branch and ensure upstream
+        branch = git_current_branch(cwd=cwd, inherit_stdio=False)
+        upstream = git_ensure_upstream(cwd=cwd, default_remote="origin", inherit_stdio=True)
+
+        # 3) Update local branch before committing
+        #    --rebase for linear history, --autostash to temporarily stash local changes if needed
+        git_pull_rebase_autostash(cwd=cwd, inherit_stdio=True)
+
+        # 4) Commit only if there are changes (either staged or unstaged tracked files)
+        has_working_changes = git_has_working_changes(cwd=cwd)
+        has_index_changes = git_has_index_changes(cwd=cwd)
+
+        if has_working_changes or has_index_changes:
+            git_commit_all_with_message(
+                f"Publishing version {self.get_project_version()}",
+                cwd=cwd,
+                inherit_stdio=True,
+            )
+
+        # 5) Push to upstream, following tags if any were created externally
+        git_push_follow_tags(cwd=cwd, inherit_stdio=True)
 
     def bump(self, interactive: bool = False, **kwargs) -> None:
         """Create a version-x.y.z branch, update the version number in config. Don't commit changes."""
