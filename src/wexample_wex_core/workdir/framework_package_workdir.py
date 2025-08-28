@@ -139,31 +139,10 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         branch_name = f"version-{new_version}"
 
         def _bump() -> None:
-            from wexample_helpers.helpers.shell import shell_run
+            from wexample_helpers_git.helpers.git import git_create_or_switch_branch
 
             # Create or switch to branch first, so changes are committed on it.
-            try:
-                # Try to create and switch (git switch -c is safer, fallback to checkout -b)
-                try:
-                    shell_run(
-                        ["git", "switch", "-c", branch_name],
-                        inherit_stdio=True,
-                        cwd=self.get_path(),
-                    )
-                except Exception:
-                    # If switch -c is unavailable or branch exists, try checkout -b
-                    shell_run(
-                        ["git", "checkout", "-b", branch_name],
-                        inherit_stdio=True,
-                        cwd=self.get_path(),
-                    )
-            except Exception:
-                # If branch already exists, just switch to it.
-                shell_run(
-                    ["git", "switch", branch_name],
-                    inherit_stdio=True,
-                    cwd=self.get_path(),
-                )
+            git_create_or_switch_branch(branch_name, cwd=self.get_path(), inherit_stdio=True)
 
             # Change version number on this branch
             self.get_config_file().write_config_value("version", new_version)
