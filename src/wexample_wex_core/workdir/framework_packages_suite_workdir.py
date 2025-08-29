@@ -6,8 +6,8 @@ from wexample_prompt.common.progress.progress_handle import ProgressHandle
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
-    from wexample_wex_core.workdir.framework_package_workdir import (
-        FrameworkPackageWorkdir,
+    from wexample_wex_core.workdir.code_base_workdir import (
+        CodeBaseWorkdir,
     )
 
 
@@ -24,18 +24,18 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
 
         return dependencies
 
-    def get_packages(self) -> list[FrameworkPackageWorkdir]:
+    def get_packages(self) -> list[CodeBaseWorkdir]:
         pip_dir = self.find_by_name(item_name="pip")
         if pip_dir:
             return pip_dir.get_children_list()
         return []
 
     def get_dependents(
-        self, package: FrameworkPackageWorkdir
-    ) -> list[FrameworkPackageWorkdir]:
+        self, package: CodeBaseWorkdir
+    ) -> list[CodeBaseWorkdir]:
         return []
 
-    def get_package(self, package_name: str) -> FrameworkPackageWorkdir | None:
+    def get_package(self, package_name: str) -> CodeBaseWorkdir | None:
         for package in self.get_packages():
             if package.get_package_name() == package_name:
                 return package
@@ -63,16 +63,16 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
 
     def build_dependencies_stack(
         self,
-        package: FrameworkPackageWorkdir,
-        dependency: FrameworkPackageWorkdir,
+        package: CodeBaseWorkdir,
+        dependency: CodeBaseWorkdir,
         dependencies_map: dict[str, list[str]],
-    ) -> list[FrameworkPackageWorkdir]:
+    ) -> list[CodeBaseWorkdir]:
         """When a package depends on another (uses it in its codebase),
         return the dependency chain to locate the original package that declares the explicit dependency.
         """
         return []
 
-    def get_ordered_packages(self) -> list[FrameworkPackageWorkdir]:
+    def get_ordered_packages(self) -> list[CodeBaseWorkdir]:
         return self.get_packages()
 
     def packages_propagate_versions(
@@ -100,12 +100,12 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         progress.finish()
 
     # Publication planning helpers
-    def compute_packages_to_publish(self) -> list[FrameworkPackageWorkdir]:
+    def compute_packages_to_publish(self) -> list[CodeBaseWorkdir]:
         """Return packages that changed since their last publication tag.
 
         If a package has no previous tag, it is considered to be published.
         """
-        to_publish: list[FrameworkPackageWorkdir] = []
+        to_publish: list[CodeBaseWorkdir] = []
         for pkg in self.get_packages():
             try:
                 if pkg.has_changes_since_last_publication_tag():
