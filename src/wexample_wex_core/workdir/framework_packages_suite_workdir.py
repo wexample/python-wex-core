@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from wexample_prompt.common.progress.progress_handle import ProgressHandle
+
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
     from wexample_wex_core.workdir.code_base_workdir import (
         CodeBaseWorkdir,
     )
+    from pathlib import Path
+    from wexample_config.const.types import DictConfig
 
 
 class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
@@ -60,10 +64,10 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         return filtered
 
     def build_dependencies_stack(
-        self,
-        package: CodeBaseWorkdir,
-        dependency: CodeBaseWorkdir,
-        dependencies_map: dict[str, list[str]],
+            self,
+            package: CodeBaseWorkdir,
+            dependency: CodeBaseWorkdir,
+            dependencies_map: dict[str, list[str]],
     ) -> list[CodeBaseWorkdir]:
         """When a package depends on another (uses it in its codebase),
         return the dependency chain to locate the original package that declares the explicit dependency.
@@ -74,15 +78,15 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         return self.get_packages()
 
     def packages_propagate_versions(
-        self, progress: ProgressHandle | None = None
+            self, progress: ProgressHandle | None = None
     ) -> None:
         ordered_packages = self.get_ordered_packages()
 
         progress = (
-            progress
-            or self.io.progress(
-                label=f"Starting...", total=len(ordered_packages)
-            ).get_handle()
+                progress
+                or self.io.progress(
+            label=f"Starting...", total=len(ordered_packages)
+        ).get_handle()
         )
 
         for package in ordered_packages:
@@ -112,3 +116,46 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
                 # Be conservative: if detection fails, include the package to avoid missing a needed release
                 to_publish.append(pkg)
         return to_publish
+
+    def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
+        from wexample_filestate.config_option.children_filter_config_option import (
+            ChildrenFilterConfigOption,
+        )
+        from wexample_filestate.const.disk import DiskItemType
+
+        raw_value = super().prepare_value(raw_value=raw_value)
+
+        children = raw_value["children"]
+
+        # By default, consider each sub folder as a pip package
+        children.append(
+            {
+                "name": self._get_children_package_directory_name(),
+                "type": DiskItemType.DIRECTORY,
+                "children": [
+                    ChildrenFilterConfigOption(
+                        filter=self._child_is_package_directory,
+                        pattern={
+                            "class": self._get_children_package_workdir_class(),
+                            "type": DiskItemType.DIRECTORY,
+                        },
+                    )
+                ],
+            }
+        )
+
+        return raw_value
+
+    @abstractmethod
+    def _child_is_package_directory(self, entry: Path) -> bool:
+        pass
+
+    def _get_children_package_directory_name(self) -> str:
+        return "packages"
+
+    def _get_children_package_workdir_class(self) -> type[CodeBaseWorkdir]:
+        from wexample_wex_core.workdir.code_base_workdir import (
+            CodeBaseWorkdir,
+        )
+
+        return CodeBaseWorkdir
