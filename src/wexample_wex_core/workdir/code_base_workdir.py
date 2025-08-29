@@ -7,6 +7,8 @@ from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
     from wexample_prompt.common.progress.progress_handle import ProgressHandle
+    from wexample_config.options_provider.abstract_options_provider import AbstractOptionsProvider
+    from wexample_filestate.operations_provider.abstract_operations_provider import AbstractOperationsProvider
 
 
 class CodeBaseWorkdir(ProjectWorkdir):
@@ -28,6 +30,33 @@ class CodeBaseWorkdir(ProjectWorkdir):
         list the packages inheritance stack to find the original package declaring the explicit dependency
         """
         return []
+
+
+    def get_options_providers(self) -> list[type[AbstractOptionsProvider]]:
+        from wexample_filestate.options_provider.default_options_provider import (
+            DefaultOptionsProvider,
+        )
+        from wexample_filestate_git.options_provider.git_options_provider import (
+            GitOptionsProvider,
+        )
+
+        return [
+            DefaultOptionsProvider,
+            GitOptionsProvider,
+        ]
+
+    def get_operations_providers(self) -> list[type[AbstractOperationsProvider]]:
+        from wexample_filestate.operations_provider.default_operations_provider import (
+            DefaultOperationsProvider,
+        )
+        from wexample_filestate_git.operations_provider.git_operations_provider import (
+            GitOperationsProvider,
+        )
+
+        return [
+            DefaultOperationsProvider,
+            GitOperationsProvider,
+        ]
 
     def depends_from(self, package: CodeBaseWorkdir) -> bool:
         """Check if current package depends on given one."""
