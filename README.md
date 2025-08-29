@@ -2,7 +2,7 @@
 
 Wex core
 
-Version: 6.0.41
+Version: 6.0.43
 
 ## Requirements
 
@@ -12,9 +12,9 @@ Version: 6.0.41
 
 - click
 - pydantic>=2,<3
-- wexample-app==0.0.47
-- wexample-filestate==0.0.47
-- wexample-helpers-git==0.0.46
+- wexample-app==0.0.48
+- wexample-filestate==0.0.49
+- wexample-helpers-git==0.0.48
 
 ## Installation
 

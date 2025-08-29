@@ -18,14 +18,12 @@ class CodeBaseWorkdir(ProjectWorkdir):
     def get_dependencies(self) -> list[str]:
         pass
 
-    def imports_package_in_codebase(
-            self, searched_package: CodeBaseWorkdir
-    ) -> bool:
+    def imports_package_in_codebase(self, searched_package: CodeBaseWorkdir) -> bool:
         """Check whether the given package is used in this package's codebase."""
         return False
 
     def build_dependencies_stack(
-            self, package: CodeBaseWorkdir, dependency: CodeBaseWorkdir
+        self, package: CodeBaseWorkdir, dependency: CodeBaseWorkdir
     ) -> list[CodeBaseWorkdir]:
         """When package is dependent from another one (is using it in its codebase),
         list the packages inheritance stack to find the original package declaring the explicit dependency
@@ -40,8 +38,8 @@ class CodeBaseWorkdir(ProjectWorkdir):
         """Register a dependency into the configuration file."""
 
     def publish(
-            self,
-            progress: ProgressHandle | None = None,
+        self,
+        progress: ProgressHandle | None = None,
     ) -> None:
         pass
 
@@ -51,8 +49,8 @@ class CodeBaseWorkdir(ProjectWorkdir):
         return git_has_working_changes(cwd=self.get_path(), inherit_stdio=True)
 
     def commit_changes(
-            self,
-            progress: ProgressHandle | None = None,
+        self,
+        progress: ProgressHandle | None = None,
     ) -> None:
         """Commit local changes (if any), without pushing."""
         from wexample_helpers_git.helpers.git import (
@@ -66,8 +64,8 @@ class CodeBaseWorkdir(ProjectWorkdir):
 
         cwd = self.get_path()
         progress = (
-                progress
-                or self.io.progress(label="Committing changes...", total=3).get_handle()
+            progress
+            or self.io.progress(label="Committing changes...", total=3).get_handle()
         )
 
         git_current_branch(cwd=cwd, inherit_stdio=False)
@@ -91,8 +89,8 @@ class CodeBaseWorkdir(ProjectWorkdir):
             progress.finish(label="No changes to commit")
 
     def push_changes(
-            self,
-            progress: ProgressHandle | None = None,
+        self,
+        progress: ProgressHandle | None = None,
     ) -> None:
         """Push current branch to upstream (following tags), without committing."""
         from wexample_helpers_git.helpers.git import (
@@ -103,8 +101,8 @@ class CodeBaseWorkdir(ProjectWorkdir):
 
         cwd = self.get_path()
         progress = (
-                progress
-                or self.io.progress(label="Pushing changes...", total=1).get_handle()
+            progress
+            or self.io.progress(label="Pushing changes...", total=1).get_handle()
         )
 
         git_current_branch(cwd=cwd, inherit_stdio=False)
