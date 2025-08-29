@@ -19,13 +19,13 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         pass
 
     def imports_package_in_codebase(
-        self, searched_package: FrameworkPackageWorkdir
+            self, searched_package: FrameworkPackageWorkdir
     ) -> bool:
         """Check whether the given package is used in this package's codebase."""
         return False
 
     def build_dependencies_stack(
-        self, package: FrameworkPackageWorkdir, dependency: FrameworkPackageWorkdir
+            self, package: FrameworkPackageWorkdir, dependency: FrameworkPackageWorkdir
     ) -> list[FrameworkPackageWorkdir]:
         """When package is dependent from another one (is using it in its codebase),
         list the packages inheritance stack to find the original package declaring the explicit dependency
@@ -40,8 +40,8 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         """Register a dependency into the configuration file."""
 
     def publish(
-        self,
-        progress: ProgressHandle | None = None,
+            self,
+            progress: ProgressHandle | None = None,
     ) -> None:
         pass
 
@@ -51,8 +51,8 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
         return git_has_working_changes(cwd=self.get_path(), inherit_stdio=True)
 
     def commit_changes(
-        self,
-        progress: ProgressHandle | None = None,
+            self,
+            progress: ProgressHandle | None = None,
     ) -> None:
         """Commit local changes (if any), without pushing."""
         from wexample_helpers_git.helpers.git import (
@@ -66,8 +66,8 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
 
         cwd = self.get_path()
         progress = (
-            progress
-            or self.io.progress(label="Committing changes...", total=3).get_handle()
+                progress
+                or self.io.progress(label="Committing changes...", total=3).get_handle()
         )
 
         git_current_branch(cwd=cwd, inherit_stdio=False)
@@ -91,8 +91,8 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
             progress.finish(label="No changes to commit")
 
     def push_changes(
-        self,
-        progress: ProgressHandle | None = None,
+            self,
+            progress: ProgressHandle | None = None,
     ) -> None:
         """Push current branch to upstream (following tags), without committing."""
         from wexample_helpers_git.helpers.git import (
@@ -103,8 +103,8 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
 
         cwd = self.get_path()
         progress = (
-            progress
-            or self.io.progress(label="Pushing changes...", total=1).get_handle()
+                progress
+                or self.io.progress(label="Pushing changes...", total=1).get_handle()
         )
 
         git_current_branch(cwd=cwd, inherit_stdio=False)
@@ -155,9 +155,13 @@ class FrameworkPackageWorkdir(ProjectWorkdir):
             )
 
         if interactive:
+            from wexample_prompt.responses.interactive.confirm_prompt_response import ConfirmPromptResponse
+
             confirm = self.confirm(
                 f"Do you want to create a new version for package {self.get_package_name()} in {self.get_path()}? "
-                f'This will create/switch to branch "{branch_name}".'
+                f'This will create/switch to branch "{branch_name}".',
+                choices=ConfirmPromptResponse.MAPPING_PRESET_YES_NO,
+                default="yes",
             )
 
             if confirm.get_answer():
