@@ -64,10 +64,10 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         return filtered
 
     def build_dependencies_stack(
-            self,
-            package: CodeBaseWorkdir,
-            dependency: CodeBaseWorkdir,
-            dependencies_map: dict[str, list[str]],
+        self,
+        package: CodeBaseWorkdir,
+        dependency: CodeBaseWorkdir,
+        dependencies_map: dict[str, list[str]],
     ) -> list[CodeBaseWorkdir]:
         """When a package depends on another (uses it in its codebase),
         return the dependency chain to locate the original package that declares the explicit dependency.
@@ -78,15 +78,15 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         return self.get_packages()
 
     def packages_propagate_versions(
-            self, progress: ProgressHandle | None = None
+        self, progress: ProgressHandle | None = None
     ) -> None:
         ordered_packages = self.get_ordered_packages()
 
         progress = (
-                progress
-                or self.io.progress(
-            label=f"Starting...", total=len(ordered_packages)
-        ).get_handle()
+            progress
+            or self.io.progress(
+                label=f"Starting...", total=len(ordered_packages)
+            ).get_handle()
         )
 
         for package in ordered_packages:

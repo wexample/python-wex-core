@@ -35,7 +35,6 @@ class CodeBaseWorkdir(ProjectWorkdir):
         """
         return []
 
-
     def get_options_providers(self) -> list[type[AbstractOptionsProvider]]:
         from wexample_filestate.options_provider.default_options_provider import (
             DefaultOptionsProvider,
