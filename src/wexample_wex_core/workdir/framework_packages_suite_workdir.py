@@ -4,15 +4,15 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from wexample_prompt.common.progress.progress_handle import ProgressHandle
-
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
+    from wexample_config.const.types import DictConfig
     from wexample_wex_core.workdir.code_base_workdir import (
         CodeBaseWorkdir,
     )
-    from pathlib import Path
-    from wexample_config.const.types import DictConfig
 
 
 class FrameworkPackageSuiteWorkdir(ProjectWorkdir):

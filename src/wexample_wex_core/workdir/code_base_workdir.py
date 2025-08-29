@@ -6,9 +6,13 @@ from typing import TYPE_CHECKING
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
+    from wexample_config.options_provider.abstract_options_provider import (
+        AbstractOptionsProvider,
+    )
+    from wexample_filestate.operations_provider.abstract_operations_provider import (
+        AbstractOperationsProvider,
+    )
     from wexample_prompt.common.progress.progress_handle import ProgressHandle
-    from wexample_config.options_provider.abstract_options_provider import AbstractOptionsProvider
-    from wexample_filestate.operations_provider.abstract_operations_provider import AbstractOperationsProvider
 
 
 class CodeBaseWorkdir(ProjectWorkdir):
