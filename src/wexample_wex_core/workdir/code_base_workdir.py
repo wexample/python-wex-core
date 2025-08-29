@@ -10,9 +10,8 @@ if TYPE_CHECKING:
 
 
 class CodeBaseWorkdir(ProjectWorkdir):
-    @abstractmethod
     def get_package_name(self) -> str:
-        pass
+        return self.get_project_name()
 
     @abstractmethod
     def get_dependencies(self) -> list[str]:
