@@ -155,7 +155,9 @@ class CodeBaseWorkdir(ProjectWorkdir):
             )
 
         if interactive:
-            from wexample_prompt.responses.interactive.confirm_prompt_response import ConfirmPromptResponse
+            from wexample_prompt.responses.interactive.confirm_prompt_response import (
+                ConfirmPromptResponse,
+            )
 
             confirm = self.confirm(
                 f"Do you want to create a new version for package {self.get_package_name()} in {self.get_path()}? "

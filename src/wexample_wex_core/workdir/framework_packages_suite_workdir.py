@@ -30,9 +30,7 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
             return pip_dir.get_children_list()
         return []
 
-    def get_dependents(
-        self, package: CodeBaseWorkdir
-    ) -> list[CodeBaseWorkdir]:
+    def get_dependents(self, package: CodeBaseWorkdir) -> list[CodeBaseWorkdir]:
         return []
 
     def get_package(self, package_name: str) -> CodeBaseWorkdir | None:
