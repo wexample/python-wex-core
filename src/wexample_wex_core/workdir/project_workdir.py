@@ -157,6 +157,9 @@ class ProjectWorkdir(
                 "type": DiskItemType.FILE,
                 "should_exist": True,
                 "text_filter": [TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE],
+                "should_contain_lines": [
+                    "/.idea/",
+                ]
             }
         )
 
