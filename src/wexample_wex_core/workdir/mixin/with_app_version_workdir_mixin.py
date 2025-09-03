@@ -21,7 +21,7 @@ class WithAppVersionWorkdirMixin(WithVersionWorkdirMixin):
             def build_content(self, type_check: bool = True) -> str:
                 return string_ensure_end_with_new_line(
                     self.workdir.get_config()
-                    .get_config_item(key="version", default=self.raw)
+                    .search(path="general.version", default=self.raw)
                     .get_str()
                 )
 

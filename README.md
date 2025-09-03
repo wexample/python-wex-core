@@ -13,7 +13,7 @@ Version: 6.0.44
 - click
 - pydantic>=2,<3
 - wexample-app==0.0.49
-- wexample-filestate-git==0.0.37
+- wexample-filestate-git==0.0.38
 - wexample-filestate==0.0.50
 - wexample-helpers-git==0.0.49
 
