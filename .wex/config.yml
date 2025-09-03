@@ -1,5 +1,4 @@
 global:
-  name: wexample-wex-core
   type: app
-name: wex_core
-version: 6.0.44
+  name: wex_core
+  version: 6.0.44
