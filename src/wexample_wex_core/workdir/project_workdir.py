@@ -58,7 +58,7 @@ class ProjectWorkdir(
         return instance
 
     def get_project_name(self) -> str:
-        name = self.get_config().get_config_item("name").get_str().strip()
+        name = self.get_config().search("name").get_str().strip()
         # Enforce that a project must have a non-empty name; include path for debug
         if not name:
             raise ValueError(
@@ -70,7 +70,7 @@ class ProjectWorkdir(
         version = (
             self.get_config_file()
             .read_config()
-            .get_config_item("version")
+            .search("general.version")
             .get_str_or_none()
         )
         if version is None:
