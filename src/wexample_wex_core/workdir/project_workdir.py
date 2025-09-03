@@ -58,7 +58,11 @@ class ProjectWorkdir(
         return instance
 
     def get_project_name(self) -> str:
-        name = self.get_config().search("name").get_str().strip()
+        name_config = self.get_config().search("general.name")
+        # Ensure we properly handle missing or empty name
+        name: str | None = None
+        if name_config is not None:
+            name = (name_config.get_str_or_none() or "").strip()
         # Enforce that a project must have a non-empty name; include path for debug
         if not name:
             raise ValueError(
@@ -67,17 +71,17 @@ class ProjectWorkdir(
         return name
 
     def get_project_version(self) -> str:
+        # Ensure we properly handle missing node and empty value
+        config = self.get_config_file().read_config()
+        version_config = config.search("general.version")
         version = (
-            self.get_config_file()
-            .read_config()
-            .search("general.version")
-            .get_str_or_none()
+            version_config.get_str_or_none() if version_config is not None else None
         )
-        if version is None:
+        if version is None or str(version).strip() == "":
             raise ValueError(
                 f"Project at '{self.get_path()}' must define a non-empty 'version' number in {APP_FILE_APP_CONFIG}."
             )
-        return version
+        return str(version).strip()
 
     def get_config_file(self) -> YamlFile:
         config_file = self.find_by_name_recursive(item_name=APP_FILE_APP_CONFIG)
