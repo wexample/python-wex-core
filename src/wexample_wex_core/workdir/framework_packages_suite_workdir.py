@@ -109,11 +109,7 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         """
         to_publish: list[CodeBaseWorkdir] = []
         for pkg in self.get_packages():
-            try:
-                if pkg.has_changes_since_last_publication_tag():
-                    to_publish.append(pkg)
-            except Exception:
-                # Be conservative: if detection fails, include the package to avoid missing a needed release
+            if pkg.has_changes_since_last_publication_tag():
                 to_publish.append(pkg)
         return to_publish
 
