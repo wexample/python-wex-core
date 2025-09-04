@@ -1,4 +1,4 @@
-general:
+global:
   name: wex_core
   type: app
   version: 6.0.45

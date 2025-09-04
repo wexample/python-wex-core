@@ -73,7 +73,7 @@ class ProjectWorkdir(
     def get_project_version(self) -> str:
         # Ensure we properly handle missing node and empty value
         config = self.get_config_file().read_config()
-        version_config = config.search("general.version")
+        version_config = config.search("global.version")
         version = (
             version_config.get_str_or_none() if version_config is not None else None
         )
