@@ -177,7 +177,7 @@ class CodeBaseWorkdir(ProjectWorkdir):
             )
 
             # Change version number on this branch
-            self.get_config_file().write_config_value("version", new_version)
+            self.get_config_file().write_config_value("general.version", new_version)
 
             self.success(
                 f'Bumped {self.get_package_name()} from "{current_version}" to "{new_version}" and switched to branch "{branch_name}"'
