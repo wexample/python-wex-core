@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 def command(description: str | None = None):
-    def decorator(function: AnyCallable):
+    def decorator(function: AnyCallable) -> CommandMethodWrapper:
         return CommandMethodWrapper(function=function, description=description)
 
     return decorator
