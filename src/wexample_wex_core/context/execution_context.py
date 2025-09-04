@@ -45,8 +45,7 @@ class ExecutionContext(
     def get_or_create_progress(self, **kwargs) -> ProgressHandle:
         if self._current_progress is None:
             self._current_progress = self.io.progress(
-                **kwargs,
-                context=self.io.create_context()
+                **kwargs, context=self.io.create_context()
             ).get_handle()
         return self._current_progress
 
