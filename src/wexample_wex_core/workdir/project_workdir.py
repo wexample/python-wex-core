@@ -137,6 +137,7 @@ class ProjectWorkdir(
         return None
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
+        from wexample_wex_core.const.project import PROJECT_GITIGNORE_DEFAULT
         from wexample_filestate.config_option.text_filter_config_option import (
             TextFilterConfigOption,
         )
@@ -161,9 +162,7 @@ class ProjectWorkdir(
                 "type": DiskItemType.FILE,
                 "should_exist": True,
                 "text_filter": [TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE],
-                "should_contain_lines": [
-                    "/.idea/",
-                ],
+                "should_contain_lines": PROJECT_GITIGNORE_DEFAULT,
             }
         )
 
