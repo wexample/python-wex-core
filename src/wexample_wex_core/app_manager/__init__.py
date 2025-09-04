@@ -1,11 +1,12 @@
 """WEX Core - App Manager integration point.
 Provides a stable run(argv, app_root=None) entry used by thin per-app wrappers.
 """
+
 from __future__ import annotations
 
 import os
 import sys
-from typing import Iterable
+from collections.abc import Iterable
 
 
 def run(argv: Iterable[str] | None = None, app_root: str | None = None) -> int:
