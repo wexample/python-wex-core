@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 PROJECT_GITIGNORE_DEFAULT = [
   # Editors / IDE
   "/.idea/",

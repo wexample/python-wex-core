@@ -137,10 +137,10 @@ class ProjectWorkdir(
         return None
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
-        from wexample_wex_core.const.project import PROJECT_GITIGNORE_DEFAULT
         from wexample_filestate.config_option.text_filter_config_option import (
             TextFilterConfigOption,
         )
+        from wexample_wex_core.const.project import PROJECT_GITIGNORE_DEFAULT
 
         raw_value = super().prepare_value(raw_value)
 
