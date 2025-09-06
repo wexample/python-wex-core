@@ -9,7 +9,6 @@ from wexample_helpers.service.mixins.registry_container_mixin import (
 
 if TYPE_CHECKING:
     from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
-    from wexample_app.service.service_registry import ServiceRegistry
 
 
 class MiddlewaresRegistry(RegistryContainerMixin, BaseModel):

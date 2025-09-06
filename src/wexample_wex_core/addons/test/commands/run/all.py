@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 @command()
 def test__run__all(context: ExecutionContext) -> None:
-    from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     import pytest
+    from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
 
     # Change to project root directory
     workdir = context.kernel.workdir.get_path()

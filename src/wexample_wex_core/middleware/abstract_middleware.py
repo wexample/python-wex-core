@@ -61,8 +61,8 @@ class AbstractMiddleware(
     def append_options(
         self, request: CommandRequest, command_wrapper: CommandMethodWrapper
     ) -> None:
-        from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_OPTIONAL
         from wexample_wex_core.command.option import Option
+        from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_OPTIONAL
 
         if self.parallel:
             self.stop_on_failure = False

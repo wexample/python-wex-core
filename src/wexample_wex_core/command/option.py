@@ -18,8 +18,8 @@ class Option(BaseModel):
     value: Any = None
 
     def __init__(self, **kwargs) -> None:
-        from wexample_wex_core.helpers.option import option_build_short_name
         from wexample_helpers.helpers.string import string_to_kebab_case
+        from wexample_wex_core.helpers.option import option_build_short_name
 
         super().__init__(**kwargs)
 

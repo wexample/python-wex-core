@@ -14,12 +14,16 @@ class Workdir(FileStateManager):
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_app.const.globals import APP_FILE_APP_CONFIG
-        from wexample_filestate.config_value.aggregated_templates_config_value import AggregatedTemplatesConfigValue
+        from wexample_filestate.config_option.text_filter_config_option import (
+            TextFilterConfigOption,
+        )
+        from wexample_filestate.config_value.aggregated_templates_config_value import (
+            AggregatedTemplatesConfigValue,
+        )
         from wexample_filestate.const.disk import DiskItemType
         from wexample_filestate.item.file.env_file import EnvFile
-        from wexample_filestate.config_option.text_filter_config_option import TextFilterConfigOption
-        from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
         from wexample_filestate.item.file.yaml_file import YamlFile
+        from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
 
         raw_value = super().prepare_value(raw_value)
 

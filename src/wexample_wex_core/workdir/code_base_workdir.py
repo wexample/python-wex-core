@@ -36,8 +36,12 @@ class CodeBaseWorkdir(ProjectWorkdir):
         return []
 
     def get_options_providers(self) -> list[type[AbstractOptionsProvider]]:
-        from wexample_filestate.options_provider.default_options_provider import DefaultOptionsProvider
-        from wexample_filestate_git.options_provider.git_options_provider import GitOptionsProvider
+        from wexample_filestate.options_provider.default_options_provider import (
+            DefaultOptionsProvider,
+        )
+        from wexample_filestate_git.options_provider.git_options_provider import (
+            GitOptionsProvider,
+        )
 
         return [
             DefaultOptionsProvider,
@@ -45,8 +49,12 @@ class CodeBaseWorkdir(ProjectWorkdir):
         ]
 
     def get_operations_providers(self) -> list[type[AbstractOperationsProvider]]:
-        from wexample_filestate.operations_provider.default_operations_provider import DefaultOperationsProvider
-        from wexample_filestate_git.operations_provider.git_operations_provider import GitOperationsProvider
+        from wexample_filestate.operations_provider.default_operations_provider import (
+            DefaultOperationsProvider,
+        )
+        from wexample_filestate_git.operations_provider.git_operations_provider import (
+            GitOperationsProvider,
+        )
 
         return [
             DefaultOperationsProvider,
@@ -76,7 +84,14 @@ class CodeBaseWorkdir(ProjectWorkdir):
         progress: ProgressHandle | None = None,
     ) -> None:
         """Commit local changes (if any), without pushing."""
-        from wexample_helpers_git.helpers.git import git_commit_all_with_message, git_current_branch, git_ensure_upstream, git_has_index_changes, git_has_working_changes, git_pull_rebase_autostash
+        from wexample_helpers_git.helpers.git import (
+            git_commit_all_with_message,
+            git_current_branch,
+            git_ensure_upstream,
+            git_has_index_changes,
+            git_has_working_changes,
+            git_pull_rebase_autostash,
+        )
 
         cwd = self.get_path()
         progress = (
@@ -109,7 +124,11 @@ class CodeBaseWorkdir(ProjectWorkdir):
         progress: ProgressHandle | None = None,
     ) -> None:
         """Push current branch to upstream (following tags), without committing."""
-        from wexample_helpers_git.helpers.git import git_current_branch, git_ensure_upstream, git_push_follow_tags
+        from wexample_helpers_git.helpers.git import (
+            git_current_branch,
+            git_ensure_upstream,
+            git_push_follow_tags,
+        )
 
         cwd = self.get_path()
         progress = (
@@ -123,7 +142,11 @@ class CodeBaseWorkdir(ProjectWorkdir):
         progress.finish(label="Pushed")
 
     def add_publication_tag(self) -> None:
-        from wexample_helpers_git.helpers.git import git_push_tag, git_tag_annotated, git_tag_exists
+        from wexample_helpers_git.helpers.git import (
+            git_push_tag,
+            git_tag_annotated,
+            git_tag_exists,
+        )
 
         cwd = self.get_path()
         tag = f"{self.get_package_name()}/v{self.get_project_version()}"
@@ -139,8 +162,10 @@ class CodeBaseWorkdir(ProjectWorkdir):
 
     def bump(self, interactive: bool = False, **kwargs) -> None:
         """Create a version-x.y.z branch, update the version number in config. Don't commit changes."""
-        from wexample_prompt.responses.interactive.confirm_prompt_response import ConfirmPromptResponse
         from wexample_helpers.helpers.version import version_increment
+        from wexample_prompt.responses.interactive.confirm_prompt_response import (
+            ConfirmPromptResponse,
+        )
 
         current_version = self.get_project_version()
         new_version = version_increment(version=current_version, **kwargs)

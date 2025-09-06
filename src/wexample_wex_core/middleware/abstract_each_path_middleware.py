@@ -48,7 +48,9 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         request: CommandRequest,
         function_kwargs: Kwargs,
     ) -> bool:
-        from wexample_wex_core.exception.path_not_found_command_option_exception import PathNotFoundCommandOptionException
+        from wexample_wex_core.exception.path_not_found_command_option_exception import (
+            PathNotFoundCommandOptionException,
+        )
         if self.should_exist:
             import os.path
 

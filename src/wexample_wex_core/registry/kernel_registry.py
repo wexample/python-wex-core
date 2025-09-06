@@ -24,7 +24,9 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseModel):
         SerializableMixin.__init__(self)
 
     def serialize(self) -> StructuredData:
-        from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
+        from wexample_app.resolver.abstract_command_resolver import (
+            AbstractCommandResolver,
+        )
         resolvers = {}
 
         for command_resolver in self.kernel.get_resolvers().values():

@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
-    from wexample_app.service.service_registry import ServiceRegistry
 
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):

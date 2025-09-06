@@ -31,9 +31,7 @@ class EachFileMiddleware(AbstractEachPathMiddleware):
         request: CommandRequest,
         function_kwargs: Kwargs,
     ) -> bool:
-        from wexample_wex_core.exception.path_is_not_file_command_option_exception import (
-            PathIsNotFileCommandOptionException,
-        )
+        from wexample_wex_core.exception.path_is_not_file_command_option_exception import PathIsNotFileCommandOptionException
         valid = super().validate_options(
             command_wrapper=command_wrapper,
             request=request,
