@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from wexample_helpers.helpers.string import string_to_snake_case
@@ -28,7 +29,7 @@ class AddonCommandResolver(AbstractCommandResolver):
     def get_type(cls) -> str:
         return COMMAND_TYPE_ADDON
 
-    def build_command_path(self, request: CommandRequest, extension: str) -> str | None:
+    def build_command_path(self, request: CommandRequest, extension: str) -> Path | None:
 
         match = request.match
 
@@ -38,7 +39,7 @@ class AddonCommandResolver(AbstractCommandResolver):
 
         addon_manager = self.get_request_addon_manager(request)
 
-        return str(
+        return (
             addon_manager.workdir.get_path()
             / "commands"
             / group

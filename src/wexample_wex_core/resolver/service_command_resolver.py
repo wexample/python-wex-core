@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from wexample_wex_core.const.globals import (
@@ -21,8 +22,9 @@ class ServiceCommandResolver(AbstractCommandResolver):
     def get_type(cls) -> str:
         return COMMAND_TYPE_SERVICE
 
-    def build_command_path(self, request: CommandRequest, extension: str) -> str | None:
-        return f"{self.kernel.workdir.get_resolved()}cli/{request.name}.{extension}"
+    def build_command_path(self, request: CommandRequest, extension: str) -> Path | None:
+        base = self.kernel.workdir.get_path()
+        return base / "cli" / f"{request.name}.{extension}"
 
     def build_command_function_name(self, request: CommandRequest) -> str | None:
         import re

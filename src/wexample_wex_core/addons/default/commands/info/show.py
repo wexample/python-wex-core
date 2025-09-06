@@ -17,7 +17,7 @@ def default__info__show(context: ExecutionContext) -> None:
     context.io.properties(
         title="General",
         properties={
-            "Location": context.kernel.workdir.get_resolved(),
+            "Location": context.kernel.workdir.get_path(),
             "Environment": registry.env,
             "Arguments": context.kernel._sys_argv,
             "Python version": platform.python_version(),
