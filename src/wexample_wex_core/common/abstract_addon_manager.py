@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 from pydantic import BaseModel
-from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
 from wexample_filestate.mixins.with_workdir_mixin import WithWorkdirMixin
 from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin import (
     HasSnakeShortClassNameClassMixin,
 )
 from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
-from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from wexample_app.common.abstract_kernel import AbstractKernel
+    from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 
 class AbstractAddonManager(

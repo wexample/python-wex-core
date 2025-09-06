@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-
-from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
 from wexample_config.config_value.config_value import ConfigValue
 
 if TYPE_CHECKING:
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
+    from wexample_app.common.abstract_kernel import AbstractKernel
 
 
 class RegistryBuilder(AbstractKernelChild, ConfigValue):
