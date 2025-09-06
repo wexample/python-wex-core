@@ -156,6 +156,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         function_kwargs: Kwargs,
     ) -> list[ExecutionContext]:
         from wexample_wex_core.context.execution_context import ExecutionContext
+
         # If glob expansion is enabled and the path is a directory,
         # create an execution for each matching item in that directory
         if self.expand_glob:

@@ -3,9 +3,6 @@ from __future__ import annotations
 import os.path
 from typing import TYPE_CHECKING, Any
 
-from wexample_wex_core.exception.path_is_not_directory_command_option_exception import (
-    PathIsNotDirectoryCommandOptionException,
-)
 from wexample_wex_core.middleware.abstract_each_path_middleware import (
     AbstractEachPathMiddleware,
 )
@@ -34,7 +31,9 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
         request: CommandRequest,
         function_kwargs: Kwargs,
     ) -> bool:
-        from wexample_wex_core.exception.path_is_not_directory_command_option_exception import PathIsNotDirectoryCommandOptionException
+        from wexample_wex_core.exception.path_is_not_directory_command_option_exception import (
+            PathIsNotDirectoryCommandOptionException,
+        )
         if super().validate_options(
             command_wrapper=command_wrapper,
             request=request,

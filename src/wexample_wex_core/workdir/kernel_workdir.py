@@ -7,10 +7,10 @@ from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
     from wexample_app.common.abstract_kernel import AbstractKernel
+    from wexample_config.const.types import DictConfig
     from wexample_filestate.item.item_target_directory import ItemTargetDirectory
     from wexample_prompt.common.io_manager import IoManager
     from wexample_wex_core.common.kernel import Kernel
-    from wexample_config.const.types import DictConfig
 
 
 class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):

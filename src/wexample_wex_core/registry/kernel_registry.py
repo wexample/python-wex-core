@@ -7,8 +7,8 @@ from wexample_app.common.abstract_kernel_child import AbstractKernelChild
 from wexample_helpers.classes.mixin.serializable_mixin import SerializableMixin
 
 if TYPE_CHECKING:
-    from wexample_wex_core.common.kernel import Kernel
     from wexample_helpers.const.types import StructuredData
+    from wexample_wex_core.common.kernel import Kernel
 
 
 class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseModel):

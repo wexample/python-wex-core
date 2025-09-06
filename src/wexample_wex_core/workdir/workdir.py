@@ -1,7 +1,10 @@
 from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from wexample_filestate.file_state_manager import FileStateManager
 from wexample_helpers.const.types import StringKeysDict
-from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from wexample_config.const.types import DictConfig
 

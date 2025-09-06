@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
 from wexample_filestate.workdir.mixin.with_readme_workdir_mixin import (
     WithReadmeWorkdirMixin,
 )
@@ -14,8 +15,8 @@ from wexample_wex_core.workdir.workdir import Workdir
 
 if TYPE_CHECKING:
     from wexample_config.config_value.nested_config_value import NestedConfigValue
-    from wexample_filestate.item.file.yaml_file import YamlFile
     from wexample_config.const.types import DictConfig
+    from wexample_filestate.item.file.yaml_file import YamlFile
 
 
 class ProjectWorkdir(
@@ -66,6 +67,7 @@ class ProjectWorkdir(
 
     def get_project_version(self) -> str:
         from wexample_app.const.globals import APP_FILE_APP_CONFIG
+
         # Ensure we properly handle missing node and empty value
         config = self.get_config_file().read_config()
         version_config = config.search("global.version")

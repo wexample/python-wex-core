@@ -3,10 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from wexample_wex_core.const.globals import (
-    COMMAND_PATTERN_SERVICE,
-    COMMAND_TYPE_SERVICE,
-)
 from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 if TYPE_CHECKING:
@@ -17,11 +13,13 @@ class ServiceCommandResolver(AbstractCommandResolver):
     @classmethod
     def get_pattern(cls) -> str:
         from wexample_wex_core.const.globals import COMMAND_PATTERN_SERVICE
+
         return COMMAND_PATTERN_SERVICE
 
     @classmethod
     def get_type(cls) -> str:
         from wexample_wex_core.const.globals import COMMAND_TYPE_SERVICE
+
         return COMMAND_TYPE_SERVICE
 
     def build_command_path(

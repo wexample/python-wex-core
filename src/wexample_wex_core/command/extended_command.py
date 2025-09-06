@@ -8,10 +8,10 @@ from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
-    from wexample_app.response.abstract_response import AbstractResponse
     from wexample_wex_core.context.execution_context import ExecutionContext
     from wexample_helpers.const.types import Kwargs
     from wexample_wex_core.const.types import ParsedArgs
+    from wexample_app.response.abstract_response import AbstractResponse
 
 
 class ExtendedCommand(Command):

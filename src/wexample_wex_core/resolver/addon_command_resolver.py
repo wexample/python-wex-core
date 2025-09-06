@@ -3,16 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from wexample_helpers.helpers.string import string_to_snake_case
-from wexample_wex_core.const.globals import (
-    COMMAND_PATTERN_ADDON,
-    COMMAND_SEPARATOR_FUNCTION_PARTS,
-    COMMAND_TYPE_ADDON,
-)
 from wexample_wex_core.const.registries import RegistryResolverData
-from wexample_wex_core.exception.addon_not_registered_exception import (
-    AddonNotRegisteredException,
-)
 from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 if TYPE_CHECKING:
@@ -54,8 +45,10 @@ class AddonCommandResolver(AbstractCommandResolver):
     def get_request_addon_manager(
         self, request: CommandRequest
     ) -> AbstractAddonManager:
-        from wexample_wex_core.exception.addon_not_registered_exception import AddonNotRegisteredException
         from wexample_helpers.helpers.string import string_to_snake_case
+        from wexample_wex_core.exception.addon_not_registered_exception import (
+            AddonNotRegisteredException,
+        )
         match = request.match
         addon_name = string_to_snake_case(match.group(1))
         addon_registry = self.kernel.get_registry("addon")
@@ -70,8 +63,8 @@ class AddonCommandResolver(AbstractCommandResolver):
         return addon_registry.get(addon_name)
 
     def build_command_function_name(self, request: CommandRequest) -> str | None:
-        from wexample_wex_core.const.globals import COMMAND_SEPARATOR_FUNCTION_PARTS
         from wexample_helpers.helpers.string import string_to_snake_case
+        from wexample_wex_core.const.globals import COMMAND_SEPARATOR_FUNCTION_PARTS
         return string_to_snake_case(
             COMMAND_SEPARATOR_FUNCTION_PARTS.join(
                 self.get_function_name_parts(request.match.groups())

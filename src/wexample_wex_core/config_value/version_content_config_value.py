@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from wexample_filestate.config_value.content_config_value import ContentConfigValue
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
+
 
 class VersionContentConfigValue(ContentConfigValue):
     workdir: ProjectWorkdir

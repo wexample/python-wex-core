@@ -9,10 +9,10 @@ from wexample_app.resolver.abstract_command_resolver import (
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
+    from wexample_helpers.const.types import Kwargs, StructuredData
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.context.execution_context import ExecutionContext
     from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
-    from wexample_helpers.const.types import Kwargs, StructuredData
 
 
 class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
