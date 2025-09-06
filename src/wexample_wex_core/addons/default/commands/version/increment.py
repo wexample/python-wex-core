@@ -23,6 +23,7 @@ def default__version__increment(
     increment: int = 1,
     build: bool = False,
 ) -> str:
+    from wexample_helpers.helpers.version import version_increment
     return version_increment(
         version=version,
         type=type,
