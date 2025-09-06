@@ -10,8 +10,6 @@ if TYPE_CHECKING:
 
 class AsSuitePackageItem:
     def find_suite_workdir(self) -> FrameworkPackageSuiteWorkdir | None:
-        from wexample_wex_core.workdir.framework_packages_suite_workdir import (
-            FrameworkPackageSuiteWorkdir,
-        )
+        from wexample_wex_core.workdir.framework_packages_suite_workdir import FrameworkPackageSuiteWorkdir
 
         return self.find_closest(FrameworkPackageSuiteWorkdir)

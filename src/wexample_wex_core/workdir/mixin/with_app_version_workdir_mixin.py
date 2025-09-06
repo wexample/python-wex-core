@@ -5,19 +5,17 @@ from typing import Any
 from wexample_filestate.workdir.mixin.with_version_workdir_mixin import (
     WithVersionWorkdirMixin,
 )
-from wexample_helpers.helpers.polyfill import polyfill_import
 
 
 class WithAppVersionWorkdirMixin(WithVersionWorkdirMixin):
     def _get_version_default_content(self) -> Any:
-        from wexample_wex_core.config_value.version_content_config_value import VersionContentConfigValue
-        from wexample_config.options_provider.abstract_options_provider import AbstractOptionsProvider
-        from wexample_filestate.const.state_items import SourceFileOrDirectory
         from wexample_filestate.operations_provider.abstract_operations_provider import AbstractOperationsProvider
+        from wexample_config.options_provider.abstract_options_provider import AbstractOptionsProvider
         from wexample_filestate.result.abstract_result import AbstractResult
-
-        # TODO Waiting for the de-pydantification
         from wexample_config.config_value.config_value import ConfigValue
+        from wexample_filestate.const.state_items import SourceFileOrDirectory
+        from wexample_wex_core.config_value.version_content_config_value import VersionContentConfigValue
+        from wexample_helpers.helpers.polyfill import polyfill_import
         polyfill_import(ConfigValue, AbstractOptionsProvider, SourceFileOrDirectory, AbstractOperationsProvider, AbstractResult)
         VersionContentConfigValue.model_rebuild()
 

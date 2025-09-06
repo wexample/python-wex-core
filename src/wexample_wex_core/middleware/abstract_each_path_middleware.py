@@ -32,9 +32,9 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         return function_kwargs[option.name]
 
     def _get_default_option(self) -> dict[str, Any]:
-        from wexample_helpers.const.globals import PATH_NAME_PATH
 
         """Get the default path option definition."""
+        from wexample_helpers.const.globals import PATH_NAME_PATH
         return {
             "name": PATH_NAME_PATH,
             "type": str,
@@ -48,12 +48,9 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         request: CommandRequest,
         function_kwargs: Kwargs,
     ) -> bool:
+        from wexample_wex_core.exception.path_not_found_command_option_exception import PathNotFoundCommandOptionException
         if self.should_exist:
             import os.path
-
-            from wexample_wex_core.exception.path_not_found_command_option_exception import (
-                PathNotFoundCommandOptionException,
-            )
 
             option = self.get_first_option()
             if option and option.name in function_kwargs:
@@ -158,10 +155,10 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         request: CommandRequest,
         function_kwargs: Kwargs,
     ) -> list[ExecutionContext]:
+        from wexample_wex_core.context.execution_context import ExecutionContext
         # If glob expansion is enabled and the path is a directory,
         # create an execution for each matching item in that directory
         if self.expand_glob:
-            from wexample_wex_core.context.execution_context import ExecutionContext
 
             path = self._get_option_file_path(function_kwargs=function_kwargs)
 

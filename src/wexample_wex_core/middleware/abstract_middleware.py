@@ -8,13 +8,13 @@ from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin impor
     HasSnakeShortClassNameClassMixin,
 )
 from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
-from wexample_helpers.const.types import Kwargs
 from wexample_wex_core.command.option import Option
 
 if TYPE_CHECKING:
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.context.execution_context import ExecutionContext
+    from wexample_helpers.const.types import Kwargs
 
 
 class AbstractMiddleware(
@@ -61,8 +61,8 @@ class AbstractMiddleware(
     def append_options(
         self, request: CommandRequest, command_wrapper: CommandMethodWrapper
     ) -> None:
-        from wexample_wex_core.command.option import Option
         from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_OPTIONAL
+        from wexample_wex_core.command.option import Option
 
         if self.parallel:
             self.stop_on_failure = False

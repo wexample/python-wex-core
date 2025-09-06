@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-
 if TYPE_CHECKING:
     from wexample_helpers.const.types import AnyCallable
+    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
 
 def command(description: str | None = None):
     def decorator(function: AnyCallable) -> CommandMethodWrapper:
+        from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
         return CommandMethodWrapper(function=function, description=description)
 
     return decorator

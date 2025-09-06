@@ -1,16 +1,9 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-
-from wexample_app.const.globals import (
-    APP_FILE_APP_CONFIG,
-)
-from wexample_config.const.types import DictConfig
-from wexample_filestate.const.disk import DiskItemType
 from wexample_filestate.workdir.mixin.with_readme_workdir_mixin import (
     WithReadmeWorkdirMixin,
 )
-from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
 from wexample_wex_core.workdir.mixin.as_suite_package_item import (
     AsSuitePackageItem,
 )
@@ -22,6 +15,7 @@ from wexample_wex_core.workdir.workdir import Workdir
 if TYPE_CHECKING:
     from wexample_config.config_value.nested_config_value import NestedConfigValue
     from wexample_filestate.item.file.yaml_file import YamlFile
+    from wexample_config.const.types import DictConfig
 
 
 class ProjectWorkdir(
@@ -30,9 +24,8 @@ class ProjectWorkdir(
 
     @classmethod
     def create_from_config(cls, **kwargs) -> ProjectWorkdir:
-        from wexample_filestate.config_option.class_config_option import (
-            ClassConfigOption,
-        )
+        from wexample_app.const.globals import APP_FILE_APP_CONFIG
+        from wexample_filestate.config_option.class_config_option import ClassConfigOption
         from wexample_helpers.helpers.module import module_are_same
 
         config = kwargs.get("config")
@@ -58,6 +51,7 @@ class ProjectWorkdir(
         return instance
 
     def get_project_name(self) -> str:
+        from wexample_app.const.globals import APP_FILE_APP_CONFIG
         name_config = self.get_config().search("global.name")
         # Ensure we properly handle missing or empty name
         name: str | None = None
@@ -71,6 +65,7 @@ class ProjectWorkdir(
         return name
 
     def get_project_version(self) -> str:
+        from wexample_app.const.globals import APP_FILE_APP_CONFIG
         # Ensure we properly handle missing node and empty value
         config = self.get_config_file().read_config()
         version_config = config.search("global.version")
@@ -84,6 +79,7 @@ class ProjectWorkdir(
         return str(version).strip()
 
     def get_config_file(self) -> YamlFile:
+        from wexample_app.const.globals import APP_FILE_APP_CONFIG
         config_file = self.find_by_name_recursive(item_name=APP_FILE_APP_CONFIG)
         assert config_file is not None
         return config_file
@@ -98,9 +94,9 @@ class ProjectWorkdir(
         return NestedConfigValue(raw={})
 
     def get_preferred_workdir_class(self) -> type[ProjectWorkdir] | None:
-        from wexample_helpers.helpers.module import (
-            module_load_class_from_file_with_package_root,
-        )
+        from wexample_app.const.globals import APP_FILE_APP_CONFIG
+        from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
+        from wexample_helpers.helpers.module import module_load_class_from_file_with_package_root
 
         path = self.get_path()
         manager_config = self.get_config().search("files_state.manager")
@@ -137,10 +133,9 @@ class ProjectWorkdir(
         return None
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
-        from wexample_filestate.config_option.text_filter_config_option import (
-            TextFilterConfigOption,
-        )
+        from wexample_filestate.const.disk import DiskItemType
         from wexample_wex_core.const.project import PROJECT_GITIGNORE_DEFAULT
+        from wexample_filestate.config_option.text_filter_config_option import TextFilterConfigOption
 
         raw_value = super().prepare_value(raw_value)
 
@@ -186,6 +181,7 @@ class ProjectWorkdir(
 
     def get_env_config(self) -> NestedConfigValue:
         from wexample_filestate.item.file.env_file import EnvFile
+        from wexample_config.config_value.nested_config_value import NestedConfigValue
         from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
 
         config_dir = self.find_by_name(WORKDIR_SETUP_DIR)

@@ -3,8 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
-from wexample_config.const.types import DictConfig
-from wexample_filestate.const.disk import DiskItemType
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
@@ -12,6 +10,7 @@ if TYPE_CHECKING:
     from wexample_filestate.item.item_target_directory import ItemTargetDirectory
     from wexample_prompt.common.io_manager import IoManager
     from wexample_wex_core.common.kernel import Kernel
+    from wexample_config.const.types import DictConfig
 
 
 class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
@@ -25,6 +24,7 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
         AbstractKernelChild.__init__(self, kernel=kernel)
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
+        from wexample_filestate.const.disk import DiskItemType
         from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
 
         config = super().prepare_value(raw_value=raw_value)

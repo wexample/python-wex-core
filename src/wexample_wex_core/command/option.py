@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any
 
 from pydantic import BaseModel
-from wexample_helpers.helpers.string import string_to_kebab_case
 
 
 class Option(BaseModel):
@@ -20,6 +19,7 @@ class Option(BaseModel):
 
     def __init__(self, **kwargs) -> None:
         from wexample_wex_core.helpers.option import option_build_short_name
+        from wexample_helpers.helpers.string import string_to_kebab_case
 
         super().__init__(**kwargs)
 
