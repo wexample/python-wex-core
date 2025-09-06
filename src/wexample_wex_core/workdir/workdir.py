@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from wexample_config.const.types import DictConfig
+from wexample_filestate.config_value.aggregated_templates_config_value import (
+    AggregatedTemplatesConfigValue,
+)
 from wexample_filestate.file_state_manager import FileStateManager
 from wexample_helpers.const.types import StringKeysDict
 
@@ -14,9 +17,6 @@ class Workdir(FileStateManager):
         )
         from wexample_filestate.config_option.text_filter_config_option import (
             TextFilterConfigOption,
-        )
-        from wexample_filestate.config_value.file_content_config_value import (
-            FileContentConfigValue,
         )
         from wexample_filestate.const.disk import DiskItemType
         from wexample_filestate.item.file.env_file import EnvFile
@@ -64,7 +64,32 @@ class Workdir(FileStateManager):
                             "name": "app-manager",
                             "type": DiskItemType.FILE,
                             "should_exist": True,
-                            "content": FileContentConfigValue(raw="somewhere"),
+                            "content": AggregatedTemplatesConfigValue(raw=[
+                                '#!/usr/bin/env bash',
+                                'set -euo pipefail',
+                                'ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"',
+                                'APP_ROOT="${APP_ROOT:-$ROOT}"',
+                                'AM_DIR="$ROOT/.wex/python/app_manager"',
+                                'VENV="$AM_DIR/.venv"',
+                                'PY="$VENV/bin/python3"',
+                                '',
+                                'if [ ! -x "$PY" ]; then',
+                                '  python3 -m venv "$VENV"',
+                                '  "$PY" -m pip install -U pip wheel',
+                                'fi',
+                                '',
+                                '# Prefer local core in editable mode if available; fallback to PyPI dep',
+                                'CORE_DIR="$ROOT/../../wex-core"',
+                                'if [ -d "$CORE_DIR" ]; then',
+                                '  "$PY" -m pip install -e "$CORE_DIR"',
+                                'else',
+                                '  # Ensure core from PyPI is present (respect pyproject if you later switch to PDM)',
+                                '  "$PY" -m pip install -U wexample-wex-core',
+                                'fi',
+                                '',
+                                'export APP_ROOT',
+                                'exec "$PY" -m wexample_wex_core.app_manager -- "$@"',
+                            ]),
                         }
                     ],
                 },
