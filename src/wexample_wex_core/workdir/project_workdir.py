@@ -58,7 +58,7 @@ class ProjectWorkdir(
         return instance
 
     def get_project_name(self) -> str:
-        name_config = self.get_config().search("general.name")
+        name_config = self.get_config().search("global.name")
         # Ensure we properly handle missing or empty name
         name: str | None = None
         if name_config is not None:

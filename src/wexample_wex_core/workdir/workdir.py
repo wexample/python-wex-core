@@ -15,6 +15,9 @@ class Workdir(FileStateManager):
         from wexample_filestate.config_option.text_filter_config_option import (
             TextFilterConfigOption,
         )
+        from wexample_filestate.config_value.file_content_config_value import (
+            FileContentConfigValue,
+        )
         from wexample_filestate.const.disk import DiskItemType
         from wexample_filestate.item.file.env_file import EnvFile
         from wexample_filestate.item.file.yaml_file import YamlFile
@@ -50,6 +53,20 @@ class Workdir(FileStateManager):
                         "tmp/",
                     ],
                     "yaml_filter": ["sort_recursive"],
+                },
+                {
+                    # python (app manager)
+                    "name": "bin",
+                    "type": DiskItemType.DIRECTORY,
+                    "should_exist": True,
+                    "children": [
+                        {
+                            "name": "app-manager",
+                            "type": DiskItemType.FILE,
+                            "should_exist": True,
+                            "content": FileContentConfigValue(raw="somewhere"),
+                        }
+                    ],
                 },
                 {
                     # tmp

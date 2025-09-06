@@ -39,7 +39,7 @@ def test__run__all(context: ExecutionContext) -> None:
     for addon in context.kernel.get_addons().values():
         assert isinstance(addon, AbstractAddonManager)
         context.io.log(f"Adding tests from addon: {addon.get_snake_short_class_name()}")
-        pytest_args.append(addon.workdir.get_path().resolve() / 'tests')
+        pytest_args.append(addon.workdir.get_path().resolve() / "tests")
 
     context.io.log(f"Running pytest with args: {' '.join(pytest_args)}")
 

@@ -22,7 +22,9 @@ class ServiceCommandResolver(AbstractCommandResolver):
     def get_type(cls) -> str:
         return COMMAND_TYPE_SERVICE
 
-    def build_command_path(self, request: CommandRequest, extension: str) -> Path | None:
+    def build_command_path(
+        self, request: CommandRequest, extension: str
+    ) -> Path | None:
         base = self.kernel.workdir.get_path()
         return base / "cli" / f"{request.name}.{extension}"
 
