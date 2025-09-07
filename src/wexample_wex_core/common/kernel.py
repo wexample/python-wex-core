@@ -21,8 +21,8 @@ if TYPE_CHECKING:
 
 
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
-    _registry: KernelRegistry
     _config_arg_verbosity: VerbosityLevel = PrivateAttr(default=VerbosityLevel.DEFAULT)
+    _registry: KernelRegistry
 
     def __init__(self, **kwargs) -> None:
         AbstractKernel.__init__(self, **kwargs)

@@ -12,10 +12,10 @@ if TYPE_CHECKING:
 
 
 class AbstractEachPathMiddleware(AbstractMiddleware):
-    recursive: bool = False
-    should_exist: bool = False
     expand_glob: bool = False
     recursion_limit: int = 100
+    recursive: bool = False
+    should_exist: bool = False
 
     def __init__(self, **kwargs) -> None:
         # Set default option if none provided

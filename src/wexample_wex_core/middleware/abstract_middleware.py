@@ -20,12 +20,12 @@ if TYPE_CHECKING:
 class AbstractMiddleware(
     HasSnakeShortClassNameClassMixin, HasTwoStepInit, HasClassDependencies, BaseModel
 ):
-    options: list[dict[str, Any] | Option] = Field(default_factory=list)
-    normalized_options: list[Option] = Field(default_factory=list)
-    stop_on_failure: None | bool | str = False
     max_iterations: int | None = None
+    normalized_options: list[Option] = Field(default_factory=list)
+    options: list[dict[str, Any] | Option] = Field(default_factory=list)
     parallel: None | bool | str = False
     show_progress: None | bool | str = False
+    stop_on_failure: None | bool | str = False
 
     def __init__(self, **kwargs: Kwargs) -> None:
         super().__init__(**kwargs)

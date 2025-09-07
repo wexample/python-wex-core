@@ -9,11 +9,11 @@ from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 
 class CommandMethodWrapper(BaseModel):
-    function: AnyCallable
     description: str | None = None
-    options: list[Option] = field(default_factory=list)
+    function: AnyCallable
     middlewares: list[AbstractMiddleware] = field(default_factory=list)
     middlewares_attributes: dict[str, Kwargs] = field(default_factory=dict)
+    options: list[Option] = field(default_factory=list)
 
     def set_option(self, option: Option) -> None:
         self.options.append(option)

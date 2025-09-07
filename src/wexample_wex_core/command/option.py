@@ -6,14 +6,14 @@ from pydantic import BaseModel
 
 
 class Option(BaseModel):
-    name: str
+    default: Any = None
+    description: str | None = None
+    is_flag: bool = False
     kebab_name: str | None = None
+    name: str
+    required: bool = False
     short_name: str | None = None
     type: type
-    description: str | None = None
-    required: bool = False
-    default: Any = None
-    is_flag: bool = False
     # The computed value using input argument or default value.
     value: Any = None
 

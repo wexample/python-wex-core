@@ -10,8 +10,8 @@ class CommandArgumentConversionData(ExceptionData):
     """Data model for CommandArgumentConversion exception."""
 
     argument_name: str
-    value: str
     target_type: str
+    value: str
 
 
 class CommandArgumentConversionException(UndefinedException):
