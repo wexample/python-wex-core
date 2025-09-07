@@ -83,6 +83,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         )
 
         return [
+            # filestate: python-iterable-sort
             AddonCommandResolver,
             ServiceCommandResolver,
         ]
@@ -97,6 +98,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         return [
             # Default runner.
+            # filestate: python-iterable-sort
             CorePythonCommandRunner,
             CoreYamlCommandRunner,
         ]
