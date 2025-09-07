@@ -5,6 +5,12 @@ import sys
 from collections.abc import Iterable
 
 
+def main() -> None:
+    app_root = os.environ.get("APP_ROOT")
+    argv = sys.argv[1:]
+    run(argv, app_root)
+
+
 def run(argv: Iterable[str] | None = None, app_root: str | None = None) -> int:
     if argv is None:
         argv = sys.argv[1:]
@@ -13,12 +19,6 @@ def run(argv: Iterable[str] | None = None, app_root: str | None = None) -> int:
     # TODO: later: dispatch to real commands (click/argparse/typer)
     print(f"wex-core manager: OK (app_root={root}) args={' '.join(argv)}")
     return 0
-
-
-def main() -> None:
-    app_root = os.environ.get("APP_ROOT")
-    argv = sys.argv[1:]
-    run(argv, app_root)
 
 
 if __name__ == "__main__":
