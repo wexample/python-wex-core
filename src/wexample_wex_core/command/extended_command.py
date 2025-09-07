@@ -202,7 +202,6 @@ class ExtendedCommand(Command):
         return responses
 
     def _parse_arguments(self, arguments: list[str]) -> ParsedArgs:
-
         """Parse raw command line arguments into a dictionary of option name to value."""
         from wexample_helpers.helpers.cli import cli_argument_convert_value
         from wexample_wex_core.exception.command_argument_conversion_exception import (
@@ -211,6 +210,7 @@ class ExtendedCommand(Command):
         from wexample_wex_core.exception.command_unexpected_argument_exception import (
             CommandUnexpectedArgumentException,
         )
+
         result: dict[str, Any] = {}
         skip_next = False
 

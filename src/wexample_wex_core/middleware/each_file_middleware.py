@@ -14,9 +14,9 @@ if TYPE_CHECKING:
 
 class EachFileMiddleware(AbstractEachPathMiddleware):
     def _get_default_option(self) -> dict[str, Any]:
-
         """Get the default file option definition."""
         from wexample_file.const.globals import PATH_NAME_FILE
+
         return {
             "name": PATH_NAME_FILE,
             "type": str,
@@ -33,6 +33,7 @@ class EachFileMiddleware(AbstractEachPathMiddleware):
         from wexample_wex_core.exception.path_is_not_file_command_option_exception import (
             PathIsNotFileCommandOptionException,
         )
+
         valid = super().validate_options(
             command_wrapper=command_wrapper,
             request=request,

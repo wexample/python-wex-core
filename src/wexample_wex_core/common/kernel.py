@@ -147,6 +147,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
     def get_addons(self) -> dict[str, AbstractAddonManager]:
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
+
         return self.get_registry(REGISTRY_KERNEL_ADDON).get_all()
 
     def get_configuration_registry(self) -> KernelRegistry:

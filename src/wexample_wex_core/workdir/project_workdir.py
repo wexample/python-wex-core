@@ -55,6 +55,7 @@ class ProjectWorkdir(
 
     def get_project_name(self) -> str:
         from wexample_app.const.globals import APP_FILE_APP_CONFIG
+
         name_config = self.get_config().search("global.name")
         # Ensure we properly handle missing or empty name
         name: str | None = None
@@ -84,6 +85,7 @@ class ProjectWorkdir(
 
     def get_config_file(self) -> YamlFile:
         from wexample_app.const.globals import APP_FILE_APP_CONFIG
+
         config_file = self.find_by_name_recursive(item_name=APP_FILE_APP_CONFIG)
         assert config_file is not None
         return config_file

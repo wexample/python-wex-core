@@ -27,6 +27,7 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseModel):
         from wexample_app.resolver.abstract_command_resolver import (
             AbstractCommandResolver,
         )
+
         resolvers = {}
 
         for command_resolver in self.kernel.get_resolvers().values():

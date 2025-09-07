@@ -31,9 +31,9 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         return function_kwargs[option.name]
 
     def _get_default_option(self) -> dict[str, Any]:
-
         """Get the default path option definition."""
         from wexample_helpers.const.globals import PATH_NAME_PATH
+
         return {
             "name": PATH_NAME_PATH,
             "type": str,
@@ -50,6 +50,7 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         from wexample_wex_core.exception.path_not_found_command_option_exception import (
             PathNotFoundCommandOptionException,
         )
+
         if self.should_exist:
             import os.path
 

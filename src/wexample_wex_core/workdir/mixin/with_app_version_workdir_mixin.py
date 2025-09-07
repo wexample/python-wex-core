@@ -22,10 +22,16 @@ class WithAppVersionWorkdirMixin(WithVersionWorkdirMixin):
         from wexample_wex_core.config_value.version_content_config_value import (
             VersionContentConfigValue,
         )
-        polyfill_import(ConfigValue, AbstractOptionsProvider, SourceFileOrDirectory, AbstractOperationsProvider, AbstractResult)
+
+        polyfill_import(
+            ConfigValue,
+            AbstractOptionsProvider,
+            SourceFileOrDirectory,
+            AbstractOperationsProvider,
+            AbstractResult,
+        )
         VersionContentConfigValue.model_rebuild()
 
         return VersionContentConfigValue(
-            raw=super()._get_version_default_content(),
-            workdir=self
+            raw=super()._get_version_default_content(), workdir=self
         )
