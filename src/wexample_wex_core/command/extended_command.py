@@ -8,9 +8,9 @@ from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
-    from wexample_wex_core.context.execution_context import ExecutionContext
     from wexample_helpers.const.types import Kwargs
     from wexample_wex_core.const.types import ParsedArgs
+    from wexample_wex_core.context.execution_context import ExecutionContext
 
 
 class ExtendedCommand(Command):
@@ -24,10 +24,13 @@ class ExtendedCommand(Command):
         super().__init__(function=command_wrapper.function, *args, **kwargs)
 
     def execute_request(self, request: CommandRequest) -> Any:
-        from wexample_app.response.failure_response import FailureResponse
-        from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_ALLWAYS, MIDDLEWARE_OPTION_VALUE_OPTIONAL
-        from wexample_app.response.multiple_response import MultipleResponse
         from wexample_app.helpers.response import response_normalize
+        from wexample_app.response.failure_response import FailureResponse
+        from wexample_app.response.multiple_response import MultipleResponse
+        from wexample_wex_core.const.middleware import (
+            MIDDLEWARE_OPTION_VALUE_ALLWAYS,
+            MIDDLEWARE_OPTION_VALUE_OPTIONAL,
+        )
 
         middlewares_attributes = self.command_wrapper.middlewares_attributes
         middlewares_registry = self.kernel.get_registry("middlewares")
@@ -153,9 +156,10 @@ class ExtendedCommand(Command):
         Returns:
             List of normalized responses from all executions
         """
-        from wexample_app.response.abstract_response import AbstractResponse
         from concurrent.futures import ThreadPoolExecutor
+
         from wexample_app.helpers.response import response_normalize
+        from wexample_app.response.abstract_response import AbstractResponse
 
         # Create a list to store all tasks
         tasks = []
@@ -200,9 +204,13 @@ class ExtendedCommand(Command):
     def _parse_arguments(self, arguments: list[str]) -> ParsedArgs:
 
         """Parse raw command line arguments into a dictionary of option name to value."""
-        from wexample_wex_core.exception.command_argument_conversion_exception import CommandArgumentConversionException
-        from wexample_wex_core.exception.command_unexpected_argument_exception import CommandUnexpectedArgumentException
         from wexample_helpers.helpers.cli import cli_argument_convert_value
+        from wexample_wex_core.exception.command_argument_conversion_exception import (
+            CommandArgumentConversionException,
+        )
+        from wexample_wex_core.exception.command_unexpected_argument_exception import (
+            CommandUnexpectedArgumentException,
+        )
         result: dict[str, Any] = {}
         skip_next = False
 
@@ -282,7 +290,10 @@ class ExtendedCommand(Command):
         return result
 
     def _build_function_kwargs(self, request: CommandRequest) -> dict[str, Any]:
-        from wexample_wex_core.exception.command_option_missing_exception import CommandOptionMissingException
+        from wexample_wex_core.exception.command_option_missing_exception import (
+            CommandOptionMissingException,
+        )
+
         # Allow middleware to add extra options.
         for middleware in self.command_wrapper.middlewares:
             middleware.append_options(

@@ -48,8 +48,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def _init_addons(
         self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> None:
-        from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
         from wexample_app.service.service_registry import ServiceRegistry
+        from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
 
         cast(ServiceRegistry, self.set_registry(REGISTRY_KERNEL_ADDON))
         registry = self.register_items(REGISTRY_KERNEL_ADDON, addons or [])
@@ -75,8 +75,12 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             )
 
     def _get_command_resolvers(self) -> list[type[AbstractCommandResolver]]:
-        from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolver
-        from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
+        from wexample_wex_core.resolver.addon_command_resolver import (
+            AddonCommandResolver,
+        )
+        from wexample_wex_core.resolver.service_command_resolver import (
+            ServiceCommandResolver,
+        )
 
         return [
             AddonCommandResolver,
@@ -84,8 +88,12 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def _get_command_runners(self) -> list[type[AbstractCommandRunner]]:
-        from wexample_wex_core.runner.core_python_command_runner import CorePythonCommandRunner
-        from wexample_wex_core.runner.core_yaml_command_runner import CoreYamlCommandRunner
+        from wexample_wex_core.runner.core_python_command_runner import (
+            CorePythonCommandRunner,
+        )
+        from wexample_wex_core.runner.core_yaml_command_runner import (
+            CoreYamlCommandRunner,
+        )
 
         return [
             # Default runner.

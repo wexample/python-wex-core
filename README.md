@@ -10,6 +10,8 @@ Version: 6.0.45
 
 ## Dependencies
 
+- attrs>=23.1.0
+- cattrs>=23.1.0
 - click
 - pydantic>=2,<3
 - wexample-app==0.0.50

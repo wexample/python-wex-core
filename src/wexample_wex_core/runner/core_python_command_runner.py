@@ -11,9 +11,11 @@ if TYPE_CHECKING:
 
 class CorePythonCommandRunner(PythonCommandRunner):
     def build_runnable_command(self, request: CommandRequest) -> Command | None:
-        from wexample_wex_core.exception.command_function_build_failed_exception import CommandFunctionBuildFailedException
-        from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
         from wexample_wex_core.command.extended_command import ExtendedCommand
+        from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+        from wexample_wex_core.exception.command_function_build_failed_exception import (
+            CommandFunctionBuildFailedException,
+        )
 
         command_wrapper = self._build_command_function(request=request)
         if not isinstance(command_wrapper, CommandMethodWrapper):
