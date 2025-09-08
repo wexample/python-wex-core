@@ -7,7 +7,6 @@ from wexample_wex_core.exception.abstract_command_option_exception import (
 
 class PathIsNotDirectoryCommandOptionException(AbstractCommandOptionException):
     """Exception raised when a path specified in a command option exists but is not a directory."""
-
     error_code: str = "PATH_IS_NOT_DIRECTORY_COMMAND_OPTION"
 
     def __init__(

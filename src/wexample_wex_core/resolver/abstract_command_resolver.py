@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 
 
 class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
-
     def build_execution_context(
         self,
         middleware: AbstractMiddleware | None,

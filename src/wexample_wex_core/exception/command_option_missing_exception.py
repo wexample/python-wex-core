@@ -10,13 +10,11 @@ from wexample_wex_core.exception.abstract_command_option_exception import (
 
 class CommandOptionMissingData(ExceptionData):
     """Data model for CommandOptionMissing exception."""
-
     option_name: str
 
 
 class CommandOptionMissingException(AbstractCommandOptionException):
     """Exception raised when a required command option is missing."""
-
     error_code: str = "COMMAND_OPTION_MISSING"
 
     def __init__(

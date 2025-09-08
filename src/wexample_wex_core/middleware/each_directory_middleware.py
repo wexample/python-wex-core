@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 
 class EachDirectoryMiddleware(AbstractEachPathMiddleware):
-
     def validate_options(
         self,
         command_wrapper: CommandMethodWrapper,

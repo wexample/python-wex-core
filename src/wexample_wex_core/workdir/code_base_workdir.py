@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 
 
 class CodeBaseWorkdir(ProjectWorkdir):
-
     def add_publication_tag(self) -> None:
         from wexample_helpers_git.helpers.git import (
             git_push_tag,

@@ -8,7 +8,6 @@ from wexample_helpers.exception.undefined_exception import (
 
 class CommandFunctionBuildFailedData(ExceptionData):
     """Data model for CommandFunctionBuildFailed exception."""
-
     actual_type: str
 
     command_name: str
@@ -22,7 +21,6 @@ class CommandFunctionBuildFailedException(UndefinedException):
     the result is not of the expected type, indicating an issue with the command
     declaration or implementation.
     """
-
     error_code: str = "COMMAND_FUNCTION_BUILD_FAILED"
 
     def __init__(

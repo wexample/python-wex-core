@@ -22,7 +22,6 @@ if TYPE_CHECKING:
 class ProjectWorkdir(
     AsSuitePackageItem, WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
 ):
-
     @classmethod
     def create_from_config(cls, **kwargs) -> ProjectWorkdir:
         from wexample_app.const.globals import APP_FILE_APP_CONFIG

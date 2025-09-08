@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 
 
 class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
-
     def build_dependencies_map(self) -> dict[str, list[str]]:
         dependencies = {}
         for package in self.get_packages():
