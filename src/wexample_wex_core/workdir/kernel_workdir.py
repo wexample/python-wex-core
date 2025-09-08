@@ -23,6 +23,14 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
         ProjectWorkdir.__init__(self, **kwargs)
         AbstractKernelChild.__init__(self, kernel=kernel)
 
+    @classmethod
+    def create_from_kernel(
+        cls, kernel: Kernel, io: IoManager, **kwargs
+    ) -> ItemTargetDirectory:
+        return super().create_from_path(
+            path=kernel.entrypoint_path, kernel=kernel, io=io, **kwargs
+        )
+
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_filestate.const.disk import DiskItemType
         from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
@@ -49,11 +57,3 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
         )
 
         return config
-
-    @classmethod
-    def create_from_kernel(
-        cls, kernel: Kernel, io: IoManager, **kwargs
-    ) -> ItemTargetDirectory:
-        return super().create_from_path(
-            path=kernel.entrypoint_path, kernel=kernel, io=io, **kwargs
-        )

@@ -53,43 +53,6 @@ class ProjectWorkdir(
 
         return instance
 
-    def get_project_name(self) -> str:
-        from wexample_app.const.globals import APP_FILE_APP_CONFIG
-
-        name_config = self.get_config().search("global.name")
-        # Ensure we properly handle missing or empty name
-        name: str | None = None
-        if name_config is not None:
-            name = (name_config.get_str_or_none() or "").strip()
-        # Enforce that a project must have a non-empty name; include path for debug
-        if not name:
-            raise ValueError(
-                f"Project at '{self.get_path()}' must define a non-empty 'name' in {APP_FILE_APP_CONFIG}."
-            )
-        return name
-
-    def get_project_version(self) -> str:
-        from wexample_app.const.globals import APP_FILE_APP_CONFIG
-
-        # Ensure we properly handle missing node and empty value
-        config = self.get_config_file().read_config()
-        version_config = config.search("global.version")
-        version = (
-            version_config.get_str_or_none() if version_config is not None else None
-        )
-        if version is None or str(version).strip() == "":
-            raise ValueError(
-                f"Project at '{self.get_path()}' must define a non-empty 'version' number in {APP_FILE_APP_CONFIG}."
-            )
-        return str(version).strip()
-
-    def get_config_file(self) -> YamlFile:
-        from wexample_app.const.globals import APP_FILE_APP_CONFIG
-
-        config_file = self.find_by_name_recursive(item_name=APP_FILE_APP_CONFIG)
-        assert config_file is not None
-        return config_file
-
     def get_config(self) -> NestedConfigValue:
         from wexample_config.config_value.nested_config_value import NestedConfigValue
 
@@ -98,6 +61,41 @@ class ProjectWorkdir(
             return config_file.read_config()
 
         return NestedConfigValue(raw={})
+
+    def get_config_file(self) -> YamlFile:
+        from wexample_app.const.globals import APP_FILE_APP_CONFIG
+
+        config_file = self.find_by_name_recursive(item_name=APP_FILE_APP_CONFIG)
+        assert config_file is not None
+        return config_file
+
+    def get_env_config(self) -> NestedConfigValue:
+        from wexample_config.config_value.nested_config_value import NestedConfigValue
+        from wexample_filestate.item.file.env_file import EnvFile
+        from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
+
+        config_dir = self.find_by_name(WORKDIR_SETUP_DIR)
+        if config_dir:
+            dot_env = config_dir.find_by_name(EnvFile.EXTENSION_DOT_ENV)
+            if dot_env:
+                return dot_env.read_config()
+        return NestedConfigValue(raw={})
+
+    def get_env_parameter(self, key: str, default: str | None = None) -> str | None:
+        # Search in .env.
+        value = (
+            self.get_env_config()
+            .get_config_item(key=key, default=default)
+            .get_str_or_none()
+        )
+
+        if value is None:
+            return super().get_env_parameter(
+                key=key,
+                default=default,
+            )
+
+        return value
 
     def get_preferred_workdir_class(self) -> type[ProjectWorkdir] | None:
         from wexample_app.const.globals import APP_FILE_APP_CONFIG
@@ -140,6 +138,36 @@ class ProjectWorkdir(
                 )
         return None
 
+    def get_project_name(self) -> str:
+        from wexample_app.const.globals import APP_FILE_APP_CONFIG
+
+        name_config = self.get_config().search("global.name")
+        # Ensure we properly handle missing or empty name
+        name: str | None = None
+        if name_config is not None:
+            name = (name_config.get_str_or_none() or "").strip()
+        # Enforce that a project must have a non-empty name; include path for debug
+        if not name:
+            raise ValueError(
+                f"Project at '{self.get_path()}' must define a non-empty 'name' in {APP_FILE_APP_CONFIG}."
+            )
+        return name
+
+    def get_project_version(self) -> str:
+        from wexample_app.const.globals import APP_FILE_APP_CONFIG
+
+        # Ensure we properly handle missing node and empty value
+        config = self.get_config_file().read_config()
+        version_config = config.search("global.version")
+        version = (
+            version_config.get_str_or_none() if version_config is not None else None
+        )
+        if version is None or str(version).strip() == "":
+            raise ValueError(
+                f"Project at '{self.get_path()}' must define a non-empty 'version' number in {APP_FILE_APP_CONFIG}."
+            )
+        return str(version).strip()
+
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_filestate.config_option.text_filter_config_option import (
             TextFilterConfigOption,
@@ -172,31 +200,3 @@ class ProjectWorkdir(
         )
 
         return raw_value
-
-    def get_env_parameter(self, key: str, default: str | None = None) -> str | None:
-        # Search in .env.
-        value = (
-            self.get_env_config()
-            .get_config_item(key=key, default=default)
-            .get_str_or_none()
-        )
-
-        if value is None:
-            return super().get_env_parameter(
-                key=key,
-                default=default,
-            )
-
-        return value
-
-    def get_env_config(self) -> NestedConfigValue:
-        from wexample_config.config_value.nested_config_value import NestedConfigValue
-        from wexample_filestate.item.file.env_file import EnvFile
-        from wexample_wex_core.const.globals import WORKDIR_SETUP_DIR
-
-        config_dir = self.find_by_name(WORKDIR_SETUP_DIR)
-        if config_dir:
-            dot_env = config_dir.find_by_name(EnvFile.EXTENSION_DOT_ENV)
-            if dot_env:
-                return dot_env.read_config()
-        return NestedConfigValue(raw={})

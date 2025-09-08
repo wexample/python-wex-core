@@ -36,28 +36,6 @@ class AbstractMiddleware(
     def get_class_name_suffix(cls) -> str | None:
         return "Middleware"
 
-    def get_first_option(self) -> Option | None:
-        """Get the path option from the normalized options."""
-        if self.normalized_options:
-            return self.normalized_options[0]
-        return None
-
-    def build_options(self) -> list[Option]:
-        from wexample_wex_core.command.option import Option
-
-        """Convert options from various formats to Option objects."""
-        normalized = []
-
-        for option in self.options:
-            if isinstance(option, dict):
-                normalized.append(Option(**option))
-            elif isinstance(option, Option):
-                normalized.append(option)
-            else:
-                raise TypeError(f"Unsupported option type: {type(option)}")
-
-        return normalized
-
     def append_options(
         self, request: CommandRequest, command_wrapper: CommandMethodWrapper
     ) -> None:
@@ -106,14 +84,6 @@ class AbstractMiddleware(
                 )
             )
 
-    def validate_options(
-        self,
-        command_wrapper: CommandMethodWrapper,
-        request: CommandRequest,
-        function_kwargs: Kwargs,
-    ) -> bool:
-        return True
-
     def build_execution_contexts(
         self,
         command_wrapper: CommandMethodWrapper,
@@ -136,3 +106,33 @@ class AbstractMiddleware(
                 function_kwargs=function_kwargs,
             )
         ]
+
+    def build_options(self) -> list[Option]:
+        from wexample_wex_core.command.option import Option
+
+        """Convert options from various formats to Option objects."""
+        normalized = []
+
+        for option in self.options:
+            if isinstance(option, dict):
+                normalized.append(Option(**option))
+            elif isinstance(option, Option):
+                normalized.append(option)
+            else:
+                raise TypeError(f"Unsupported option type: {type(option)}")
+
+        return normalized
+
+    def get_first_option(self) -> Option | None:
+        """Get the path option from the normalized options."""
+        if self.normalized_options:
+            return self.normalized_options[0]
+        return None
+
+    def validate_options(
+        self,
+        command_wrapper: CommandMethodWrapper,
+        request: CommandRequest,
+        function_kwargs: Kwargs,
+    ) -> bool:
+        return True

@@ -26,20 +26,55 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
         super().__init__(**kwargs)
 
-    def _get_option_file_path(self, function_kwargs: Kwargs) -> str | None:
-        option = self.get_first_option()
-        return function_kwargs[option.name]
+    def build_execution_contexts(
+        self,
+        command_wrapper: CommandMethodWrapper,
+        request: CommandRequest,
+        function_kwargs: Kwargs,
+    ) -> list[ExecutionContext]:
+        from wexample_wex_core.context.execution_context import ExecutionContext
 
-    def _get_default_option(self) -> dict[str, Any]:
-        """Get the default path option definition."""
-        from wexample_helpers.const.globals import PATH_NAME_PATH
+        # If glob expansion is enabled and the path is a directory,
+        # create an execution for each matching item in that directory
+        if self.expand_glob:
 
-        return {
-            "name": PATH_NAME_PATH,
-            "type": str,
-            "required": True,
-            "description": "Path to local file or directory",
-        }
+            path = self._get_option_file_path(function_kwargs=function_kwargs)
+
+            # If the path is a directory, process it
+            if os.path.isdir(path):
+                passes = []
+                option = self.get_first_option()
+
+                # Process the directory (recursively if enabled)
+                path_kwargs_list = self._process_directory_recursively(
+                    request=request, directory_path=path, option_name=option.name
+                )
+
+                # Create execution passes by combining the original kwargs with each path
+                for path_kwargs in path_kwargs_list:
+                    kwargs_copy = function_kwargs.copy()
+                    kwargs_copy.update(path_kwargs)
+
+                    passes.append(
+                        ExecutionContext(
+                            middleware=self,
+                            command_wrapper=command_wrapper,
+                            request=request,
+                            function_kwargs=kwargs_copy,
+                        )
+                    )
+
+                return passes
+
+            # If the path is not a directory, continue normally
+            # (validation will happen in validate_options)
+
+        # If expand_glob is not enabled, use default behavior
+        return super().build_execution_contexts(
+            command_wrapper=command_wrapper,
+            request=request,
+            function_kwargs=function_kwargs,
+        )
 
     def validate_options(
         self,
@@ -64,35 +99,20 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
         return True
 
-    def _should_process_item(self, request: CommandRequest, item_path: str) -> bool:
-        """
-        Determine if an item should be processed based on its path.
-        This method should be overridden by subclasses to implement specific filtering logic.
+    def _get_default_option(self) -> dict[str, Any]:
+        """Get the default path option definition."""
+        from wexample_helpers.const.globals import PATH_NAME_PATH
 
-        Args:
-            item_path: Path to the item to check
+        return {
+            "name": PATH_NAME_PATH,
+            "type": str,
+            "required": True,
+            "description": "Path to local file or directory",
+        }
 
-        Returns:
-            True if the item should be processed, False otherwise
-        """
-        # Base implementation accepts all items
-        return True
-
-    def _should_explore_directory(
-        self, request: CommandRequest, directory_name: str
-    ) -> bool:
-        """
-        Determine if a directory should be explored during recursive traversal.
-        This method can be overridden by subclasses to skip certain directories.
-
-        Args:
-            directory_name: Name of the directory to check (not the full path)
-
-        Returns:
-            True if the directory should be explored, False otherwise
-        """
-        # Base implementation explores all directories
-        return True
+    def _get_option_file_path(self, function_kwargs: Kwargs) -> str | None:
+        option = self.get_first_option()
+        return function_kwargs[option.name]
 
     def _process_directory_recursively(
         self,
@@ -151,52 +171,32 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
         return result
 
-    def build_execution_contexts(
-        self,
-        command_wrapper: CommandMethodWrapper,
-        request: CommandRequest,
-        function_kwargs: Kwargs,
-    ) -> list[ExecutionContext]:
-        from wexample_wex_core.context.execution_context import ExecutionContext
+    def _should_explore_directory(
+        self, request: CommandRequest, directory_name: str
+    ) -> bool:
+        """
+        Determine if a directory should be explored during recursive traversal.
+        This method can be overridden by subclasses to skip certain directories.
 
-        # If glob expansion is enabled and the path is a directory,
-        # create an execution for each matching item in that directory
-        if self.expand_glob:
+        Args:
+            directory_name: Name of the directory to check (not the full path)
 
-            path = self._get_option_file_path(function_kwargs=function_kwargs)
+        Returns:
+            True if the directory should be explored, False otherwise
+        """
+        # Base implementation explores all directories
+        return True
 
-            # If the path is a directory, process it
-            if os.path.isdir(path):
-                passes = []
-                option = self.get_first_option()
+    def _should_process_item(self, request: CommandRequest, item_path: str) -> bool:
+        """
+        Determine if an item should be processed based on its path.
+        This method should be overridden by subclasses to implement specific filtering logic.
 
-                # Process the directory (recursively if enabled)
-                path_kwargs_list = self._process_directory_recursively(
-                    request=request, directory_path=path, option_name=option.name
-                )
+        Args:
+            item_path: Path to the item to check
 
-                # Create execution passes by combining the original kwargs with each path
-                for path_kwargs in path_kwargs_list:
-                    kwargs_copy = function_kwargs.copy()
-                    kwargs_copy.update(path_kwargs)
-
-                    passes.append(
-                        ExecutionContext(
-                            middleware=self,
-                            command_wrapper=command_wrapper,
-                            request=request,
-                            function_kwargs=kwargs_copy,
-                        )
-                    )
-
-                return passes
-
-            # If the path is not a directory, continue normally
-            # (validation will happen in validate_options)
-
-        # If expand_glob is not enabled, use default behavior
-        return super().build_execution_contexts(
-            command_wrapper=command_wrapper,
-            request=request,
-            function_kwargs=function_kwargs,
-        )
+        Returns:
+            True if the item should be processed, False otherwise
+        """
+        # Base implementation accepts all items
+        return True

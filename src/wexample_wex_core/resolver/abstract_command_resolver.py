@@ -16,9 +16,6 @@ if TYPE_CHECKING:
 
 
 class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
-    @abstractmethod
-    def build_registry_data(self) -> StructuredData:
-        pass
 
     def build_execution_context(
         self,
@@ -35,3 +32,6 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
             request=request,
             function_kwargs=function_kwargs,
         )
+    @abstractmethod
+    def build_registry_data(self) -> StructuredData:
+        pass

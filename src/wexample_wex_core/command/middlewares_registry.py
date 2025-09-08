@@ -23,8 +23,10 @@ class MiddlewaresRegistry(RegistryContainerMixin, BaseModel):
 
         self._init_middlewares()
 
-    def _init_middlewares(self) -> None:
-        self.register_items("middlewares", self._get_middlewares_classes())
+    def create_middleware_instance(self, name: str) -> None:
+        from wexample_app.service.service_registry import ServiceRegistry
+
+        cast(ServiceRegistry, self.get_registry("middlewares").get(name))
 
     def _get_middlewares_classes(self) -> list[type[AbstractMiddleware]]:
         from wexample_wex_core.middleware.each_directory_middleware import (
@@ -39,7 +41,5 @@ class MiddlewaresRegistry(RegistryContainerMixin, BaseModel):
             EachPathMiddleware,
         ]
 
-    def create_middleware_instance(self, name: str) -> None:
-        from wexample_app.service.service_registry import ServiceRegistry
-
-        cast(ServiceRegistry, self.get_registry("middlewares").get(name))
+    def _init_middlewares(self) -> None:
+        self.register_items("middlewares", self._get_middlewares_classes())

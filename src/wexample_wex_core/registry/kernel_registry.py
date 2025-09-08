@@ -23,6 +23,9 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseModel):
         AbstractKernelChild.__init__(self, kernel=kernel)
         SerializableMixin.__init__(self)
 
+    def hydrate(self, data: StructuredData) -> None:
+        self.env = data.get("env", self.env)
+
     def serialize(self) -> StructuredData:
         from wexample_app.resolver.abstract_command_resolver import (
             AbstractCommandResolver,
@@ -37,6 +40,3 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseModel):
             )
 
         return {"env": self.env, "resolvers": resolvers}
-
-    def hydrate(self, data: StructuredData) -> None:
-        self.env = data.get("env", self.env)

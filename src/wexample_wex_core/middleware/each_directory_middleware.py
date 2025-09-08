@@ -13,16 +13,6 @@ if TYPE_CHECKING:
 
 
 class EachDirectoryMiddleware(AbstractEachPathMiddleware):
-    def _get_default_option(self) -> dict[str, Any]:
-        """Get the default directory option definition."""
-        from wexample_file.const.globals import PATH_NAME_DIRECTORY
-
-        return {
-            "name": PATH_NAME_DIRECTORY,
-            "type": str,
-            "required": True,
-            "description": "Path to local directory",
-        }
 
     def validate_options(
         self,
@@ -49,6 +39,16 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
             return True
 
         return False
+    def _get_default_option(self) -> dict[str, Any]:
+        """Get the default directory option definition."""
+        from wexample_file.const.globals import PATH_NAME_DIRECTORY
+
+        return {
+            "name": PATH_NAME_DIRECTORY,
+            "type": str,
+            "required": True,
+            "description": "Path to local directory",
+        }
 
     def _should_process_item(self, request: CommandRequest, item_path: str) -> bool:
         return os.path.isdir(item_path)

@@ -42,16 +42,16 @@ class ExecutionContext(
         )
         return self._current_progress
 
-    def get_or_create_progress(self, **kwargs) -> ProgressHandle:
-        if self._current_progress is None:
-            self._current_progress = self.io.progress(
-                **kwargs, context=self.io.create_context()
-            ).get_handle()
-        return self._current_progress
-
     def finish_progress(self, **kwargs) -> ProgressHandle:
         self._current_progress.finish()
 
         self._current_progress = self._current_progress.parent
         self._current_progress.update(**kwargs)
+        return self._current_progress
+
+    def get_or_create_progress(self, **kwargs) -> ProgressHandle:
+        if self._current_progress is None:
+            self._current_progress = self.io.progress(
+                **kwargs, context=self.io.create_context()
+            ).get_handle()
         return self._current_progress

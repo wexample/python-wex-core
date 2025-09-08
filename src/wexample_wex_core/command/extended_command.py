@@ -145,6 +145,39 @@ class ExtendedCommand(Command):
             kernel=self.kernel, response=self.function(**context.function_kwargs)
         )
 
+    def _build_function_kwargs(self, request: CommandRequest) -> dict[str, Any]:
+        from wexample_wex_core.exception.command_option_missing_exception import (
+            CommandOptionMissingException,
+        )
+
+        # Allow middleware to add extra options.
+        for middleware in self.command_wrapper.middlewares:
+            middleware.append_options(
+                request=request,
+                command_wrapper=self.command_wrapper,
+            )
+
+        """Execute the command with the given request arguments."""
+        # Parse and convert arguments to appropriate types
+        parsed_args = self._parse_arguments(request.arguments)
+
+        """Build the final kwargs dictionary for the function call."""
+        function_kwargs = {}
+
+        # Process all declared options
+        for option in self.command_wrapper.options:
+            # If the option is in parsed args, use that value
+            if option.name in parsed_args:
+                option.value = function_kwargs[option.name] = parsed_args[option.name]
+            # Otherwise, use the default value if available
+            elif option.default is not None:
+                option.value = function_kwargs[option.name] = option.default
+            # If the option is required but not provided, raise an error
+            elif option.required:
+                raise CommandOptionMissingException(option_name=option.name)
+
+        return function_kwargs
+
     async def _execute_passes_parallel(
         self, execution_contexts: list[ExecutionContext]
     ) -> list[Any]:
@@ -288,36 +321,3 @@ class ExtendedCommand(Command):
                     )
 
         return result
-
-    def _build_function_kwargs(self, request: CommandRequest) -> dict[str, Any]:
-        from wexample_wex_core.exception.command_option_missing_exception import (
-            CommandOptionMissingException,
-        )
-
-        # Allow middleware to add extra options.
-        for middleware in self.command_wrapper.middlewares:
-            middleware.append_options(
-                request=request,
-                command_wrapper=self.command_wrapper,
-            )
-
-        """Execute the command with the given request arguments."""
-        # Parse and convert arguments to appropriate types
-        parsed_args = self._parse_arguments(request.arguments)
-
-        """Build the final kwargs dictionary for the function call."""
-        function_kwargs = {}
-
-        # Process all declared options
-        for option in self.command_wrapper.options:
-            # If the option is in parsed args, use that value
-            if option.name in parsed_args:
-                option.value = function_kwargs[option.name] = parsed_args[option.name]
-            # Otherwise, use the default value if available
-            elif option.default is not None:
-                option.value = function_kwargs[option.name] = option.default
-            # If the option is required but not provided, raise an error
-            elif option.required:
-                raise CommandOptionMissingException(option_name=option.name)
-
-        return function_kwargs
