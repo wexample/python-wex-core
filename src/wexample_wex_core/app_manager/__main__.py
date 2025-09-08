@@ -20,5 +20,6 @@ def run(argv: Iterable[str] | None = None, app_root: str | None = None) -> int:
     print(f"wex-core manager: OK (app_root={root}) args={' '.join(argv)}")
     return 0
 
+
 if __name__ == "__main__":
     main()
