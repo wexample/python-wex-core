@@ -8,11 +8,13 @@ from wexample_helpers.exception.undefined_exception import ExceptionData
 
 class CommandUnexpectedArgumentData(ExceptionData):
     """Data model for CommandUnexpectedArgument exception."""
+
     argument: str
 
 
 class CommandUnexpectedArgumentException(NotAllowedItemException):
     """Exception raised when an unexpected argument is provided to a command."""
+
     error_code: str = "COMMAND_UNEXPECTED_ARGUMENT"
 
     def __init__(
