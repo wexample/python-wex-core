@@ -17,6 +17,7 @@ class MiddlewaresRegistry(RegistryContainerMixin, BaseModel):
     Middlewares can modify the behavior of commands, such as by iterating over
     multiple values for a single option, running in parallel, etc.
     """
+
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 

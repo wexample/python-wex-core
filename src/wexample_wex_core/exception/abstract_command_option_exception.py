@@ -7,6 +7,7 @@ from wexample_helpers.exception.undefined_exception import UndefinedException
 
 class AbstractCommandOptionException(UndefinedException):
     """Base exception class for command option related errors."""
+
     error_code: str = "COMMAND_OPTION_ERROR"
 
     def __init__(
