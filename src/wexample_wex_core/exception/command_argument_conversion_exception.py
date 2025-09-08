@@ -8,7 +8,6 @@ from wexample_helpers.exception.undefined_exception import (
 
 class CommandArgumentConversionData(ExceptionData):
     """Data model for CommandArgumentConversion exception."""
-
     argument_name: str
     target_type: str
     value: str
@@ -16,7 +15,6 @@ class CommandArgumentConversionData(ExceptionData):
 
 class CommandArgumentConversionException(UndefinedException):
     """Exception raised when a command argument cannot be converted to the expected type."""
-
     error_code: str = "COMMAND_ARGUMENT_CONVERSION_ERROR"
 
     def __init__(

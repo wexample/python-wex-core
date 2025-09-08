@@ -11,7 +11,6 @@ class AddonNotRegisteredException(NotAllowedItemException):
     This exception extends NotAllowedItemException to provide a standardized way
     of handling cases where an addon name is not in the list of registered addons.
     """
-
     error_code: str = "ADDON_NOT_REGISTERED"
 
     def __init__(
