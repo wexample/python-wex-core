@@ -32,6 +32,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
             request=request,
             function_kwargs=function_kwargs,
         )
+
     @abstractmethod
     def build_registry_data(self) -> StructuredData:
         pass

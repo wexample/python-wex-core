@@ -42,6 +42,7 @@ class EachFileMiddleware(AbstractEachPathMiddleware):
             return True
 
         return valid
+
     def _get_default_option(self) -> dict[str, Any]:
         """Get the default file option definition."""
         from wexample_file.const.globals import PATH_NAME_FILE

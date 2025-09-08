@@ -71,6 +71,7 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
 
     def get_dependents(self, package: CodeBaseWorkdir) -> list[CodeBaseWorkdir]:
         return []
+
     def get_local_packages_names(self) -> list[str]:
         return [p.get_package_name() for p in self.get_packages()]
 

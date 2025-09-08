@@ -39,6 +39,7 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
             return True
 
         return False
+
     def _get_default_option(self) -> dict[str, Any]:
         """Get the default directory option definition."""
         from wexample_file.const.globals import PATH_NAME_DIRECTORY

@@ -164,6 +164,7 @@ class CodeBaseWorkdir(ProjectWorkdir):
             DefaultOptionsProvider,
             GitOptionsProvider,
         ]
+
     def get_package_name(self) -> str:
         return self.get_project_name()
 
