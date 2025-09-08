@@ -19,7 +19,7 @@ def test__run__all(context: ExecutionContext) -> None:
     os.chdir(workdir)
 
     context.io.log(f"Starting pytest test suite from {workdir}")
-
+    
     # TODO Finaliser le registre pour pouvoir lister les tests
     #  Voir /home/weeger/Desktop/WIP/WEB/WEXAMPLE/WEX/local/wex/src/core/file/KernelRegistryFileStructure.py
     #  Voir /home/weeger/Desktop/WIP/WEB/WEXAMPLE/WEX/local/wex/src/core/file/AbstractFileSystemStructure.py
@@ -27,7 +27,6 @@ def test__run__all(context: ExecutionContext) -> None:
     #  - Créer KernelRegistryFileStructure basé sur YamlFile + KernelChild
     #  - Créer le registre comme avant et le sauver dans tmp.
     #  - Le registre identifier les fichier test pour chaque commande, qu'on réutilisera ici.
-
     # Build pytest arguments explicitly to avoid using sys.argv
     pytest_args = [
         "tests",  # Run tests from the tests directory
