@@ -59,7 +59,7 @@ class AbstractMiddleware(
         return "Middleware"
 
     def append_options(
-            self, request: CommandRequest, command_wrapper: CommandMethodWrapper
+        self, request: CommandRequest, command_wrapper: CommandMethodWrapper
     ) -> None:
         from wexample_wex_core.command.option import Option
         from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_OPTIONAL
@@ -107,10 +107,10 @@ class AbstractMiddleware(
             )
 
     def build_execution_contexts(
-            self,
-            command_wrapper: CommandMethodWrapper,
-            request: CommandRequest,
-            function_kwargs: Kwargs,
+        self,
+        command_wrapper: CommandMethodWrapper,
+        request: CommandRequest,
+        function_kwargs: Kwargs,
     ) -> list[ExecutionContext]:
         from wexample_wex_core.context.execution_context import ExecutionContext
 
@@ -152,9 +152,9 @@ class AbstractMiddleware(
         return None
 
     def validate_options(
-            self,
-            command_wrapper: CommandMethodWrapper,
-            request: CommandRequest,
-            function_kwargs: Kwargs,
+        self,
+        command_wrapper: CommandMethodWrapper,
+        request: CommandRequest,
+        function_kwargs: Kwargs,
     ) -> bool:
         return True

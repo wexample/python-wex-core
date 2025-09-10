@@ -22,14 +22,11 @@ if TYPE_CHECKING:
 
 
 @base_class
-class Kernel(
-    CommandRunnerKernel,
-    CommandLineKernel,
-    AbstractKernel
-):
+class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _config_arg_verbosity: VerbosityLevel = private_field(
-        default=VerbosityLevel.DEFAULT, init=False,
-        description="Verbosity level of every logs"
+        default=VerbosityLevel.DEFAULT,
+        init=False,
+        description="Verbosity level of every logs",
     )
     _registry: KernelRegistry = private_field(
         init=False, description="The configuration registry"
@@ -44,7 +41,7 @@ class Kernel(
         return self._registry
 
     def setup(
-            self, addons: list[type[AbstractAddonManager]] | None = None
+        self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> AbstractKernel:
         response = super().setup()
 
@@ -58,7 +55,7 @@ class Kernel(
         return response
 
     def _build_single_command_request_from_arguments(
-            self, arguments: CommandLineArgumentsList
+        self, arguments: CommandLineArgumentsList
     ):
         # Core command request takes a request id.
         return [
@@ -112,17 +109,17 @@ class Kernel(
         ]
 
     def _get_workdir_state_manager_class(
-            self,
-            entrypoint_path: str,
-            io: IoManager,
-            config: DictConfig | None = None,
+        self,
+        entrypoint_path: str,
+        io: IoManager,
+        config: DictConfig | None = None,
     ) -> FileStateManager:
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
         return KernelWorkdir.create_from_kernel(kernel=self, config=config or {}, io=io)
 
     def _init_addons(
-            self, addons: list[type[AbstractAddonManager]] | None = None
+        self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> None:
         from wexample_app.service.service_registry import ServiceRegistry
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON

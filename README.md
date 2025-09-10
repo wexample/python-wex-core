@@ -13,7 +13,6 @@ Version: 6.0.45
 - attrs>=23.1.0
 - cattrs>=23.1.0
 - click
-- pydantic>=2,<3
 - wexample-app==0.0.50
 - wexample-filestate-git==0.0.39
 - wexample-filestate==0.0.51

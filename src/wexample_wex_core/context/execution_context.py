@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
 from wexample_helpers.classes.base_class import BaseClass
