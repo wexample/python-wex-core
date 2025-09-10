@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from pydantic import PrivateAttr
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
+from wexample_helpers.classes.private_field import private_field
+from wexample_helpers.decorator.base_class import base_class
 from wexample_prompt.enums.verbosity_level import VerbosityLevel
 
 if TYPE_CHECKING:
@@ -20,12 +21,19 @@ if TYPE_CHECKING:
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
 
 
-class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
-    _config_arg_verbosity: VerbosityLevel = PrivateAttr(default=VerbosityLevel.DEFAULT)
-    _registry: KernelRegistry
-
-    def __init__(self, **kwargs) -> None:
-        AbstractKernel.__init__(self, **kwargs)
+@base_class
+class Kernel(
+    CommandRunnerKernel,
+    CommandLineKernel,
+    AbstractKernel
+):
+    _config_arg_verbosity: VerbosityLevel = private_field(
+        default=VerbosityLevel.DEFAULT, init=False,
+        description="Verbosity level of every logs"
+    )
+    _registry: KernelRegistry = private_field(
+        init=False, description="The configuration registry"
+    )
 
     def get_addons(self) -> dict[str, AbstractAddonManager]:
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
@@ -36,9 +44,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return self._registry
 
     def setup(
-        self, addons: list[type[AbstractAddonManager]] | None = None
+            self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> AbstractKernel:
         response = super().setup()
+
         self._init_command_line_kernel()
         self._init_addons(addons=addons)
         self._init_resolvers()
@@ -49,7 +58,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return response
 
     def _build_single_command_request_from_arguments(
-        self, arguments: CommandLineArgumentsList
+            self, arguments: CommandLineArgumentsList
     ):
         # Core command request takes a request id.
         return [
@@ -103,17 +112,17 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def _get_workdir_state_manager_class(
-        self,
-        entrypoint_path: str,
-        io: IoManager,
-        config: DictConfig | None = None,
+            self,
+            entrypoint_path: str,
+            io: IoManager,
+            config: DictConfig | None = None,
     ) -> FileStateManager:
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
         return KernelWorkdir.create_from_kernel(kernel=self, config=config or {}, io=io)
 
     def _init_addons(
-        self, addons: list[type[AbstractAddonManager]] | None = None
+            self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> None:
         from wexample_app.service.service_registry import ServiceRegistry
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON

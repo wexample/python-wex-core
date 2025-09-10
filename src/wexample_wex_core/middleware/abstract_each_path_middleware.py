@@ -17,14 +17,12 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
     recursive: bool = False
     should_exist: bool = False
 
-    def __init__(self, **kwargs) -> None:
+    def __attrs_post_init__(self, **kwargs) -> None:
         # Set default option if none provided
         if "option" not in kwargs or not kwargs["option"]:
             kwargs["option"] = self._get_default_option()
 
         kwargs["options"] = [kwargs["option"]]
-
-        super().__init__(**kwargs)
 
     def build_execution_contexts(
         self,

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from wexample_filestate.config_value.content_config_value import ContentConfigValue
+from wexample_helpers.decorator.base_class import base_class
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 
+@base_class
 class VersionContentConfigValue(ContentConfigValue):
     workdir: ProjectWorkdir
 

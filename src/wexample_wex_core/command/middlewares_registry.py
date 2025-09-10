@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from pydantic import BaseModel
 from wexample_helpers.service.mixins.registry_container_mixin import (
     RegistryContainerMixin,
 )
@@ -10,17 +9,18 @@ from wexample_helpers.service.mixins.registry_container_mixin import (
 if TYPE_CHECKING:
     from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
+from wexample_helpers.decorator.base_class import base_class
 
-class MiddlewaresRegistry(RegistryContainerMixin, BaseModel):
+
+@base_class
+class MiddlewaresRegistry(RegistryContainerMixin):
     """Middleware configuration for command execution.
 
     Middlewares can modify the behavior of commands, such as by iterating over
     multiple values for a single option, running in parallel, etc.
     """
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
+    def __attrs_post_init__(self) -> None:
         self._init_middlewares()
 
     def create_middleware_instance(self, name: str) -> None:

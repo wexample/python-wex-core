@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from wexample_filestate.workdir.mixin.with_readme_workdir_mixin import (
     WithReadmeWorkdirMixin,
 )
+from wexample_helpers.decorator.base_class import base_class
 from wexample_wex_core.workdir.mixin.as_suite_package_item import (
     AsSuitePackageItem,
 )
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
     from wexample_filestate.item.file.yaml_file import YamlFile
 
 
+@base_class
 class ProjectWorkdir(
     AsSuitePackageItem, WithReadmeWorkdirMixin, WithAppVersionWorkdirMixin, Workdir
 ):

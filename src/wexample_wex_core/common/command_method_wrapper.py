@@ -1,19 +1,34 @@
 from __future__ import annotations
 
-from dataclasses import field
-
-from pydantic import BaseModel
+from wexample_helpers.classes.base_class import BaseClass
+from wexample_helpers.classes.field import public_field
 from wexample_helpers.const.types import AnyCallable, Kwargs
+from wexample_helpers.decorator.base_class import base_class
 from wexample_wex_core.command.option import Option
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 
-class CommandMethodWrapper(BaseModel):
-    description: str | None = None
-    function: AnyCallable
-    middlewares: list[AbstractMiddleware] = field(default_factory=list)
-    middlewares_attributes: dict[str, Kwargs] = field(default_factory=dict)
-    options: list[Option] = field(default_factory=list)
+@base_class
+class CommandMethodWrapper(BaseClass):
+    description: str | None = public_field(
+        default=None,
+        description="Optional human-readable description of the command method",
+    )
+    function: AnyCallable = public_field(
+        description="Callable object implementing the command method",
+    )
+    middlewares: list[AbstractMiddleware] = public_field(
+        factory=list,
+        description="List of middleware instances applied to the command method",
+    )
+    middlewares_attributes: dict[str, Kwargs] = public_field(
+        factory=dict,
+        description="Mapping of middleware names to their initialization attributes",
+    )
+    options: list[Option] = public_field(
+        factory=list,
+        description="List of command options available for this method",
+    )
 
     def find_option_by_kebab_name(self, kabab_name: str) -> Option | None:
         """Find an option by its name."""

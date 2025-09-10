@@ -2,11 +2,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, Field, PrivateAttr
+from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
+from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
+from wexample_helpers.classes.base_class import BaseClass
+from wexample_helpers.classes.field import public_field
 from wexample_helpers.classes.mixin.printable_mixin import PrintableMixin
+from wexample_helpers.classes.private_field import private_field
 from wexample_helpers.const.types import Kwargs
-from wexample_prompt.mixins.with_required_io_manager import WithRequiredIoManager
+from wexample_helpers.decorator.base_class import base_class
+from wexample_prompt.mixins.with_io_manager import WithIoManager
 from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 from wexample_wex_core.common.command_request import CommandRequest
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
@@ -15,26 +20,39 @@ if TYPE_CHECKING:
     from wexample_prompt.common.progress.progress_handle import ProgressHandle
 
 
+@base_class
 class ExecutionContext(
     AbstractKernelChild,
-    WithRequiredIoManager,
+    WithIoManager,
     PrintableMixin,
-    BaseModel,
+    BaseClass,
 ):
-    command_wrapper: CommandMethodWrapper
-    function_kwargs: Kwargs = Field(default_factory=dict)
-    middleware: AbstractMiddleware | None
-    request: CommandRequest
-    _current_progress: ProgressHandle | None = PrivateAttr(default=None)
+    command_wrapper: CommandMethodWrapper = public_field(
+        description="Wrapper around the command method being executed",
+    )
+    function_kwargs: Kwargs = public_field(
+        factory=dict,
+        description="Keyword arguments passed to the command function",
+    )
+    middleware: AbstractMiddleware | None = public_field(
+        description="Optional middleware applied in this execution context",
+    )
+    request: CommandRequest = public_field(
+        description="The command request associated with this execution",
+    )
+    kernel: CommandRunnerKernel = public_field(
+        description="The kernel is extracted from request",
+        default=None
+    )
+    _current_progress: ProgressHandle | None = private_field(
+        default=None,
+        description="Internal progress handle used to track execution progress",
+    )
 
-    def __init__(self, **kwargs) -> None:
-        BaseModel.__init__(self, **kwargs)
-
-        AbstractKernelChild.__init__(self, kernel=self.request.kernel)
-
-        WithRequiredIoManager.__init__(self, io=self.kernel.io)
-
+    def __attrs_post_init__(self) -> None:
         self.function_kwargs["context"] = self
+        self.kernel = self.request.kernel
+        self.io = self.kernel.io
 
     def create_progress_range(self, **kwargs) -> ProgressHandle:
         self._current_progress = self.get_or_create_progress().create_range_handle(

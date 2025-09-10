@@ -4,24 +4,25 @@ import asyncio
 from typing import TYPE_CHECKING, Any
 
 from wexample_app.common.command import Command
+from wexample_helpers.classes.field import public_field
+from wexample_helpers.decorator.base_class import base_class
 from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
-    from wexample_helpers.const.types import Kwargs
     from wexample_wex_core.const.types import ParsedArgs
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
+@base_class
 class ExtendedCommand(Command):
-    command_wrapper: CommandMethodWrapper
+    command_wrapper: CommandMethodWrapper = public_field(
+        description="The wrapper holding the command function"
+    )
 
-    def __init__(
-        self, command_wrapper: CommandMethodWrapper, *args: Any, **kwargs: Kwargs
-    ) -> None:
-        kwargs["command_wrapper"] = command_wrapper
-
-        super().__init__(function=command_wrapper.function, *args, **kwargs)
+    def __attrs_post_init__(self) -> None:
+        # Now override function based on command_wrapper
+        self.function = self.command_wrapper.function
 
     def execute_request(self, request: CommandRequest) -> Any:
         from wexample_app.helpers.response import response_normalize
@@ -47,11 +48,11 @@ class ExtendedCommand(Command):
 
             for middleware in self.command_wrapper.middlewares:
                 show_progress = (
-                    middleware.show_progress == MIDDLEWARE_OPTION_VALUE_ALLWAYS
-                    or (
-                        middleware.show_progress == MIDDLEWARE_OPTION_VALUE_OPTIONAL
-                        and function_kwargs["show_progress"]
-                    )
+                        middleware.show_progress == MIDDLEWARE_OPTION_VALUE_ALLWAYS
+                        or (
+                                middleware.show_progress == MIDDLEWARE_OPTION_VALUE_OPTIONAL
+                                and function_kwargs["show_progress"]
+                        )
                 )
 
                 # Each middleware can multiply the executions,
@@ -64,8 +65,8 @@ class ExtendedCommand(Command):
 
                 # Apply limit if specified
                 if (
-                    isinstance(middleware.max_iterations, int)
-                    and middleware.max_iterations > 0
+                        isinstance(middleware.max_iterations, int)
+                        and middleware.max_iterations > 0
                 ):
                     execution_contexts = execution_contexts[: middleware.max_iterations]
                     self.kernel.io.info(
@@ -74,9 +75,9 @@ class ExtendedCommand(Command):
 
                 # Check if middleware should run in parallel
                 if middleware.parallel == MIDDLEWARE_OPTION_VALUE_ALLWAYS or (
-                    middleware.parallel == MIDDLEWARE_OPTION_VALUE_OPTIONAL
-                    and "parallel" in function_kwargs
-                    and function_kwargs["parallel"]
+                        middleware.parallel == MIDDLEWARE_OPTION_VALUE_OPTIONAL
+                        and "parallel" in function_kwargs
+                        and function_kwargs["parallel"]
                 ):
                     # Execute passes in parallel using asyncio
                     responses = asyncio.run(
@@ -91,8 +92,8 @@ class ExtendedCommand(Command):
 
                         # Check if we should stop on failure
                         if (
-                            isinstance(response, FailureResponse)
-                            and middleware.stop_on_failure
+                                isinstance(response, FailureResponse)
+                                and middleware.stop_on_failure
                         ):
                             # "Stop" does not mean "fail", so we just stop the process.
                             return output
@@ -119,14 +120,14 @@ class ExtendedCommand(Command):
                             request.kernel.io.progress(length, i)
 
                         if isinstance(response, FailureResponse) and (
-                            middleware.stop_on_failure
-                            == MIDDLEWARE_OPTION_VALUE_ALLWAYS
-                            or (
                                 middleware.stop_on_failure
-                                == MIDDLEWARE_OPTION_VALUE_OPTIONAL
-                                and "stop_on_failure" in function_kwargs
-                                and function_kwargs["stop_on_failure"]
-                            )
+                                == MIDDLEWARE_OPTION_VALUE_ALLWAYS
+                                or (
+                                        middleware.stop_on_failure
+                                        == MIDDLEWARE_OPTION_VALUE_OPTIONAL
+                                        and "stop_on_failure" in function_kwargs
+                                        and function_kwargs["stop_on_failure"]
+                                )
                         ):
                             # "Stop" does not mean "fail", so we just stop the process.
                             return output
@@ -179,7 +180,7 @@ class ExtendedCommand(Command):
         return function_kwargs
 
     async def _execute_passes_parallel(
-        self, execution_contexts: list[ExecutionContext]
+            self, execution_contexts: list[ExecutionContext]
     ) -> list[Any]:
         """Execute multiple passes in parallel using asyncio.
 
@@ -202,7 +203,7 @@ class ExtendedCommand(Command):
 
         # Define a coroutine that executes a single pass
         async def execute_single_pass(
-            execution_context: ExecutionContext,
+                execution_context: ExecutionContext,
         ) -> AbstractResponse:
             from wexample_prompt.output.buffer_output_handler import BufferOutputHandler
 

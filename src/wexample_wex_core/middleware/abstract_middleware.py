@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, Field
+from wexample_helpers.classes.base_class import BaseClass
+from wexample_helpers.classes.field import public_field
 from wexample_helpers.classes.mixin.has_class_dependencies import HasClassDependencies
 from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin import (
     HasSnakeShortClassNameClassMixin,
 )
 from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
+from wexample_helpers.decorator.base_class import base_class
 from wexample_wex_core.command.option import Option
 
 if TYPE_CHECKING:
@@ -17,19 +19,39 @@ if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
+@base_class
 class AbstractMiddleware(
-    HasSnakeShortClassNameClassMixin, HasTwoStepInit, HasClassDependencies, BaseModel
+    HasSnakeShortClassNameClassMixin,
+    HasTwoStepInit,
+    HasClassDependencies,
+    BaseClass,
 ):
-    max_iterations: int | None = None
-    normalized_options: list[Option] = Field(default_factory=list)
-    options: list[dict[str, Any] | Option] = Field(default_factory=list)
-    parallel: None | bool | str = False
-    show_progress: None | bool | str = False
-    stop_on_failure: None | bool | str = False
+    max_iterations: int | None = public_field(
+        default=None,
+        description="Maximum number of iterations allowed for this middleware",
+    )
+    normalized_options: list[Option] = public_field(
+        factory=list,
+        description="List of normalized option objects for middleware configuration",
+    )
+    options: list[dict[str, Any] | Option] = public_field(
+        factory=list,
+        description="Raw option definitions or Option objects provided to the middleware",
+    )
+    parallel: None | bool | str = public_field(
+        default=False,
+        description="Whether the middleware should run in parallel (bool, str, or None)",
+    )
+    show_progress: None | bool | str = public_field(
+        default=False,
+        description="Whether to display a progress indicator during execution",
+    )
+    stop_on_failure: None | bool | str = public_field(
+        default=False,
+        description="Whether to stop execution immediately if a failure occurs",
+    )
 
-    def __init__(self, **kwargs: Kwargs) -> None:
-        super().__init__(**kwargs)
-
+    def __attrs_post_init__(self) -> None:
         self.normalized_options = self.build_options()
 
     @classmethod
@@ -37,7 +59,7 @@ class AbstractMiddleware(
         return "Middleware"
 
     def append_options(
-        self, request: CommandRequest, command_wrapper: CommandMethodWrapper
+            self, request: CommandRequest, command_wrapper: CommandMethodWrapper
     ) -> None:
         from wexample_wex_core.command.option import Option
         from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_OPTIONAL
@@ -85,10 +107,10 @@ class AbstractMiddleware(
             )
 
     def build_execution_contexts(
-        self,
-        command_wrapper: CommandMethodWrapper,
-        request: CommandRequest,
-        function_kwargs: Kwargs,
+            self,
+            command_wrapper: CommandMethodWrapper,
+            request: CommandRequest,
+            function_kwargs: Kwargs,
     ) -> list[ExecutionContext]:
         from wexample_wex_core.context.execution_context import ExecutionContext
 
@@ -130,9 +152,9 @@ class AbstractMiddleware(
         return None
 
     def validate_options(
-        self,
-        command_wrapper: CommandMethodWrapper,
-        request: CommandRequest,
-        function_kwargs: Kwargs,
+            self,
+            command_wrapper: CommandMethodWrapper,
+            request: CommandRequest,
+            function_kwargs: Kwargs,
     ) -> bool:
         return True

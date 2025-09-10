@@ -3,29 +3,26 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
+from wexample_helpers.decorator.base_class import base_class
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
-    from wexample_app.common.abstract_kernel import AbstractKernel
     from wexample_config.const.types import DictConfig
     from wexample_filestate.item.item_target_directory import ItemTargetDirectory
     from wexample_prompt.common.io_manager import IoManager
     from wexample_wex_core.common.kernel import Kernel
 
 
+@base_class
 class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
     # Class-scoped constant for the tmp shortcut
     SHORTCUT_REGISTRY: ClassVar[str] = "registry"
     SHORTCUT_TMP: ClassVar[str] = "tmp"
     FILE_REGISTRY: ClassVar[str] = "registry.yml"
 
-    def __init__(self, kernel: AbstractKernel, **kwargs) -> None:
-        ProjectWorkdir.__init__(self, **kwargs)
-        AbstractKernelChild.__init__(self, kernel=kernel)
-
     @classmethod
     def create_from_kernel(
-        cls, kernel: Kernel, io: IoManager, **kwargs
+            cls, kernel: Kernel, io: IoManager, **kwargs
     ) -> ItemTargetDirectory:
         return super().create_from_path(
             path=kernel.entrypoint_path, kernel=kernel, io=io, **kwargs

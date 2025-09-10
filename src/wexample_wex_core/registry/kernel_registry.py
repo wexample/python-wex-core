@@ -2,26 +2,22 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
+from wexample_helpers.classes.base_class import BaseClass
+from wexample_helpers.classes.field import public_field
 from wexample_helpers.classes.mixin.serializable_mixin import SerializableMixin
 
 if TYPE_CHECKING:
     from wexample_helpers.const.types import StructuredData
-    from wexample_wex_core.common.kernel import Kernel
 
 
-class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseModel):
-    env: str
+class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
+    env: str = public_field(description="The environment name")
 
-    def __init__(self, kernel: Kernel, **kwargs) -> None:
+    def __attrs_post_init__(self) -> None:
         from wexample_app.const.globals import ENV_VAR_NAME_APP_ENV
 
-        kwargs["env"] = kernel.get_env_parameter(ENV_VAR_NAME_APP_ENV)
-
-        BaseModel.__init__(self, **kwargs)
-        AbstractKernelChild.__init__(self, kernel=kernel)
-        SerializableMixin.__init__(self)
+        self.env = self.kernel.get_env_parameter(ENV_VAR_NAME_APP_ENV)
 
     def hydrate(self, data: StructuredData) -> None:
         self.env = data.get("env", self.env)
