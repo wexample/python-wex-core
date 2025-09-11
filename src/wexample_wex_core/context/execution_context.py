@@ -34,8 +34,7 @@ class ExecutionContext(
         description="Keyword arguments passed to the command function",
     )
     kernel: CommandRunnerKernel = public_field(
-        description="The kernel is extracted from request",
-        default=None
+        description="The kernel is extracted from request", default=None
     )
     middleware: AbstractMiddleware | None = public_field(
         description="Optional middleware applied in this execution context",
