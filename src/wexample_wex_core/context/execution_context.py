@@ -33,15 +33,15 @@ class ExecutionContext(
         factory=dict,
         description="Keyword arguments passed to the command function",
     )
+    kernel: CommandRunnerKernel = public_field(
+        description="The kernel is extracted from request",
+        default=None
+    )
     middleware: AbstractMiddleware | None = public_field(
         description="Optional middleware applied in this execution context",
     )
     request: CommandRequest = public_field(
         description="The command request associated with this execution",
-    )
-    kernel: CommandRunnerKernel = public_field(
-        description="The kernel is extracted from request",
-        default=None
     )
     _current_progress: ProgressHandle | None = private_field(
         default=None,
