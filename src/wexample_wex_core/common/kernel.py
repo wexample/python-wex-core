@@ -7,7 +7,6 @@ from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
 from wexample_helpers.classes.private_field import private_field
 from wexample_helpers.decorator.base_class import base_class
-from wexample_prompt.enums.verbosity_level import VerbosityLevel
 
 if TYPE_CHECKING:
     from wexample_app.const.types import CommandLineArgumentsList
@@ -19,6 +18,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
+    from wexample_prompt.enums.verbosity_level import VerbosityLevel
 
 
 @base_class
@@ -102,6 +102,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def _get_core_args(self):
+        from wexample_prompt.enums.verbosity_level import VerbosityLevel
         return super()._get_core_args() + [
             {"arg": "quiet", "attr": "verbosity", "value": VerbosityLevel.QUIET},
             {"arg": "vv", "attr": "verbosity", "value": VerbosityLevel.MEDIUM},

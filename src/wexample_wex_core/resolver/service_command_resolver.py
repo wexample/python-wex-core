@@ -7,6 +7,7 @@ from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommand
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
+    from pathlib import Path
 
 
 class ServiceCommandResolver(AbstractCommandResolver):

@@ -9,6 +9,8 @@ from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommand
 if TYPE_CHECKING:
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest
+    from pathlib import Path
+    from wexample_wex_core.const.registries import RegistryResolverData
 
 
 class AddonCommandResolver(AbstractCommandResolver):

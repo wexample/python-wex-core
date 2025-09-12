@@ -7,6 +7,7 @@ from wexample_helpers.const.types import StringKeysDict
 
 if TYPE_CHECKING:
     from wexample_config.const.types import DictConfig
+    from wexample_helpers.const.types import StringKeysDict
 
 
 class Workdir(FileStateManager):
