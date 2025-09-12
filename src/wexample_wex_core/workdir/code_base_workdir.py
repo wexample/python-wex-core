@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
+from wexample_helpers.classes.abstract_method import abstract_method
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
 if TYPE_CHECKING:
@@ -127,7 +128,7 @@ class CodeBaseWorkdir(ProjectWorkdir):
         """Check if current package depends on given one."""
         return False
 
-    @abstractmethod
+    @abstract_method
     def get_dependencies(self) -> list[str]:
         pass
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
+from wexample_helpers.classes.abstract_method import abstract_method
 from wexample_prompt.common.progress.progress_handle import ProgressHandle
 from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
@@ -142,7 +143,7 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
 
         return raw_value
 
-    @abstractmethod
+    @abstract_method
     def _child_is_package_directory(self, entry: Path) -> bool:
         pass
 

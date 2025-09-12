@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from wexample_app.resolver.abstract_command_resolver import (
     AbstractCommandResolver as BaseAbstractCommandResolver,
 )
+from wexample_helpers.classes.abstract_method import abstract_method
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
@@ -32,6 +33,6 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
             function_kwargs=function_kwargs,
         )
 
-    @abstractmethod
+    @abstract_method
     def build_registry_data(self) -> StructuredData:
         pass
