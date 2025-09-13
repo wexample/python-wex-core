@@ -2,7 +2,7 @@
 
 Wex core
 
-Version: 6.0.45
+Version: 6.0.46
 
 ## Requirements
 
@@ -13,10 +13,10 @@ Version: 6.0.45
 - attrs>=23.1.0
 - cattrs>=23.1.0
 - click
-- wexample-app==0.0.50
-- wexample-filestate-git==0.0.39
-- wexample-filestate==0.0.51
-- wexample-helpers-git==0.0.50
+- wexample-app==0.0.51
+- wexample-filestate-git==0.0.40
+- wexample-filestate==0.0.52
+- wexample-helpers-git==0.0.51
 
 ## Installation
 
