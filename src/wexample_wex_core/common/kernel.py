@@ -103,6 +103,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
     def _get_core_args(self):
         from wexample_prompt.enums.verbosity_level import VerbosityLevel
+
         return super()._get_core_args() + [
             {"arg": "quiet", "attr": "verbosity", "value": VerbosityLevel.QUIET},
             {"arg": "vv", "attr": "verbosity", "value": VerbosityLevel.MEDIUM},

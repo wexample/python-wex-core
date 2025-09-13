@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING
 from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 if TYPE_CHECKING:
-    from wexample_app.common.command_request import CommandRequest
     from pathlib import Path
+
+    from wexample_app.common.command_request import CommandRequest
 
 
 class ServiceCommandResolver(AbstractCommandResolver):

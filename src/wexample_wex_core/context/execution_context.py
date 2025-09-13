@@ -16,12 +16,12 @@ from wexample_wex_core.common.command_request import CommandRequest
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 if TYPE_CHECKING:
-    from wexample_prompt.common.progress.progress_handle import ProgressHandle
-    from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
-    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-    from wexample_wex_core.common.command_request import CommandRequest
     from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
     from wexample_helpers.const.types import Kwargs
+    from wexample_prompt.common.progress.progress_handle import ProgressHandle
+    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+    from wexample_wex_core.common.command_request import CommandRequest
+    from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 
 @base_class
