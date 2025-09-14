@@ -29,7 +29,6 @@ class AbstractAddonManager(
         manager_file = inspect.getfile(self.__class__)
 
         self._init_workdir(
-            self,
             entrypoint_path=os.path.dirname(manager_file),
             io=self.kernel.io,
         )
