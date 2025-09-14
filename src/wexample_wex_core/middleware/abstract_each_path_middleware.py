@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING, Any
 
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
