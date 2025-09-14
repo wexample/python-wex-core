@@ -16,7 +16,7 @@ class Workdir(FileStateManager):
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_app.const.globals import APP_FILE_APP_CONFIG
         from wexample_filestate.option.text_filter_option import (
-            TextFilterConfigOption,
+            TextFilterOption,
         )
         from wexample_filestate.config_value.aggregated_templates_config_value import (
             AggregatedTemplatesConfigValue,
@@ -43,7 +43,7 @@ class Workdir(FileStateManager):
                     "name": EnvFile.EXTENSION_DOT_ENV,
                     "type": DiskItemType.FILE,
                     "should_exist": True,
-                    "text_filter": [TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE],
+                    "text_filter": [TextFilterOption.OPTION_NAME_ENSURE_NEWLINE],
                 },
                 {
                     # config.yml
@@ -52,7 +52,7 @@ class Workdir(FileStateManager):
                     "should_exist": True,
                     "class": YamlFile,
                     "text_filter": [
-                        TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE,
+                        TextFilterOption.OPTION_NAME_ENSURE_NEWLINE,
                         "tmp/",
                     ],
                     "yaml_filter": ["sort_recursive"],
@@ -102,7 +102,7 @@ class Workdir(FileStateManager):
                     "type": DiskItemType.FILE,
                     "should_exist": True,
                     "should_contain_lines": [EnvFile.EXTENSION_DOT_ENV],
-                    "text_filter": [TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE],
+                    "text_filter": [TextFilterOption.OPTION_NAME_ENSURE_NEWLINE],
                 },
             ],
         }

@@ -28,7 +28,7 @@ class ProjectWorkdir(
     def create_from_config(cls, **kwargs) -> ProjectWorkdir:
         from wexample_app.const.globals import APP_FILE_APP_CONFIG
         from wexample_filestate.option.class_option import (
-            ClassConfigOption,
+            ClassOption,
         )
         from wexample_helpers.helpers.module import module_are_same
 
@@ -37,7 +37,7 @@ class ProjectWorkdir(
         instance = super().create_from_config(**kwargs)
 
         if isinstance(config, dict):
-            ClassConfigOption.get_snake_short_class_name()
+            ClassOption.get_snake_short_class_name()
             preferred = instance.get_preferred_workdir_class()
             if preferred:
                 # The loaded class definition is a different one.
@@ -171,7 +171,7 @@ class ProjectWorkdir(
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_filestate.option.text_filter_option import (
-            TextFilterConfigOption,
+            TextFilterOption,
         )
         from wexample_filestate.const.disk import DiskItemType
         from wexample_wex_core.const.project import PROJECT_GITIGNORE_DEFAULT
@@ -195,7 +195,7 @@ class ProjectWorkdir(
                 "name": ".gitignore",
                 "type": DiskItemType.FILE,
                 "should_exist": True,
-                "text_filter": [TextFilterConfigOption.OPTION_NAME_ENSURE_NEWLINE],
+                "text_filter": [TextFilterOption.OPTION_NAME_ENSURE_NEWLINE],
                 "should_contain_lines": PROJECT_GITIGNORE_DEFAULT,
             }
         )
