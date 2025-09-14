@@ -15,7 +15,7 @@ class Workdir(FileStateManager):
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_app.const.globals import APP_FILE_APP_CONFIG
-        from wexample_filestate.config_option.text_filter_config_option import (
+        from wexample_filestate.option.text_filter_config_option import (
             TextFilterConfigOption,
         )
         from wexample_filestate.config_value.aggregated_templates_config_value import (

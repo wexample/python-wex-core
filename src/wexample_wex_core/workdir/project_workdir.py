@@ -27,7 +27,7 @@ class ProjectWorkdir(
     @classmethod
     def create_from_config(cls, **kwargs) -> ProjectWorkdir:
         from wexample_app.const.globals import APP_FILE_APP_CONFIG
-        from wexample_filestate.config_option.class_config_option import (
+        from wexample_filestate.option.class_config_option import (
             ClassConfigOption,
         )
         from wexample_helpers.helpers.module import module_are_same
@@ -170,7 +170,7 @@ class ProjectWorkdir(
         return str(version).strip()
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
-        from wexample_filestate.config_option.text_filter_config_option import (
+        from wexample_filestate.option.text_filter_config_option import (
             TextFilterConfigOption,
         )
         from wexample_filestate.const.disk import DiskItemType

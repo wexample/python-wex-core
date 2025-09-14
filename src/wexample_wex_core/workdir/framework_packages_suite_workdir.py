@@ -114,7 +114,7 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         progress.finish()
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
-        from wexample_filestate.config_option.children_filter_config_option import (
+        from wexample_filestate.option.children_filter_config_option import (
             ChildrenFilterConfigOption,
         )
         from wexample_filestate.const.disk import DiskItemType
