@@ -115,7 +115,7 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_filestate.option.children_filter_option import (
-            ChildrenFilterConfigOption,
+            ChildrenFilterOption,
         )
         from wexample_filestate.const.disk import DiskItemType
 
@@ -129,7 +129,7 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
                 "name": self._get_children_package_directory_name(),
                 "type": DiskItemType.DIRECTORY,
                 "children": [
-                    ChildrenFilterConfigOption(
+                    ChildrenFilterOption(
                         filter=self._child_is_package_directory,
                         pattern={
                             "class": self._get_children_package_workdir_class(),
