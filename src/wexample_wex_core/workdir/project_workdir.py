@@ -180,8 +180,10 @@ class ProjectWorkdir(
 
         raw_value.update(
             {
-                "mode": "777",
-                "mode_recursive": True,
+                "mode": {
+                    "permissions": "777",
+                    "recursive": True
+                }
             }
         )
 
