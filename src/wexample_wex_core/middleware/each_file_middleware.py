@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING, Any
 
 from wexample_wex_core.middleware.abstract_each_path_middleware import (
@@ -44,10 +45,8 @@ class EachFileMiddleware(AbstractEachPathMiddleware):
 
     def _get_default_option(self) -> dict[str, Any]:
         """Get the default file option definition."""
-        from wexample_file.const.globals import PATH_NAME_FILE
-
         return {
-            "name": PATH_NAME_FILE,
+            "name": "file",
             "type": str,
             "required": True,
             "description": "Path to local file",

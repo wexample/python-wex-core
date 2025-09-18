@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING, Any
 
 from wexample_wex_core.middleware.abstract_each_path_middleware import (
@@ -41,10 +42,9 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
 
     def _get_default_option(self) -> dict[str, Any]:
         """Get the default directory option definition."""
-        from wexample_file.const.globals import PATH_NAME_DIRECTORY
 
         return {
-            "name": PATH_NAME_DIRECTORY,
+            "name": "directory",
             "type": str,
             "required": True,
             "description": "Path to local directory",
