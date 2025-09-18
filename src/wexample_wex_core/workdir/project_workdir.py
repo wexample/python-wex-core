@@ -37,7 +37,7 @@ class ProjectWorkdir(
         instance = super().create_from_config(**kwargs)
 
         if isinstance(config, dict):
-            ClassOption.get_snake_short_class_name()
+            ClassOption.get_name()
             preferred = instance.get_preferred_workdir_class()
             if preferred:
                 # The loaded class definition is a different one.
