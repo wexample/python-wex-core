@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from wexample_filestate.file_state_manager import FileStateManager
+from wexample_filestate.option.text_option import TextOption
 
 if TYPE_CHECKING:
     from wexample_config.const.types import DictConfig
@@ -14,9 +15,6 @@ class Workdir(FileStateManager):
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_app.const.globals import APP_FILE_APP_CONFIG
-        from wexample_filestate.option.text_filter_option import (
-            TextFilterOption,
-        )
         from wexample_filestate.config_value.aggregated_templates_config_value import (
             AggregatedTemplatesConfigValue,
         )
@@ -42,7 +40,9 @@ class Workdir(FileStateManager):
                     "name": EnvFile.EXTENSION_DOT_ENV,
                     "type": DiskItemType.FILE,
                     "should_exist": True,
-                    "text_filter": [TextFilterOption.OPTION_NAME_ENSURE_NEWLINE],
+                    TextOption.get_name(): {
+                        "end_new_line": True
+                    },
                 },
                 {
                     # config.yml
@@ -50,10 +50,9 @@ class Workdir(FileStateManager):
                     "type": DiskItemType.FILE,
                     "should_exist": True,
                     "class": YamlFile,
-                    "text_filter": [
-                        TextFilterOption.OPTION_NAME_ENSURE_NEWLINE,
-                        "tmp/",
-                    ],
+                    TextOption.get_name(): {
+                        "end_new_line": True
+                    },
                     "yaml": {"sort_recursive": True},
                 },
                 {
@@ -101,7 +100,9 @@ class Workdir(FileStateManager):
                     "type": DiskItemType.FILE,
                     "should_exist": True,
                     "should_contain_lines": [EnvFile.EXTENSION_DOT_ENV],
-                    "text_filter": [TextFilterOption.OPTION_NAME_ENSURE_NEWLINE],
+                    TextOption.get_name(): {
+                        "end_new_line": True
+                    },
                 },
             ],
         }

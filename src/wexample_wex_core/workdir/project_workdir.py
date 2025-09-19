@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from wexample_filestate.option.text_option import TextOption
 from wexample_filestate.workdir.mixin.with_readme_workdir_mixin import (
     WithReadmeWorkdirMixin,
 )
@@ -170,9 +171,6 @@ class ProjectWorkdir(
         return str(version).strip()
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
-        from wexample_filestate.option.text_filter_option import (
-            TextFilterOption,
-        )
         from wexample_filestate.const.disk import DiskItemType
         from wexample_wex_core.const.project import PROJECT_GITIGNORE_DEFAULT
 
@@ -197,7 +195,9 @@ class ProjectWorkdir(
                 "name": ".gitignore",
                 "type": DiskItemType.FILE,
                 "should_exist": True,
-                "text_filter": [TextFilterOption.OPTION_NAME_ENSURE_NEWLINE],
+                TextOption.get_name(): {
+                    "end_new_line": True
+                },
                 "should_contain_lines": PROJECT_GITIGNORE_DEFAULT,
             }
         )
