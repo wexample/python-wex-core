@@ -176,14 +176,7 @@ class ProjectWorkdir(
 
         raw_value = super().prepare_value(raw_value)
 
-        raw_value.update(
-            {
-                "mode": {
-                    "permissions": "777",
-                    "recursive": True
-                }
-            }
-        )
+        raw_value.update({"mode": {"permissions": "777", "recursive": True}})
 
         children = raw_value["children"]
 
@@ -195,9 +188,7 @@ class ProjectWorkdir(
                 "name": ".gitignore",
                 "type": DiskItemType.FILE,
                 "should_exist": True,
-                TextOption.get_name(): {
-                    "end_new_line": True
-                },
+                TextOption.get_name(): {"end_new_line": True},
                 "should_contain_lines": PROJECT_GITIGNORE_DEFAULT,
             }
         )

@@ -42,7 +42,6 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
 
     def _get_default_option(self) -> dict[str, Any]:
         """Get the default directory option definition."""
-
         return {
             "name": "directory",
             "type": str,

@@ -7,7 +7,6 @@ from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
 from wexample_helpers.classes.private_field import private_field
 from wexample_helpers.decorator.base_class import base_class
-from wexample_prompt.enums.verbosity_level import VerbosityLevel
 
 if TYPE_CHECKING:
     from wexample_app.const.types import CommandLineArgumentsList
