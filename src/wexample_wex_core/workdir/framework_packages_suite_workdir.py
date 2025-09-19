@@ -114,10 +114,10 @@ class FrameworkPackageSuiteWorkdir(ProjectWorkdir):
         progress.finish()
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
+        from wexample_filestate.const.disk import DiskItemType
         from wexample_filestate.option.children_filter_option import (
             ChildrenFilterOption,
         )
-        from wexample_filestate.const.disk import DiskItemType
 
         raw_value = super().prepare_value(raw_value=raw_value)
 

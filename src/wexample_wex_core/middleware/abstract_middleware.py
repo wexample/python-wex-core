@@ -10,7 +10,6 @@ from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin impor
 )
 from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
 from wexample_helpers.decorator.base_class import base_class
-from wexample_wex_core.command.option import Option
 
 if TYPE_CHECKING:
     from wexample_helpers.const.types import Kwargs

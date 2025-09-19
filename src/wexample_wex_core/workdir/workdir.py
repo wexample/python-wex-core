@@ -40,9 +40,7 @@ class Workdir(FileStateManager):
                     "name": EnvFile.EXTENSION_DOT_ENV,
                     "type": DiskItemType.FILE,
                     "should_exist": True,
-                    TextOption.get_name(): {
-                        "end_new_line": True
-                    },
+                    TextOption.get_name(): {"end_new_line": True},
                 },
                 {
                     # config.yml
@@ -50,9 +48,7 @@ class Workdir(FileStateManager):
                     "type": DiskItemType.FILE,
                     "should_exist": True,
                     "class": YamlFile,
-                    TextOption.get_name(): {
-                        "end_new_line": True
-                    },
+                    TextOption.get_name(): {"end_new_line": True},
                     "yaml": {"sort_recursive": True},
                 },
                 {
@@ -100,9 +96,7 @@ class Workdir(FileStateManager):
                     "type": DiskItemType.FILE,
                     "should_exist": True,
                     "should_contain_lines": [EnvFile.EXTENSION_DOT_ENV],
-                    TextOption.get_name(): {
-                        "end_new_line": True
-                    },
+                    TextOption.get_name(): {"end_new_line": True},
                 },
             ],
         }
