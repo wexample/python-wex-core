@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
-from wexample_filestate.mixins.with_workdir_mixin import WithWorkdirMixin
+from wexample_filestate.workdir.mixin.with_workdir_mixin import WithWorkdirMixin
 from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin import (
     HasSnakeShortClassNameClassMixin,
 )
