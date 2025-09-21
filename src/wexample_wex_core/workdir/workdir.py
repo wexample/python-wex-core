@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wexample_filestate.file_state_manager import FileStateManager
+from wexample_filestate.utils.file_state_manager import FileStateManager
 
 if TYPE_CHECKING:
     from wexample_config.const.types import DictConfig

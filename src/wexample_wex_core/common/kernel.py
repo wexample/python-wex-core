@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
     from wexample_app.runner.abstract_command_runner import AbstractCommandRunner
     from wexample_config.const.types import DictConfig
-    from wexample_filestate.file_state_manager import FileStateManager
+    from wexample_filestate.utils.file_state_manager import FileStateManager
     from wexample_prompt.common.io_manager import IoManager
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest
