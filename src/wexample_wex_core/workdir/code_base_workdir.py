@@ -9,9 +9,6 @@ if TYPE_CHECKING:
     from wexample_config.options_provider.abstract_options_provider import (
         AbstractOptionsProvider,
     )
-    from wexample_filestate.operations_provider.abstract_operations_provider import (
-        AbstractOperationsProvider,
-    )
     from wexample_prompt.common.progress.progress_handle import ProgressHandle
 
 
@@ -137,19 +134,6 @@ class CodeBaseWorkdir(ProjectWorkdir):
 
         prefix = f"{self.get_package_name()}/v*"
         return git_last_tag_for_prefix(prefix, cwd=self.get_path(), inherit_stdio=False)
-
-    def get_operations_providers(self) -> list[type[AbstractOperationsProvider]]:
-        from wexample_filestate.operations_provider.default_operations_provider import (
-            DefaultOperationsProvider,
-        )
-        from wexample_filestate_git.operations_provider.git_operations_provider import (
-            GitOperationsProvider,
-        )
-
-        return [
-            DefaultOperationsProvider,
-            GitOperationsProvider,
-        ]
 
     def get_options_providers(self) -> list[type[AbstractOptionsProvider]]:
         from wexample_filestate.options_provider.default_options_provider import (
