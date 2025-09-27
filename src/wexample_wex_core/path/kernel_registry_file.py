@@ -18,7 +18,7 @@ class KernelRegistryFile(YamlFile):
     def create_registry_and_save(self, kernel: Kernel) -> KernelRegistry:
         registry = self.create_registry(kernel=kernel)
 
-        self.write(registry.serialize())
+        self.write_parsed(registry.serialize())
 
         return registry
 
