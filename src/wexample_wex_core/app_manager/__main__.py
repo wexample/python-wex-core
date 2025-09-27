@@ -21,6 +21,7 @@ def run(argv: Iterable[str] | None = None, app_root: str | None = None) -> int:
 
     root = app_root or os.getenv("APP_ROOT") or os.getcwd()
     # TODO: later: dispatch to real commands (click/argparse/typer)
+    print(f"Python executable: {sys.executable}")
     print(f"wex-core manager: OK (app_root={root}) args={' '.join(argv)}")
     return 0
 
