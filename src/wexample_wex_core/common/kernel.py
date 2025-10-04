@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
+    from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
 
 @base_class
@@ -110,18 +111,20 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             {"arg": "vvv", "attr": "verbosity", "value": VerbosityLevel.MAXIMUM},
         ]
 
-    def _get_workdir_state_manager_class(
-        self,
-        entrypoint_path: str,
-        io: IoManager,
-        config: DictConfig | None = None,
-    ) -> FileStateManager:
+    def _get_workdir_state_manager_class(self) -> type[KernelWorkdir]:
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
+        return KernelWorkdir
 
-        return KernelWorkdir.create_from_kernel(kernel=self, config=config or {}, io=io)
+    def _create_workdir_state_manager(
+            self,
+            entrypoint_path: str,
+            io: IoManager,
+            config: DictConfig | None = None,
+    ) -> FileStateManager:
+        return self._get_workdir_state_manager_class().create_from_kernel(kernel=self, config=config or {}, io=io)
 
     def _init_addons(
-        self, addons: list[type[AbstractAddonManager]] | None = None
+            self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> None:
         from wexample_app.service.service_registry import ServiceRegistry
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON

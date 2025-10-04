@@ -34,9 +34,8 @@ class KernelWorkdir(AbstractKernelChild, Workdir):
 
         config = super().prepare_value(raw_value=raw_value)
 
-        children = raw_value["children"]
-
-        children.append(
+        raw_value["children"] = raw_value.get("children", [])
+        raw_value["children"].append(
             {
                 "shortcut": self.SHORTCUT_TMP,
                 "name": self.SHORTCUT_TMP,
