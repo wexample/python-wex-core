@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
 from wexample_helpers.decorator.base_class import base_class
-from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
+from wexample_wex_core.workdir.workdir import Workdir
 
 if TYPE_CHECKING:
     from wexample_config.const.types import DictConfig
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 @base_class
-class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
+class KernelWorkdir(AbstractKernelChild, Workdir):
     # Class-scoped constant for the tmp shortcut
     SHORTCUT_REGISTRY: ClassVar[str] = "registry"
     SHORTCUT_TMP: ClassVar[str] = "tmp"
@@ -22,7 +22,7 @@ class KernelWorkdir(AbstractKernelChild, ProjectWorkdir):
 
     @classmethod
     def create_from_kernel(
-        cls, kernel: Kernel, io: IoManager, **kwargs
+            cls, kernel: Kernel, io: IoManager, **kwargs
     ) -> ItemTargetDirectory:
         return super().create_from_path(
             path=kernel.entrypoint_path, kernel=kernel, io=io, **kwargs
