@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from wexample_filestate.workdir.mixin.with_version_workdir_mixin import (
+from wexample_wex_addon_app.workdir.mixin.with_version_workdir_mixin import (
     WithVersionWorkdirMixin,
 )
 from wexample_helpers.decorator.base_class import base_class
