@@ -46,6 +46,7 @@ class KernelWorkdir(AbstractKernelChild, Workdir):
                         "name": CORE_FILE_NAME_REGISTRY,
                         "shortcut": KernelWorkdir.SHORTCUT_REGISTRY,
                         "type": DiskItemType.FILE,
+                        "should_exist": True,
                     }
                 ],
             }
