@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
 from wexample_helpers.decorator.base_class import base_class
+from wexample_wex_core.const.globals import CORE_FILE_NAME_REGISTRY, CORE_DIR_NAME_TMP
 from wexample_wex_core.workdir.workdir import Workdir
 
 if TYPE_CHECKING:
@@ -17,8 +18,6 @@ if TYPE_CHECKING:
 class KernelWorkdir(AbstractKernelChild, Workdir):
     # Class-scoped constant for the tmp shortcut
     SHORTCUT_REGISTRY: ClassVar[str] = "registry"
-    SHORTCUT_TMP: ClassVar[str] = "tmp"
-    FILE_REGISTRY: ClassVar[str] = "registry.yml"
 
     @classmethod
     def create_from_kernel(
@@ -37,14 +36,14 @@ class KernelWorkdir(AbstractKernelChild, Workdir):
         raw_value["children"] = raw_value.get("children", [])
         raw_value["children"].append(
             {
-                "shortcut": self.SHORTCUT_TMP,
-                "name": self.SHORTCUT_TMP,
+                "shortcut": CORE_DIR_NAME_TMP,
+                "name": CORE_DIR_NAME_TMP,
                 "type": DiskItemType.DIRECTORY,
                 "should_exist": True,
                 "children": [
                     {
                         "class": KernelRegistryFile,
-                        "name": KernelWorkdir.FILE_REGISTRY,
+                        "name": CORE_FILE_NAME_REGISTRY,
                         "shortcut": KernelWorkdir.SHORTCUT_REGISTRY,
                         "type": DiskItemType.FILE,
                     }
