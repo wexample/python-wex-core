@@ -43,6 +43,7 @@ class AbstractAddonManager(
     @classmethod
     def get_package_source_path(cls) -> Path:
         from wexample_helpers.helpers.module import module_get_path
+
         return module_get_path(cls.get_package_module())
 
     @classmethod

@@ -21,9 +21,6 @@ class CommandMethodWrapper(BaseClass):
         default=None,
         description="Optional human-readable description of the command method",
     )
-    type: str | None = public_field(
-        description="The command type",
-    )
     function: AnyCallable = public_field(
         description="Callable object implementing the command method",
     )
@@ -38,6 +35,9 @@ class CommandMethodWrapper(BaseClass):
     options: list[Option] = public_field(
         factory=list,
         description="List of command options available for this method",
+    )
+    type: str | None = public_field(
+        description="The command type",
     )
 
     def find_option_by_kebab_name(self, kabab_name: str) -> Option | None:

@@ -3,6 +3,7 @@ from __future__ import annotations
 from wexample_helpers.exception.undefined_exception import (
     ExceptionData,
 )
+
 from wexample_wex_core.exception.abstract_command_option_exception import (
     AbstractCommandOptionException,
 )

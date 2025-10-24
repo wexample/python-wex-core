@@ -8,14 +8,14 @@ WORKDIR_SETUP_DIR: Path = Path(f".{CORE_COMMAND_NAME}")
 CORE_FILE_NAME_REGISTRY: Path = Path("registry.yml")
 CORE_DIR_NAME_TMP: Path = Path("tmp")
 CORE_DIR_NAME_KNOWLEDGE: Path = Path("knowledge")
-
-# Command types
 # filestate: python-constant-sort
-COMMAND_TYPE_ADDON: str = "addon"
-COMMAND_TYPE_SERVICE: str = "service"
 COMMAND_SEPARATOR_ADDON = "::"
 COMMAND_SEPARATOR_FUNCTION_PARTS = "__"
 COMMAND_SEPARATOR_GROUP = "/"
+
+# Command types
+COMMAND_TYPE_ADDON: str = "addon"
+COMMAND_TYPE_SERVICE: str = "service"
 
 # Command patterns
 # filestate: python-constant-sort

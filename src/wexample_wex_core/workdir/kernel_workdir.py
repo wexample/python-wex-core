@@ -21,7 +21,7 @@ class KernelWorkdir(AbstractKernelChild, Workdir):
 
     @classmethod
     def create_from_kernel(
-            cls, kernel: Kernel, io: IoManager, **kwargs
+        cls, kernel: Kernel, io: IoManager, **kwargs
     ) -> ItemTargetDirectory:
         return super().create_from_path(
             path=kernel.entrypoint_path, kernel=kernel, io=io, **kwargs

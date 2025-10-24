@@ -12,9 +12,7 @@ def command(type: str, description: str | None = None):
         from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
         return CommandMethodWrapper(
-            type=type,
-            function=function,
-            description=description
+            type=type, function=function, description=description
         )
 
     return decorator

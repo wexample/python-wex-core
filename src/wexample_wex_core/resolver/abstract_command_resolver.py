@@ -3,7 +3,10 @@ from __future__ import annotations
 from abc import ABC
 from typing import TYPE_CHECKING
 
-from wexample_wex_core.const.globals import COMMAND_SEPARATOR_ADDON, COMMAND_SEPARATOR_GROUP
+from wexample_wex_core.const.globals import (
+    COMMAND_SEPARATOR_ADDON,
+    COMMAND_SEPARATOR_GROUP,
+)
 
 from wexample_app.resolver.abstract_command_resolver import (
     AbstractCommandResolver as BaseAbstractCommandResolver,
@@ -60,9 +63,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         return f"{kebab_parts[0]}{COMMAND_SEPARATOR_ADDON}{kebab_parts[1]}{COMMAND_SEPARATOR_GROUP}{kebab_parts[2]}"
 
     @classmethod
-    def build_command_parts_from_function_name(
-            cls, function_name: str
-    ) -> StringsList:
+    def build_command_parts_from_function_name(cls, function_name: str) -> StringsList:
         """
         Returns the "default" format (addons style)
         """
