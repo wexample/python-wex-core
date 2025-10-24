@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
 from wexample_filestate.workdir.mixin.with_workdir_mixin import WithWorkdirMixin
+from wexample_helpers.classes.abstract_method import abstract_method
 from wexample_helpers.classes.mixin.has_snake_short_class_name_class_mixin import (
     HasSnakeShortClassNameClassMixin,
 )
@@ -32,6 +34,16 @@ class AbstractAddonManager(
             entrypoint_path=os.path.dirname(manager_file),
             io=self.kernel.io,
         )
+
+    @abstract_method
+    @classmethod
+    def get_package_module(cls) -> Any:
+        pass
+
+    @classmethod
+    def get_package_source_path(cls) -> Path:
+        from wexample_helpers.helpers.module import module_get_path
+        return module_get_path(cls.get_package_module())
 
     @classmethod
     def get_class_name_suffix(cls) -> str | None:
