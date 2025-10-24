@@ -21,6 +21,9 @@ class CommandMethodWrapper(BaseClass):
         default=None,
         description="Optional human-readable description of the command method",
     )
+    type: str | None = public_field(
+        description="The command type",
+    )
     function: AnyCallable = public_field(
         description="Callable object implementing the command method",
     )
