@@ -107,7 +107,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         return super()._get_core_args() + [
             {"arg": "quiet", "attr": "verbosity", "value": VerbosityLevel.QUIET},
-            {"arg": "vv", "attr": "verbosity", "value": VerbosityLevel.MEDIUM},
+            {"arg": "v", "attr": "verbosity", "value": VerbosityLevel.MEDIUM},
+            {"arg": "vv", "attr": "verbosity", "value": VerbosityLevel.HIGH},
             {"arg": "vvv", "attr": "verbosity", "value": VerbosityLevel.MAXIMUM},
         ]
 
