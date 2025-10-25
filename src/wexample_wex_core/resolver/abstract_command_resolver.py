@@ -30,8 +30,12 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         """
         Returns the "default" format (addons style)
         """
-        from wexample_wex_core.const.globals import COMMAND_SEPARATOR_ADDON, COMMAND_SEPARATOR_GROUP
+        from wexample_wex_core.const.globals import (
+            COMMAND_SEPARATOR_ADDON,
+            COMMAND_SEPARATOR_GROUP,
+        )
         from wexample_helpers.helpers.string import string_to_kebab_case
+
         # Convert each part to kebab-case
         kebab_parts = [string_to_kebab_case(part) for part in parts]
 
@@ -43,6 +47,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         Returns the "default" format (addons style)
         """
         from wexample_wex_core.const.globals import COMMAND_SEPARATOR_FUNCTION_PARTS
+
         return function_name.split(COMMAND_SEPARATOR_FUNCTION_PARTS)[:3]
 
     def build_execution_context(
