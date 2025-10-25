@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
+from wexample_prompt.enums.verbosity_level import VerbosityLevel
+
+from wexample_app.command.option import Option
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
 from wexample_helpers.classes.private_field import private_field
 from wexample_helpers.decorator.base_class import base_class
-from wexample_prompt.enums.verbosity_level import VerbosityLevel
 
 if TYPE_CHECKING:
     from wexample_app.const.types import CommandLineArgumentsList
@@ -27,6 +29,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _config_arg_verbosity: VerbosityLevel = private_field(
         default=VerbosityLevel.DEFAULT,
         description="Verbosity level of every logs",
+    )
+    _config_arg_indentation_level: int | None = private_field(
+        default=None,
+        description="Prompt messages indentation level",
     )
     _registry: KernelRegistry = private_field(
         description="The configuration registry"
@@ -54,8 +60,23 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         return response
 
+    def _init_command_line_kernel(self: AbstractKernel) -> None:
+        super()._init_command_line_kernel()
+
+        print(self._config_arg_indentation_level)
+        print(self._config_arg_indentation_level)
+        print(self._config_arg_indentation_level)
+        print(self._config_arg_indentation_level)
+
+        if self._config_arg_indentation_level is not None:
+            print(self.io.indentation)
+            print(self.io.indentation)
+            print(self.io.indentation)
+            print(self.io.indentation)
+            self.io.indentation = self._config_arg_indentation_level
+
     def _build_single_command_request_from_arguments(
-        self, arguments: CommandLineArgumentsList
+            self, arguments: CommandLineArgumentsList
     ):
         # Core command request takes a request id.
         return [
