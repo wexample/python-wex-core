@@ -3,8 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 
 from wexample_prompt.enums.verbosity_level import VerbosityLevel
-
-from wexample_app.command.option import Option
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
@@ -22,6 +20,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
     from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
+    from wexample_app.command.option import Option
 
 
 @base_class
@@ -116,6 +115,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def _get_core_args(self) -> list[Option]:
+        from wexample_app.command.option import Option
         from wexample_prompt.enums.verbosity_level import VerbosityLevel
 
         return super()._get_core_args() + [
