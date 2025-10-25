@@ -16,14 +16,17 @@ class CommandUnexpectedArgumentException(NotAllowedItemException):
     """Exception raised when an unexpected argument is provided to a command."""
 
     error_code: str = "COMMAND_UNEXPECTED_ARGUMENT"
+    argument: str
 
     def __init__(
-        self,
-        argument: str,
-        allowed_arguments: list[str],
-        cause: Exception | None = None,
-        previous: Exception | None = None,
+            self,
+            argument: str,
+            allowed_arguments: list[str],
+            cause: Exception | None = None,
+            previous: Exception | None = None,
     ) -> None:
+        self.argument = argument
+
         # Call parent constructor with appropriate parameters
         super().__init__(
             item_type="argument",

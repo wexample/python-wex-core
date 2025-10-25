@@ -18,7 +18,7 @@ def option(
     is_flag: bool = False,
 ) -> AnyCallable:
     def decorator(command_wrapper: CommandMethodWrapper) -> CommandMethodWrapper:
-        from wexample_wex_core.command.option import Option
+        from wexample_app.command.option import Option
 
         command_wrapper.set_option(
             Option(

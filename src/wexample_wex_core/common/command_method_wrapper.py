@@ -4,14 +4,11 @@ from typing import TYPE_CHECKING
 
 from wexample_helpers.classes.base_class import BaseClass
 from wexample_helpers.classes.field import public_field
-from wexample_helpers.const.types import AnyCallable, Kwargs
 from wexample_helpers.decorator.base_class import base_class
-from wexample_wex_core.command.option import Option
-from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 if TYPE_CHECKING:
     from wexample_helpers.const.types import AnyCallable, Kwargs
-    from wexample_wex_core.command.option import Option
+    from wexample_app.command.option import Option
     from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 

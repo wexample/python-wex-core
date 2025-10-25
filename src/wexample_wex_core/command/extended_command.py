@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING, Any
 from wexample_app.common.command import Command
 from wexample_helpers.classes.field import public_field
 from wexample_helpers.decorator.base_class import base_class
-
-from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+from wexample_wex_core.exception.command_unexpected_argument_exception import CommandUnexpectedArgumentException
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
@@ -45,7 +44,11 @@ class ExtendedCommand(Command):
             middleware = middleware_class(name=name, **middlewares_attributes[name])
             self.command_wrapper.set_middleware(middleware)
 
-        function_kwargs = self._build_function_kwargs(request=request)
+        try:
+            function_kwargs = self._build_function_kwargs(request=request)
+        except CommandUnexpectedArgumentException as e:
+            self.kernel.io.error(f'The argument "{e.argument}" is not allowed.')
+            return None
 
         if len(self.command_wrapper.middlewares) > 0:
             output = MultipleResponse(kernel=self.kernel)
