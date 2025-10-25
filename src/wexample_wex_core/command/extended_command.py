@@ -244,9 +244,9 @@ class ExtendedCommand(Command):
 
     def _parse_arguments(self, arguments: list[str]) -> ParsedArgs:
         """Parse raw command line arguments into a dictionary of option name to value."""
-        from wexample_wex_core.helpers.argument_parser import parse_arguments
+        from wexample_app.helpers.argument import argument_parse_options
 
-        return parse_arguments(
+        return argument_parse_options(
             arguments=arguments,
             options=self.command_wrapper.options,
             allowed_option_names=self.command_wrapper.get_options_names(),
