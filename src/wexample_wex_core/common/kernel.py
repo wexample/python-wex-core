@@ -26,11 +26,10 @@ if TYPE_CHECKING:
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _config_arg_verbosity: VerbosityLevel = private_field(
         default=VerbosityLevel.DEFAULT,
-        init=False,
         description="Verbosity level of every logs",
     )
     _registry: KernelRegistry = private_field(
-        init=False, description="The configuration registry"
+        description="The configuration registry"
     )
 
     def get_addons(self) -> dict[str, AbstractAddonManager]:
@@ -102,14 +101,44 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             CoreYamlCommandRunner,
         ]
 
-    def _get_core_args(self):
+    def _get_core_args(self) -> list[Option]:
         from wexample_prompt.enums.verbosity_level import VerbosityLevel
 
         return super()._get_core_args() + [
-            {"arg": "quiet", "attr": "verbosity", "value": VerbosityLevel.QUIET},
-            {"arg": "v", "attr": "verbosity", "value": VerbosityLevel.MEDIUM},
-            {"arg": "vv", "attr": "verbosity", "value": VerbosityLevel.HIGH},
-            {"arg": "vvv", "attr": "verbosity", "value": VerbosityLevel.MAXIMUM},
+            Option(
+                name="quiet",
+                is_flag=True,
+                type=bool,
+                value=VerbosityLevel.QUIET,
+                description="Silence all output",
+            ),
+            Option(
+                name="v",
+                is_flag=True,
+                type=bool,
+                value=VerbosityLevel.MEDIUM,
+                description="Medium verbosity (-v)",
+            ),
+            Option(
+                name="vv",
+                is_flag=True,
+                type=bool,
+                value=VerbosityLevel.HIGH,
+                description="High verbosity (-vv)",
+            ),
+            Option(
+                name="vvv",
+                is_flag=True,
+                type=bool,
+                value=VerbosityLevel.MAXIMUM,
+                description="Maximum verbosity (-vvv)",
+            ),
+            Option(
+                name="indentation_level",
+                is_flag=False,
+                type=int,
+                description="Number of indentation levels to use",
+            ),
         ]
 
     def _get_workdir_state_manager_class(self) -> type[KernelWorkdir]:
