@@ -24,7 +24,6 @@ if TYPE_CHECKING:
 
 
 class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
-
     @classmethod
     def build_command_from_function(cls, command_wrapper: CommandMethodWrapper):
         parts = cls.build_command_parts_from_function_name(

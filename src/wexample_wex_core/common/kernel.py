@@ -26,13 +26,13 @@ if TYPE_CHECKING:
 
 @base_class
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
-    _config_arg_verbosity: VerbosityLevel = private_field(
-        default=VerbosityLevel.DEFAULT,
-        description="Verbosity level of every logs",
-    )
     _config_arg_indentation_level: int | None = private_field(
         default=None,
         description="Prompt messages indentation level",
+    )
+    _config_arg_verbosity: VerbosityLevel = private_field(
+        default=VerbosityLevel.DEFAULT,
+        description="Verbosity level of every logs",
     )
     _registry: KernelRegistry = private_field(description="The configuration registry")
 

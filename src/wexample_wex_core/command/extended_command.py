@@ -6,9 +6,6 @@ from typing import TYPE_CHECKING, Any
 from wexample_app.common.command import Command
 from wexample_helpers.classes.field import public_field
 from wexample_helpers.decorator.base_class import base_class
-from wexample_wex_core.exception.command_unexpected_argument_exception import (
-    CommandUnexpectedArgumentException,
-)
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
@@ -29,14 +26,11 @@ class ExtendedCommand(Command):
         self.function = self.command_wrapper.function
 
     def execute_request(self, request: CommandRequest) -> Any:
-        from wexample_app.helpers.response import response_normalize
+        from wexample_wex_core.exception.command_unexpected_argument_exception import CommandUnexpectedArgumentException
         from wexample_app.response.failure_response import FailureResponse
+        from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_ALLWAYS, MIDDLEWARE_OPTION_VALUE_OPTIONAL
         from wexample_app.response.multiple_response import MultipleResponse
-
-        from wexample_wex_core.const.middleware import (
-            MIDDLEWARE_OPTION_VALUE_ALLWAYS,
-            MIDDLEWARE_OPTION_VALUE_OPTIONAL,
-        )
+        from wexample_app.helpers.response import response_normalize
 
         middlewares_attributes = self.command_wrapper.middlewares_attributes
         middlewares_registry = self.kernel.get_registry("middlewares")
