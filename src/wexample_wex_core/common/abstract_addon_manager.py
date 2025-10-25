@@ -35,6 +35,10 @@ class AbstractAddonManager(
             io=self.kernel.io,
         )
 
+    @classmethod
+    def get_class_name_suffix(cls) -> str | None:
+        return "AddonManager"
+
     @abstract_method
     @classmethod
     def get_package_module(cls) -> Any:
@@ -45,10 +49,6 @@ class AbstractAddonManager(
         from wexample_helpers.helpers.module import module_get_path
 
         return module_get_path(cls.get_package_module())
-
-    @classmethod
-    def get_class_name_suffix(cls) -> str | None:
-        return "AddonManager"
 
     def get_middlewares_classes(self) -> list[type[AbstractMiddleware]]:
         return []

@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING, Any
 from wexample_app.common.command import Command
 from wexample_helpers.classes.field import public_field
 from wexample_helpers.decorator.base_class import base_class
-from wexample_wex_core.exception.command_unexpected_argument_exception import CommandUnexpectedArgumentException
+from wexample_wex_core.exception.command_unexpected_argument_exception import (
+    CommandUnexpectedArgumentException,
+)
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest

@@ -7,8 +7,9 @@ from wexample_helpers.classes.field import public_field
 from wexample_helpers.decorator.base_class import base_class
 
 if TYPE_CHECKING:
-    from wexample_helpers.const.types import AnyCallable, Kwargs
     from wexample_app.command.option import Option
+    from wexample_helpers.const.types import AnyCallable, Kwargs
+
     from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 

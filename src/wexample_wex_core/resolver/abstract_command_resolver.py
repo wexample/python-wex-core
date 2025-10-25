@@ -24,25 +24,6 @@ if TYPE_CHECKING:
 
 
 class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
-    def build_execution_context(
-        self,
-        middleware: AbstractMiddleware | None,
-        command_wrapper: CommandMethodWrapper,
-        request: CommandRequest,
-        function_kwargs: Kwargs,
-    ) -> ExecutionContext:
-        from wexample_wex_core.context.execution_context import ExecutionContext
-
-        return ExecutionContext(
-            middleware=middleware,
-            command_wrapper=command_wrapper,
-            request=request,
-            function_kwargs=function_kwargs,
-        )
-
-    @abstract_method
-    def build_registry_data(self) -> StructuredData:
-        pass
 
     @classmethod
     def build_command_from_function(cls, command_wrapper: CommandMethodWrapper):
@@ -68,3 +49,22 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         Returns the "default" format (addons style)
         """
         return function_name.split(COMMAND_SEPARATOR_FUNCTION_PARTS)[:3]
+    def build_execution_context(
+        self,
+        middleware: AbstractMiddleware | None,
+        command_wrapper: CommandMethodWrapper,
+        request: CommandRequest,
+        function_kwargs: Kwargs,
+    ) -> ExecutionContext:
+        from wexample_wex_core.context.execution_context import ExecutionContext
+
+        return ExecutionContext(
+            middleware=middleware,
+            command_wrapper=command_wrapper,
+            request=request,
+            function_kwargs=function_kwargs,
+        )
+
+    @abstract_method
+    def build_registry_data(self) -> StructuredData:
+        pass

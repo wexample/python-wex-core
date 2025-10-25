@@ -34,9 +34,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=None,
         description="Prompt messages indentation level",
     )
-    _registry: KernelRegistry = private_field(
-        description="The configuration registry"
-    )
+    _registry: KernelRegistry = private_field(description="The configuration registry")
 
     def get_addons(self) -> dict[str, AbstractAddonManager]:
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
@@ -61,7 +59,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return response
 
     def _build_single_command_request_from_arguments(
-            self, arguments: CommandLineArgumentsList
+        self, arguments: CommandLineArgumentsList
     ):
         # Core command request takes a request id.
         return [
@@ -176,7 +174,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         super()._init_command_line_kernel()
         # We can then use config.
         self.io.default_context_verbosity = self._config_arg_verbosity
-        self.io.indentation = min(self._config_arg_indentation_level or self.io.indentation, int(self.io.terminal_width / 3))
+        self.io.indentation = min(
+            self._config_arg_indentation_level or self.io.indentation,
+            int(self.io.terminal_width / 3),
+        )
 
     def _init_middlewares(self) -> None:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager

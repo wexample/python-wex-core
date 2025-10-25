@@ -19,11 +19,11 @@ class CommandUnexpectedArgumentException(NotAllowedItemException):
     argument: str
 
     def __init__(
-            self,
-            argument: str,
-            allowed_arguments: list[str],
-            cause: Exception | None = None,
-            previous: Exception | None = None,
+        self,
+        argument: str,
+        allowed_arguments: list[str],
+        cause: Exception | None = None,
+        previous: Exception | None = None,
     ) -> None:
         self.argument = argument
 

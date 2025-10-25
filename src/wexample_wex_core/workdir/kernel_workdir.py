@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, ClassVar
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
 from wexample_helpers.decorator.base_class import base_class
-from wexample_wex_core.const.globals import CORE_FILE_NAME_REGISTRY, CORE_DIR_NAME_TMP
 from wexample_wex_core.workdir.workdir import Workdir
 
 if TYPE_CHECKING:
@@ -28,6 +27,7 @@ class KernelWorkdir(AbstractKernelChild, Workdir):
         )
 
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
+        from wexample_wex_core.const.globals import CORE_DIR_NAME_TMP, CORE_FILE_NAME_REGISTRY
         from wexample_filestate.const.disk import DiskItemType
         from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
 

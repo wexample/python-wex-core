@@ -12,8 +12,8 @@ from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
 from wexample_helpers.decorator.base_class import base_class
 
 if TYPE_CHECKING:
-    from wexample_helpers.const.types import Kwargs
     from wexample_app.command.option import Option
+    from wexample_helpers.const.types import Kwargs
 
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.common.command_request import CommandRequest
@@ -63,6 +63,7 @@ class AbstractMiddleware(
         self, request: CommandRequest, command_wrapper: CommandMethodWrapper
     ) -> None:
         from wexample_app.command.option import Option
+
         from wexample_wex_core.const.middleware import MIDDLEWARE_OPTION_VALUE_OPTIONAL
 
         if self.parallel:
