@@ -2,25 +2,26 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from wexample_prompt.enums.verbosity_level import VerbosityLevel
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
 from wexample_helpers.classes.private_field import private_field
 from wexample_helpers.decorator.base_class import base_class
+from wexample_prompt.enums.verbosity_level import VerbosityLevel
 
 if TYPE_CHECKING:
+    from wexample_app.command.option import Option
     from wexample_app.const.types import CommandLineArgumentsList
     from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
     from wexample_app.runner.abstract_command_runner import AbstractCommandRunner
     from wexample_config.const.types import DictConfig
     from wexample_filestate.utils.file_state_manager import FileStateManager
     from wexample_prompt.common.io_manager import IoManager
+
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
     from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
-    from wexample_app.command.option import Option
 
 
 @base_class
@@ -164,6 +165,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> None:
         from wexample_app.service.service_registry import ServiceRegistry
+
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
 
         cast(ServiceRegistry, self.set_registry(REGISTRY_KERNEL_ADDON))
