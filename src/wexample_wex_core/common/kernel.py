@@ -60,21 +60,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         return response
 
-    def _init_command_line_kernel(self: AbstractKernel) -> None:
-        super()._init_command_line_kernel()
-
-        print(self._config_arg_indentation_level)
-        print(self._config_arg_indentation_level)
-        print(self._config_arg_indentation_level)
-        print(self._config_arg_indentation_level)
-
-        if self._config_arg_indentation_level is not None:
-            print(self.io.indentation)
-            print(self.io.indentation)
-            print(self.io.indentation)
-            print(self.io.indentation)
-            self.io.indentation = self._config_arg_indentation_level
-
     def _build_single_command_request_from_arguments(
             self, arguments: CommandLineArgumentsList
     ):
@@ -191,6 +176,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         super()._init_command_line_kernel()
         # We can then use config.
         self.io.default_context_verbosity = self._config_arg_verbosity
+        self.io.indentation = min(self._config_arg_indentation_level or self.io.indentation, int(self.io.terminal_width / 3))
 
     def _init_middlewares(self) -> None:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
