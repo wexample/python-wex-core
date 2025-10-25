@@ -15,7 +15,6 @@ class CommandUnexpectedArgumentData(ExceptionData):
 class CommandUnexpectedArgumentException(NotAllowedItemException):
     """Exception raised when an unexpected argument is provided to a command."""
     argument: str
-
     error_code: str = "COMMAND_UNEXPECTED_ARGUMENT"
 
     def __init__(

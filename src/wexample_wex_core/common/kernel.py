@@ -71,6 +71,16 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             )
         ]
 
+    def _create_workdir_state_manager(
+        self,
+        entrypoint_path: str,
+        io: IoManager,
+        config: DictConfig | None = None,
+    ) -> FileStateManager:
+        return self._get_workdir_state_manager_class().create_from_kernel(
+            kernel=self, config=config or {}, io=io
+        )
+
     def _get_command_request_class(self) -> type[CommandRequest]:
         from wexample_wex_core.common.command_request import CommandRequest
 
@@ -149,16 +159,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
         return KernelWorkdir
-
-    def _create_workdir_state_manager(
-        self,
-        entrypoint_path: str,
-        io: IoManager,
-        config: DictConfig | None = None,
-    ) -> FileStateManager:
-        return self._get_workdir_state_manager_class().create_from_kernel(
-            kernel=self, config=config or {}, io=io
-        )
 
     def _init_addons(
         self, addons: list[type[AbstractAddonManager]] | None = None

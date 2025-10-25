@@ -48,6 +48,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         Returns the "default" format (addons style)
         """
         return function_name.split(COMMAND_SEPARATOR_FUNCTION_PARTS)[:3]
+
     def build_execution_context(
         self,
         middleware: AbstractMiddleware | None,
