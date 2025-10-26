@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 def middleware(
     name: str | Type[AbstractMiddleware] | None = None,
     middleware: Type[AbstractMiddleware] | None = None,
-    **kwargs
+    **kwargs,
 ) -> AnyCallable:
     def decorator(command_wrapper: CommandMethodWrapper) -> CommandMethodWrapper:
         # Type safety check

@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from wexample_wex_core.exception.abstract_command_option_exception import AbstractCommandOptionException
+from wexample_wex_core.exception.abstract_command_option_exception import (
+    AbstractCommandOptionException,
+)
 
 
 class CommandOptionValidationException(AbstractCommandOptionException):

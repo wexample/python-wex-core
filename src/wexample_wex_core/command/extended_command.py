@@ -148,7 +148,7 @@ class ExtendedCommand(Command):
 
         # Use context.function if provided, otherwise use command's function
         function_to_execute = context.function or self.function
-        
+
         return response_normalize(
             kernel=self.kernel, response=function_to_execute(**context.function_kwargs)
         )
@@ -175,7 +175,7 @@ class ExtendedCommand(Command):
         # Process all declared options
         for option in self.command_wrapper.options:
             value = None
-            
+
             # If the option is in parsed args, use that value
             if option.name in parsed_args:
                 value = parsed_args[option.name]
@@ -185,7 +185,7 @@ class ExtendedCommand(Command):
             # If the option is required but not provided, raise an error
             elif option.required:
                 raise CommandOptionMissingException(option_name=option.name)
-            
+
             # Validate the value if validators are defined and value is not None
             if value is not None and option.validators:
                 for validator in option.validators:
@@ -193,13 +193,13 @@ class ExtendedCommand(Command):
                         from wexample_wex_core.exception.command_option_validation_exception import (
                             CommandOptionValidationException,
                         )
-                        
+
                         raise CommandOptionValidationException(
                             option_name=option.name,
                             value=value,
                             error_message=validator.get_error_message(value),
                         )
-            
+
             # Assign the validated value
             if value is not None:
                 option.value = function_kwargs[option.name] = value
@@ -240,11 +240,12 @@ class ExtendedCommand(Command):
 
             # Use context.function if provided, otherwise use command's function
             function_to_execute = execution_context.function or self.function
-            
+
             # Run the function in a thread pool to avoid blocking the event loop
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
-                executor, lambda: function_to_execute(**execution_context.function_kwargs)
+                executor,
+                lambda: function_to_execute(**execution_context.function_kwargs),
             )
 
             self.kernel.io.print_responses(output.buffer)

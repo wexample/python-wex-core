@@ -6,9 +6,9 @@ CORE_COMMAND_NAME: str = "wex"
 WORKDIR_SETUP_DIR: Path = Path(f".{CORE_COMMAND_NAME}")
 
 # filestate: python-constant-sort
-CORE_FILE_NAME_REGISTRY: Path = Path("registry.yml")
-CORE_DIR_NAME_TMP: Path = Path("tmp")
 CORE_DIR_NAME_KNOWLEDGE: Path = Path("knowledge")
+CORE_DIR_NAME_TMP: Path = Path("tmp")
+CORE_FILE_NAME_REGISTRY: Path = Path("registry.yml")
 
 # filestate: python-constant-sort
 COMMAND_SEPARATOR_ADDON: str = "::"

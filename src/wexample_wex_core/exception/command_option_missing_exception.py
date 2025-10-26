@@ -11,10 +11,10 @@ class CommandOptionMissingException(AbstractCommandOptionException):
     error_code: str = "COMMAND_OPTION_MISSING"
 
     def __init__(
-            self,
-            option_name: str,
-            cause: Exception | None = None,
-            previous: Exception | None = None,
+        self,
+        option_name: str,
+        cause: Exception | None = None,
+        previous: Exception | None = None,
     ) -> None:
         # Store option_name as instance attribute
         self.option_name = option_name

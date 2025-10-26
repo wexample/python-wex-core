@@ -21,17 +21,14 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         default=False,
         description="If True, expands path patterns using glob syntax (e.g. *.py).",
     )
-
     recursion_limit: int = public_field(
         default=100,
         description="Maximum recursion depth when traversing directories.",
     )
-
     recursive: bool = public_field(
         default=False,
         description="If True, enables recursive traversal of subdirectories.",
     )
-
     should_exist: bool = public_field(
         default=False,
         description="If True, ensures that each specified path exists before processing.",
