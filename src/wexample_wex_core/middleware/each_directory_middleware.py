@@ -43,14 +43,15 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
 
         return False
 
-    def _get_default_option(self) -> dict[str, Any]:
-        """Get the default directory option definition."""
-        return {
+    def _get_middleware_options(self) -> list[dict[str, Any]]:
+        """Get the default file option definition."""
+
+        return [{
             "name": "directory",
             "type": str,
             "required": True,
             "description": "Path to local directory",
-        }
+        }]
 
     def _should_process_item(self, request: CommandRequest, item_path: str) -> bool:
         return os.path.isdir(item_path)

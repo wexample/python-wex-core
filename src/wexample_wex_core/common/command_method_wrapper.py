@@ -66,8 +66,16 @@ class CommandMethodWrapper(BaseClass):
 
         return options
 
-    def register_middleware(self, name: str, middleware_kwargs: Kwargs) -> None:
-        self.middlewares_attributes[name] = middleware_kwargs
+    def register_middleware(
+        self, name: str | type[AbstractMiddleware], middleware_kwargs: Kwargs
+    ) -> None:
+        # Extract name from class if needed
+        if not isinstance(name, str):
+            middleware_name = name.get_name()
+        else:
+            middleware_name = name
+
+        self.middlewares_attributes[middleware_name] = middleware_kwargs
 
     def set_middleware(self, middleware: AbstractMiddleware) -> None:
         self.middlewares.append(middleware)

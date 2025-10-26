@@ -53,14 +53,14 @@ class AbstractMiddleware(
     )
 
     def __attrs_post_init__(self) -> None:
-        self.normalized_options = self.build_options()
+        self.normalized_options = self._init_options()
 
     @classmethod
     def get_class_name_suffix(cls) -> str | None:
         return "Middleware"
 
     def append_options(
-        self, request: CommandRequest, command_wrapper: CommandMethodWrapper
+            self, request: CommandRequest, command_wrapper: CommandMethodWrapper
     ) -> None:
         from wexample_app.command.option import Option
 
@@ -109,10 +109,10 @@ class AbstractMiddleware(
             )
 
     def build_execution_contexts(
-        self,
-        command_wrapper: CommandMethodWrapper,
-        request: CommandRequest,
-        function_kwargs: Kwargs,
+            self,
+            command_wrapper: CommandMethodWrapper,
+            request: CommandRequest,
+            function_kwargs: Kwargs,
     ) -> list[ExecutionContext]:
         from wexample_wex_core.context.execution_context import ExecutionContext
 
@@ -131,13 +131,16 @@ class AbstractMiddleware(
             )
         ]
 
-    def build_options(self) -> list[Option]:
+    def _get_middleware_options(self) -> list[dict[str, Any]]:
+        return []
+
+    def _init_options(self) -> list[Option]:
         from wexample_app.command.option import Option
 
         """Convert options from various formats to Option objects."""
         normalized = []
 
-        for option in self.options:
+        for option in self._get_middleware_options():
             if isinstance(option, dict):
                 normalized.append(Option(**option))
             elif isinstance(option, Option):
@@ -154,9 +157,9 @@ class AbstractMiddleware(
         return None
 
     def validate_options(
-        self,
-        command_wrapper: CommandMethodWrapper,
-        request: CommandRequest,
-        function_kwargs: Kwargs,
+            self,
+            command_wrapper: CommandMethodWrapper,
+            request: CommandRequest,
+            function_kwargs: Kwargs,
     ) -> bool:
         return True

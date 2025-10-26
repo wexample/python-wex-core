@@ -37,13 +37,6 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         description="If True, ensures that each specified path exists before processing.",
     )
 
-    def __attrs_post_init__(self, **kwargs) -> None:
-        # Set default option if none provided
-        if "option" not in kwargs or not kwargs["option"]:
-            kwargs["option"] = self._get_default_option()
-
-        kwargs["options"] = [kwargs["option"]]
-
     def build_execution_contexts(
         self,
         command_wrapper: CommandMethodWrapper,
@@ -117,16 +110,16 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
         return True
 
-    def _get_default_option(self) -> dict[str, Any]:
-        """Get the default path option definition."""
+    def _get_middleware_options(self) -> list[dict[str, Any]]:
+        """Get the default file option definition."""
         from wexample_helpers.const.globals import PATH_NAME_PATH
 
-        return {
+        return [{
             "name": PATH_NAME_PATH,
             "type": str,
             "required": True,
             "description": "Path to local file or directory",
-        }
+        }]
 
     def _get_option_file_path(self, function_kwargs: Kwargs) -> str | None:
         option = self.get_first_option()

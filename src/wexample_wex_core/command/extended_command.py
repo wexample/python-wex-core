@@ -34,23 +34,16 @@ class ExtendedCommand(Command):
             MIDDLEWARE_OPTION_VALUE_ALLWAYS,
             MIDDLEWARE_OPTION_VALUE_OPTIONAL,
         )
-        from wexample_wex_core.exception.command_unexpected_argument_exception import (
-            CommandUnexpectedArgumentException,
-        )
 
         middlewares_attributes = self.command_wrapper.middlewares_attributes
         middlewares_registry = self.kernel.get_registry("middlewares")
 
         for name in middlewares_attributes:
             middleware_class = middlewares_registry.get_class(name)
-            middleware = middleware_class(name=name, **middlewares_attributes[name])
+            middleware = middleware_class(**middlewares_attributes[name])
             self.command_wrapper.set_middleware(middleware)
 
-        try:
-            function_kwargs = self._build_function_kwargs(request=request)
-        except CommandUnexpectedArgumentException as e:
-            self.kernel.io.error(f'The argument "{e.argument}" is not allowed.')
-            return None
+        function_kwargs = self._build_function_kwargs(request=request)
 
         if len(self.command_wrapper.middlewares) > 0:
             output = MultipleResponse(kernel=self.kernel)
@@ -176,15 +169,35 @@ class ExtendedCommand(Command):
 
         # Process all declared options
         for option in self.command_wrapper.options:
+            value = None
+            
             # If the option is in parsed args, use that value
             if option.name in parsed_args:
-                option.value = function_kwargs[option.name] = parsed_args[option.name]
+                value = parsed_args[option.name]
             # Otherwise, use the default value if available
             elif option.default is not None:
-                option.value = function_kwargs[option.name] = option.default
+                value = option.default
             # If the option is required but not provided, raise an error
             elif option.required:
                 raise CommandOptionMissingException(option_name=option.name)
+            
+            # Validate the value if validators are defined and value is not None
+            if value is not None and option.validators:
+                for validator in option.validators:
+                    if not validator.validate(value):
+                        from wexample_wex_core.exception.command_option_validation_exception import (
+                            CommandOptionValidationException,
+                        )
+                        
+                        raise CommandOptionValidationException(
+                            option_name=option.name,
+                            value=value,
+                            error_message=validator.get_error_message(value),
+                        )
+            
+            # Assign the validated value
+            if value is not None:
+                option.value = function_kwargs[option.name] = value
 
         return function_kwargs
 
