@@ -3,22 +3,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
-from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
 from wexample_helpers.classes.base_class import BaseClass
 from wexample_helpers.classes.field import public_field
 from wexample_helpers.classes.mixin.printable_mixin import PrintableMixin
 from wexample_helpers.classes.private_field import private_field
-from wexample_helpers.const.types import Kwargs
 from wexample_helpers.decorator.base_class import base_class
 from wexample_prompt.mixins.with_io_manager import WithIoManager
 
-from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-from wexample_wex_core.common.command_request import CommandRequest
-from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
-
 if TYPE_CHECKING:
     from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
-    from wexample_helpers.const.types import Kwargs
+    from wexample_helpers.const.types import AnyCallable, Kwargs
     from wexample_prompt.common.progress.progress_handle import ProgressHandle
 
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
@@ -35,6 +29,10 @@ class ExecutionContext(
 ):
     command_wrapper: CommandMethodWrapper = public_field(
         description="Wrapper around the command method being executed",
+    )
+    function: AnyCallable | None = public_field(
+        default=None,
+        description="Optional custom function to execute instead of command_wrapper.function",
     )
     function_kwargs: Kwargs = public_field(
         factory=dict,

@@ -109,10 +109,12 @@ class ExtendedCommand(Command):
 
                     # Execute passes sequentially
                     for context in execution_contexts:
+                        # Use context.function if provided, otherwise use command's function
+                        function_to_execute = context.function or self.function
 
                         response = response_normalize(
                             kernel=self.kernel,
-                            response=self.function(**context.function_kwargs),
+                            response=function_to_execute(**context.function_kwargs),
                         )
 
                         output.append(response)
@@ -144,8 +146,11 @@ class ExtendedCommand(Command):
             function_kwargs=function_kwargs,
         )
 
+        # Use context.function if provided, otherwise use command's function
+        function_to_execute = context.function or self.function
+        
         return response_normalize(
-            kernel=self.kernel, response=self.function(**context.function_kwargs)
+            kernel=self.kernel, response=function_to_execute(**context.function_kwargs)
         )
 
     def _build_function_kwargs(self, request: CommandRequest) -> dict[str, Any]:
@@ -233,10 +238,13 @@ class ExtendedCommand(Command):
             # Detach io manager to print log result at the end.
             execution_context._init_io_manager(output=output)
 
+            # Use context.function if provided, otherwise use command's function
+            function_to_execute = execution_context.function or self.function
+            
             # Run the function in a thread pool to avoid blocking the event loop
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(
-                executor, lambda: self.function(**execution_context.function_kwargs)
+                executor, lambda: function_to_execute(**execution_context.function_kwargs)
             )
 
             self.kernel.io.print_responses(output.buffer)
