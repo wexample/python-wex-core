@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING, Any
 
+from wexample_helpers.classes.field import public_field
+from wexample_helpers.decorator.base_class import base_class
 from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 if TYPE_CHECKING:
@@ -13,11 +15,27 @@ if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
+@base_class
 class AbstractEachPathMiddleware(AbstractMiddleware):
-    expand_glob: bool = False
-    recursion_limit: int = 100
-    recursive: bool = False
-    should_exist: bool = False
+    expand_glob: bool = public_field(
+        default=False,
+        description="If True, expands path patterns using glob syntax (e.g. *.py).",
+    )
+
+    recursion_limit: int = public_field(
+        default=100,
+        description="Maximum recursion depth when traversing directories.",
+    )
+
+    recursive: bool = public_field(
+        default=False,
+        description="If True, enables recursive traversal of subdirectories.",
+    )
+
+    should_exist: bool = public_field(
+        default=False,
+        description="If True, ensures that each specified path exists before processing.",
+    )
 
     def __attrs_post_init__(self, **kwargs) -> None:
         # Set default option if none provided
