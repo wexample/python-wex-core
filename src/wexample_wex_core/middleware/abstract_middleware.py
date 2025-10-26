@@ -131,6 +131,20 @@ class AbstractMiddleware(
             )
         ]
 
+    def get_first_option(self) -> Option | None:
+        """Get the path option from the normalized options."""
+        if self.normalized_options:
+            return self.normalized_options[0]
+        return None
+
+    def validate_options(
+        self,
+        command_wrapper: CommandMethodWrapper,
+        request: CommandRequest,
+        function_kwargs: Kwargs,
+    ) -> bool:
+        return True
+
     def _get_middleware_options(self) -> list[dict[str, Any]]:
         return []
 
@@ -149,17 +163,3 @@ class AbstractMiddleware(
                 raise TypeError(f"Unsupported option type: {type(option)}")
 
         return normalized
-
-    def get_first_option(self) -> Option | None:
-        """Get the path option from the normalized options."""
-        if self.normalized_options:
-            return self.normalized_options[0]
-        return None
-
-    def validate_options(
-        self,
-        command_wrapper: CommandMethodWrapper,
-        request: CommandRequest,
-        function_kwargs: Kwargs,
-    ) -> bool:
-        return True

@@ -9,8 +9,8 @@ if TYPE_CHECKING:
 
 
 def middleware(
-    name: str | Type[AbstractMiddleware] | None = None,
-    middleware: Type[AbstractMiddleware] | None = None,
+    name: str | type[AbstractMiddleware] | None = None,
+    middleware: type[AbstractMiddleware] | None = None,
     **kwargs,
 ) -> AnyCallable:
     def decorator(command_wrapper: CommandMethodWrapper) -> CommandMethodWrapper:

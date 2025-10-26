@@ -111,12 +111,14 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         """Get the default file option definition."""
         from wexample_helpers.const.globals import PATH_NAME_PATH
 
-        return [{
-            "name": PATH_NAME_PATH,
-            "type": str,
-            "required": True,
-            "description": "Path to local file or directory",
-        }]
+        return [
+            {
+                "name": PATH_NAME_PATH,
+                "type": str,
+                "required": True,
+                "description": "Path to local file or directory",
+            }
+        ]
 
     def _get_option_file_path(self, function_kwargs: Kwargs) -> str | None:
         option = self.get_first_option()
