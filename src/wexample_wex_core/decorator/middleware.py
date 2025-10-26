@@ -1,13 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Type
 
 if TYPE_CHECKING:
     from wexample_helpers.const.types import AnyCallable
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+    from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 
-def middleware(name: str, **kwargs) -> AnyCallable:
+def middleware(
+    name: str | Type[AbstractMiddleware] | None = None,
+    middleware: Type[AbstractMiddleware] | None = None,
+    **kwargs
+) -> AnyCallable:
     def decorator(command_wrapper: CommandMethodWrapper) -> CommandMethodWrapper:
         # Type safety check
         from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
@@ -18,7 +23,7 @@ def middleware(name: str, **kwargs) -> AnyCallable:
                 "object (produced by @command). Make sure @command is applied *before* @middleware."
             )
 
-        command_wrapper.register_middleware(name, kwargs)
+        command_wrapper.register_middleware(middleware or name, kwargs)
         return command_wrapper
 
     return decorator
