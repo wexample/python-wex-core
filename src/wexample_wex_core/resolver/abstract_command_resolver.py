@@ -11,6 +11,7 @@ from wexample_helpers.classes.abstract_method import abstract_method
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
     from wexample_helpers.const.types import Kwargs, StringsList, StructuredData
+
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.context.execution_context import ExecutionContext
     from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
@@ -31,6 +32,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         Returns the "default" format (addons style)
         """
         from wexample_helpers.helpers.string import string_to_kebab_case
+
         from wexample_wex_core.const.globals import (
             COMMAND_SEPARATOR_ADDON,
             COMMAND_SEPARATOR_GROUP,
