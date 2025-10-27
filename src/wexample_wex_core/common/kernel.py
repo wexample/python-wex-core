@@ -17,7 +17,6 @@ if TYPE_CHECKING:
     from wexample_config.const.types import DictConfig
     from wexample_filestate.utils.file_state_manager import FileStateManager
     from wexample_prompt.common.io_manager import IoManager
-
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
@@ -165,7 +164,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> None:
         from wexample_app.service.service_registry import ServiceRegistry
-
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
 
         cast(ServiceRegistry, self.set_registry(REGISTRY_KERNEL_ADDON))

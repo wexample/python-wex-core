@@ -4,14 +4,12 @@ import os
 from typing import TYPE_CHECKING, Any
 
 from wexample_helpers.decorator.base_class import base_class
-
 from wexample_wex_core.middleware.abstract_each_path_middleware import (
     AbstractEachPathMiddleware,
 )
 
 if TYPE_CHECKING:
     from wexample_helpers.const.types import Kwargs
-
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.common.command_request import CommandRequest
 

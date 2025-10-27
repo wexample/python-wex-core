@@ -29,7 +29,6 @@ class AddonCommandResolver(AbstractCommandResolver):
 
     def build_command_function_name(self, request: CommandRequest) -> str | None:
         from wexample_helpers.helpers.string import string_to_snake_case
-
         from wexample_wex_core.const.globals import COMMAND_SEPARATOR_FUNCTION_PARTS
 
         return string_to_snake_case(
@@ -73,7 +72,6 @@ class AddonCommandResolver(AbstractCommandResolver):
         self, request: CommandRequest
     ) -> AbstractAddonManager:
         from wexample_helpers.helpers.string import string_to_snake_case
-
         from wexample_wex_core.exception.addon_not_registered_exception import (
             AddonNotRegisteredException,
         )

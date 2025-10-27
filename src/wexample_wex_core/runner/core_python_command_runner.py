@@ -6,7 +6,6 @@ from wexample_app.runner.python_command_runner import PythonCommandRunner
 
 if TYPE_CHECKING:
     from wexample_app.common.command import Command
-
     from wexample_wex_core.common.command_request import CommandRequest
 
 
