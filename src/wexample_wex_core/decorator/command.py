@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from wexample_helpers.const.types import AnyCallable
-
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
 
