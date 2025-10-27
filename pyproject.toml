@@ -38,6 +38,7 @@ homepage = "https://github.com/wexample/wexample-wex-core"
 [project.optional-dependencies]
 dev = [
     "pytest",
+    "pytest-cov",
 ]
 
 [tool.pdm]
@@ -49,3 +50,7 @@ package-dir = "src"
 [[tool.pdm.build.packages]]
 include = "wexample_wex_core"
 from = "src"
+
+[tool.setuptools.packages.find]
+include = ["*"]
+exclude = ["wexample_wex_core.testing*"]
