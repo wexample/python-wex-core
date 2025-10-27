@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-CORE_COMMAND_NAME: str = "wex"
-WORKDIR_SETUP_DIR: Path = Path(f".{CORE_COMMAND_NAME}")
-
 # filestate: python-constant-sort
 CORE_DIR_NAME_KNOWLEDGE: Path = Path("knowledge")
 CORE_DIR_NAME_TMP: Path = Path("tmp")
