@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 @command(type=COMMAND_TYPE_ADDON)
 def test__run__all(context: ExecutionContext) -> None:
     import pytest
+
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
 
     # Change to project root directory
