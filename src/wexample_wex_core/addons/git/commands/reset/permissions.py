@@ -14,8 +14,9 @@ if TYPE_CHECKING:
 def git__reset__permissions(
         context: ExecutionContext,
 ) -> str:
+    # Reset file permissions to match HEAD without changing content
     shell_run(
-        "git diff --summary | grep '^mode change' | cut -d' ' -f4 | xargs git checkout HEAD --",
+        "git diff --summary | grep 'mode change' | awk '{print $NF}' | xargs -r git checkout-index --force --",
         cwd=context.kernel._call_workdir.get_path(),
         shell=True,
         inherit_stdio=True
