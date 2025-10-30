@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, cast
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
+from wexample_app.const.output import OUTPUT_FORMAT_STR, OUTPUT_TARGET_STDOUT
 from wexample_helpers.classes.private_field import private_field
 from wexample_helpers.decorator.base_class import base_class
 from wexample_prompt.enums.verbosity_level import VerbosityLevel
@@ -72,9 +73,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         from wexample_helpers.helpers.array import array_unique
         super()._init_command_line_core_args()
 
-        self._config_arg_output_format = self._config_arg_output_format or "text"
+        self._config_arg_output_format = self._config_arg_output_format or OUTPUT_FORMAT_STR
         self._config_arg_output_target = array_unique(self._config_arg_output_target or [
-            "stdout"
+            OUTPUT_TARGET_STDOUT
         ])
 
     def create_output_handlers(self) -> [AbstractAppOutputHandler]:
@@ -91,7 +92,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             if target in available_handlers:
                 handler_class = available_handlers[target]
                 outputs.append(handler_class(kernel=self))
-        
+
         return outputs
 
     def get_configuration_registry(self) -> KernelRegistry:
