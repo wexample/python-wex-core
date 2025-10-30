@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
     from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
+    from wexample_app.output.abstract_app_output_handler import AbstractAppOutputHandler
 
 
 @base_class
@@ -66,26 +67,31 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             "file": ExtendedFileOutputHandler,
         }
 
-    def _init_output_handler(self) -> None:
+    def _init_command_line_core_args(self) -> None:
+        from wexample_helpers.helpers.array import array_unique
+        super()._init_command_line_core_args()
+
+        self._config_arg_output_format = self._config_arg_output_format or "text"
+        self._config_arg_output_target = array_unique(self._config_arg_output_target or [
+            "stdout"
+        ])
+
+    def create_output_handlers(self) -> [AbstractAppOutputHandler]:
         """Initialize output handlers based on _config_arg_output_target.
         
-        Selects handlers from available handlers registry according to output targets.
-        Falls back to stdout if no target specified.
+        Replaces default stdout handler with handlers from registry according to output targets.
         """
-        if not self.outputs:
-            available_handlers = self._get_available_output_handlers()
-            
-            if self._config_arg_output_target:
-                # Instantiate handlers for each specified target
-                for target in self._config_arg_output_target:
-                    if target in available_handlers:
-                        handler_class = available_handlers[target]
-                        self.outputs.append(handler_class())
-                    else:
-                        self.io.warning(f"Unknown output target: {target}")
-            else:
-                # Default to stdout
-                self.outputs = [available_handlers["stdout"]()]
+
+        available_handlers = self._get_available_output_handlers()
+        # Clear default handlers and add specified ones
+        outputs = []
+
+        for target in self._config_arg_output_target:
+            if target in available_handlers:
+                handler_class = available_handlers[target]
+                outputs.append(handler_class(kernel=self))
+        
+        return outputs
 
     def get_configuration_registry(self) -> KernelRegistry:
         return self._registry
@@ -234,9 +240,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         registry.instantiate_all(kernel=self)
 
     def _init_command_line_kernel(self: AbstractKernel) -> None:
-        from wexample_app.output.app_stdout_output_handler import AppStdoutOutputHandler
-        from wexample_helpers.helpers.array import array_unique
-
         super()._init_command_line_kernel()
         # We can then use config.
         self.io.default_context_verbosity = self._config_arg_verbosity
@@ -244,11 +247,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             self._config_arg_indentation_level or self.io.indentation,
             int(self.io.terminal_width / 3),
         )
-
-        self._config_arg_output_format = self._config_arg_output_format or "text"
-        self._config_arg_output_target = array_unique(self._config_arg_output_target or [
-            AppStdoutOutputHandler.get_name()
-        ])
 
     def _init_middlewares(self) -> None:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
