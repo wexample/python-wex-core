@@ -134,6 +134,10 @@ class ExtendedCommand(Command):
                             # "Stop" does not mean "fail", so we just stop the process.
                             return output
 
+            # If only one response, return it directly instead of wrapping in MultipleResponse
+            if len(output.responses) == 1:
+                return output.responses[0]
+            
             return output
 
         # Delegate context creation to resolver.
