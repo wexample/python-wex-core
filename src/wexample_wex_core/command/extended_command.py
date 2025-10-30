@@ -230,9 +230,9 @@ class ExtendedCommand(Command):
         async def execute_single_pass(
             execution_context: ExecutionContext,
         ) -> AbstractResponse:
-            from wexample_prompt.output.buffer_output_handler import BufferOutputHandler
+            from wexample_prompt.output.prompt_buffer_output_handler import PromptBufferOutputHandler
 
-            output = BufferOutputHandler()
+            output = PromptBufferOutputHandler()
             # Detach io manager to print log result at the end.
             execution_context._init_io_manager(output=output)
 

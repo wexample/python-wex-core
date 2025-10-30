@@ -148,6 +148,20 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 description="Maximum verbosity (-vvv)",
             ),
             Option(
+                name="output_format",
+                is_flag=True,
+                type=bool,
+                value="str",
+                description="The way to render the output",
+            ),
+            Option(
+                name="output_target",
+                is_flag=True,
+                type=bool,
+                value="str",
+                description="The emplacement where placing the output (stdout, file, ...)",
+            ),
+            Option(
                 name="indentation_level",
                 is_flag=False,
                 type=int,
