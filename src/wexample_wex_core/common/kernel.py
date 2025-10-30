@@ -55,6 +55,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         Returns:
             Dictionary with stdout and file handlers
         """
+        from wexample_app.const.output import OUTPUT_TARGET_FILE, OUTPUT_TARGET_STDOUT
         from wexample_app.output.app_stdout_output_handler import (
             AppStdoutOutputHandler,
         )
@@ -63,8 +64,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         )
 
         return {
-            "stdout": AppStdoutOutputHandler,
-            "file": ExtendedFileOutputHandler,
+            OUTPUT_TARGET_STDOUT: AppStdoutOutputHandler,
+            OUTPUT_TARGET_FILE: ExtendedFileOutputHandler,
         }
 
     def _init_command_line_core_args(self) -> None:
