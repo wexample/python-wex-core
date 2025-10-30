@@ -32,7 +32,7 @@ class EachDirectoryMiddleware(AbstractEachPathMiddleware):
             request=request,
             function_kwargs=function_kwargs,
         ):
-            option = self.get_first_option()
+            option = self.get_option_by_name("directory")
             directory_path = function_kwargs[option.name]
             if not os.path.isdir(directory_path):
                 raise PathIsNotDirectoryCommandOptionException(

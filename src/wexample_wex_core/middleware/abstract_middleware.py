@@ -129,11 +129,11 @@ class AbstractMiddleware(
             )
         ]
 
-    def get_first_option(self) -> Option | None:
-        # TODO pourquoi firs ? path devrait pouvoir se trouver n'importe où, ca ne devrait pas évoquer path
-        """Get the path option from the normalized options."""
-        if self.normalized_options:
-            return self.normalized_options[0]
+    def get_option_by_name(self, name: str) -> Option | None:
+        """Get an option by its name from the normalized options."""
+        for option in self.normalized_options:
+            if option.name == name:
+                return option
         return None
 
     def validate_options(

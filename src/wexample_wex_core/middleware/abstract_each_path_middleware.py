@@ -49,8 +49,10 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
             # If the path is a directory, process it
             if os.path.isdir(path):
+                from wexample_helpers.const.globals import PATH_NAME_PATH
+
                 passes = []
-                option = self.get_first_option()
+                option = self.get_option_by_name(PATH_NAME_PATH)
 
                 # Process the directory (recursively if enabled)
                 path_kwargs_list = self._process_directory_recursively(
@@ -95,8 +97,9 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
         if self.should_exist:
             import os.path
+            from wexample_helpers.const.globals import PATH_NAME_PATH
 
-            option = self.get_first_option()
+            option = self.get_option_by_name(PATH_NAME_PATH)
             if option and option.name in function_kwargs:
                 file_path = function_kwargs[option.name]
                 if not os.path.exists(file_path):
@@ -121,7 +124,9 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
         ]
 
     def _get_option_file_path(self, function_kwargs: Kwargs) -> str | None:
-        option = self.get_first_option()
+        from wexample_helpers.const.globals import PATH_NAME_PATH
+
+        option = self.get_option_by_name(PATH_NAME_PATH)
         return function_kwargs[option.name]
 
     def _process_directory_recursively(

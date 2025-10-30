@@ -37,7 +37,7 @@ class EachFileMiddleware(AbstractEachPathMiddleware):
         if valid and not self.expand_glob:
             file_path = self._get_option_file_path(function_kwargs=function_kwargs)
             if not os.path.isfile(file_path):
-                option = self.get_first_option()
+                option = self.get_option_by_name("file")
                 raise PathIsNotFileCommandOptionException(
                     option_name=option.name, file_path=file_path
                 )
