@@ -31,10 +31,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=None,
         description="Prompt messages indentation level",
     )
-    _config_arg_verbosity: VerbosityLevel = private_field(
-        default=VerbosityLevel.DEFAULT,
-        description="Verbosity level of every logs",
-    )
     _config_arg_output_format: None | list[str] = private_field(
         default=None,
         description="Verbosity level of every logs",
@@ -42,6 +38,22 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _config_arg_output_target: None | list[str] = private_field(
         default=None,
         description="A target where to place the output",
+    )
+    _config_arg_quiet: bool = private_field(
+        default=False,
+        description="Disable verbosity, every log or message, useful to capture structured output",
+    )
+    _config_arg_vvv: bool = private_field(
+        default=False,
+        description="Maximum verbosity",
+    )
+    _config_arg_vv: bool = private_field(
+        default=False,
+        description="High verbosity",
+    )
+    _config_arg_v: bool = private_field(
+        default=False,
+        description="Default verbosity",
     )
     _registry: KernelRegistry = private_field(description="The configuration registry")
 
@@ -99,7 +111,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return self._registry
 
     def setup(
-        self, addons: list[type[AbstractAddonManager]] | None = None
+            self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> AbstractKernel:
         response = super().setup()
 
@@ -113,7 +125,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return response
 
     def _build_single_command_request_from_arguments(
-        self, arguments: CommandLineArgumentsList
+            self, arguments: CommandLineArgumentsList
     ):
         # Core command request takes a request id.
         return [
@@ -128,10 +140,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def _create_workdir_state_manager(
-        self,
-        entrypoint_path: str,
-        io: IoManager,
-        config: DictConfig | None = None,
+            self,
+            entrypoint_path: str,
+            io: IoManager,
+            config: DictConfig | None = None,
     ) -> FileStateManager:
         return self._get_workdir_state_manager_class().create_from_kernel(
             kernel=self, config=config or {}, io=io
@@ -185,24 +197,27 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             ),
             Option(
                 name="v",
+                short_name="v",
                 is_flag=True,
                 type=bool,
                 value=VerbosityLevel.MEDIUM,
-                description="Medium verbosity (-v)",
+                description="Medium verbosity",
             ),
             Option(
                 name="vv",
+                short_name="vv",
                 is_flag=True,
                 type=bool,
                 value=VerbosityLevel.HIGH,
-                description="High verbosity (-vv)",
+                description="High verbosity",
             ),
             Option(
                 name="vvv",
+                short_name="vvv",
                 is_flag=True,
                 type=bool,
                 value=VerbosityLevel.MAXIMUM,
-                description="Maximum verbosity (-vvv)",
+                description="Maximum verbosity",
             ),
             Option(
                 name="output_format",
@@ -232,7 +247,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return KernelWorkdir
 
     def _init_addons(
-        self, addons: list[type[AbstractAddonManager]] | None = None
+            self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> None:
         from wexample_app.service.service_registry import ServiceRegistry
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
@@ -244,7 +259,19 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def _init_command_line_kernel(self: AbstractKernel) -> None:
         super()._init_command_line_kernel()
         # We can then use config.
-        self.io.default_context_verbosity = self._config_arg_verbosity
+        if self._config_arg_quiet:
+            self.io.default_context_verbosity = VerbosityLevel.QUIET
+            self.io.default_response_verbosity = VerbosityLevel.QUIET
+        elif self._config_arg_v:
+            self.io.default_context_verbosity = VerbosityLevel.DEFAULT
+            self.io.default_response_verbosity = VerbosityLevel.DEFAULT
+        elif self._config_arg_vv:
+            self.io.default_context_verbosity = VerbosityLevel.HIGH
+            self.io.default_response_verbosity = VerbosityLevel.HIGH
+        elif self._config_arg_vvv:
+            self.io.default_context_verbosity = VerbosityLevel.MAXIMUM
+            self.io.default_response_verbosity = VerbosityLevel.MAXIMUM
+
         self.io.indentation = min(
             self._config_arg_indentation_level or self.io.indentation,
             int(self.io.terminal_width / 3),
