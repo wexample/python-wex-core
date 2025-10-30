@@ -66,39 +66,26 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             "file": ExtendedFileOutputHandler,
         }
 
-    def execute_kernel_command_and_print(self, request: CommandRequest) -> None:
-        """Execute a command and print its response using the appropriate output handler.
+    def _init_output_handler(self) -> None:
+        """Initialize output handlers based on _config_arg_output_target.
         
-        Overrides parent to handle output_target from core CommandRequest.
-        
-        Args:
-            request: The command request to execute
+        Selects handlers from available handlers registry according to output targets.
+        Falls back to stdout if no target specified.
         """
-        from pathlib import Path
-
-        from wexample_app.output.app_file_output_handler import AppFileOutputHandler
-        from wexample_wex_core.common.command_request import (
-            CommandRequest as CoreCommandRequest,
-        )
-
-        response = self.execute_kernel_command(request=request)
-        
-        # Check if this is a core request with output_target
-        if isinstance(request, CoreCommandRequest) and request.output_target:
-            target = request.output_target[0] if request.output_target else "stdout"
+        if not self.outputs:
+            available_handlers = self._get_available_output_handlers()
             
-            if target == "file":
-                # Use file output handler
-                file_path = Path(f"output_{request.request_id}.txt")
-                file_handler = AppFileOutputHandler(file_path=file_path)
-                file_handler.print(response=response)
-                self.io.success(f"Output written to {file_path}")
+            if self._config_arg_output_target:
+                # Instantiate handlers for each specified target
+                for target in self._config_arg_output_target:
+                    if target in available_handlers:
+                        handler_class = available_handlers[target]
+                        self.outputs.append(handler_class())
+                    else:
+                        self.io.warning(f"Unknown output target: {target}")
             else:
                 # Default to stdout
-                self.output.print(response=response)
-        else:
-            # Fallback to parent behavior
-            self.output.print(response=response)
+                self.outputs = [available_handlers["stdout"]()]
 
     def get_configuration_registry(self) -> KernelRegistry:
         return self._registry
