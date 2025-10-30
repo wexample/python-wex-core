@@ -59,13 +59,13 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         from wexample_app.output.app_stdout_output_handler import (
             AppStdoutOutputHandler,
         )
-        from wexample_wex_core.output.extended_file_output_handler import (
-            ExtendedFileOutputHandler,
+        from wexample_wex_core.output.request_file_output_handler import (
+            RequestFileOutputHandler,
         )
 
         return {
             OUTPUT_TARGET_STDOUT: AppStdoutOutputHandler,
-            OUTPUT_TARGET_FILE: ExtendedFileOutputHandler,
+            OUTPUT_TARGET_FILE: RequestFileOutputHandler,
         }
 
     def _init_command_line_core_args(self) -> None:

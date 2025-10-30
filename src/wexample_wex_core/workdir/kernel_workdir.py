@@ -26,6 +26,13 @@ class KernelWorkdir(AbstractKernelChild, Workdir):
             path=kernel.entrypoint_path, kernel=kernel, io=io, **kwargs
         )
 
+    def get_tmp(self) -> ItemTargetDirectory | None:
+        from wexample_wex_core.const.globals import (
+            CORE_DIR_NAME_TMP,
+        )
+
+        return self.find_by_name(item_name=CORE_DIR_NAME_TMP)
+
     def prepare_value(self, raw_value: DictConfig | None = None) -> DictConfig:
         from wexample_filestate.const.disk import DiskItemType
         from wexample_wex_core.const.globals import (
@@ -44,6 +51,11 @@ class KernelWorkdir(AbstractKernelChild, Workdir):
                 "type": DiskItemType.DIRECTORY,
                 "should_exist": True,
                 "children": [
+                    {
+                        "name": "output",
+                        "type": DiskItemType.DIRECTORY,
+                        "should_exist": True,
+                    },
                     {
                         "class": KernelRegistryFile,
                         "name": CORE_FILE_NAME_REGISTRY,
