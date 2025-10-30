@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, cast
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
+from wexample_app.output.app_stdout_output_handler import AppStdoutOutputHandler
 from wexample_helpers.classes.private_field import private_field
 from wexample_helpers.decorator.base_class import base_class
 from wexample_prompt.enums.verbosity_level import VerbosityLevel
@@ -32,6 +33,14 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _config_arg_verbosity: VerbosityLevel = private_field(
         default=VerbosityLevel.DEFAULT,
         description="Verbosity level of every logs",
+    )
+    _config_arg_output_format: None | list[str] = private_field(
+        default=None,
+        description="Verbosity level of every logs",
+    )
+    _config_arg_output_target: None | list[str] = private_field(
+        default=None,
+        description="A target where to place the output",
     )
     _registry: KernelRegistry = private_field(description="The configuration registry")
 
