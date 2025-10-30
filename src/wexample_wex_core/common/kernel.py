@@ -48,6 +48,24 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         return self.get_registry(REGISTRY_KERNEL_ADDON).get_all()
 
+    def _get_available_output_handlers(self):
+        """Get available output handlers for core kernel.
+        
+        Returns:
+            Dictionary with stdout and file handlers
+        """
+        from wexample_app.output.app_stdout_output_handler import (
+            AppStdoutOutputHandler,
+        )
+        from wexample_wex_core.output.extended_file_output_handler import (
+            ExtendedFileOutputHandler,
+        )
+
+        return {
+            "stdout": AppStdoutOutputHandler,
+            "file": ExtendedFileOutputHandler,
+        }
+
     def execute_kernel_command_and_print(self, request: CommandRequest) -> None:
         """Execute a command and print its response using the appropriate output handler.
         
