@@ -48,6 +48,40 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         return self.get_registry(REGISTRY_KERNEL_ADDON).get_all()
 
+    def execute_kernel_command_and_print(self, request: CommandRequest) -> None:
+        """Execute a command and print its response using the appropriate output handler.
+        
+        Overrides parent to handle output_target from core CommandRequest.
+        
+        Args:
+            request: The command request to execute
+        """
+        from pathlib import Path
+
+        from wexample_app.output.app_file_output_handler import AppFileOutputHandler
+        from wexample_wex_core.common.command_request import (
+            CommandRequest as CoreCommandRequest,
+        )
+
+        response = self.execute_kernel_command(request=request)
+        
+        # Check if this is a core request with output_target
+        if isinstance(request, CoreCommandRequest) and request.output_target:
+            target = request.output_target[0] if request.output_target else "stdout"
+            
+            if target == "file":
+                # Use file output handler
+                file_path = Path(f"output_{request.request_id}.txt")
+                file_handler = AppFileOutputHandler(file_path=file_path)
+                file_handler.print(response=response)
+                self.io.success(f"Output written to {file_path}")
+            else:
+                # Default to stdout
+                self.output.print(response=response)
+        else:
+            # Fallback to parent behavior
+            self.output.print(response=response)
+
     def get_configuration_registry(self) -> KernelRegistry:
         return self._registry
 
