@@ -186,17 +186,25 @@ class ExtendedCommand(Command):
 
             # Validate the value if validators are defined and value is not None
             if value is not None and option.validators:
-                for validator in option.validators:
-                    if not validator.validate(value):
-                        from wexample_wex_core.exception.command_option_validation_exception import (
-                            CommandOptionValidationException,
-                        )
+                # For multiple values, validate each item individually
+                values_to_validate = value if isinstance(value, list) else [value]
+                
+                for val in values_to_validate:
+                    for validator in option.validators:
+                        if not validator.validate(val):
+                            from wexample_wex_core.exception.command_option_validation_exception import (
+                                CommandOptionValidationException,
+                            )
 
-                        raise CommandOptionValidationException(
-                            option_name=option.name,
-                            value=value,
-                            error_message=validator.get_error_message(value),
-                        )
+                            raise CommandOptionValidationException(
+                                option_name=option.name,
+                                value=val,
+                                error_message=validator.get_error_message(val),
+                            )
+
+            # Normalize to list if always_list is True
+            if value is not None and option.always_list and not isinstance(value, list):
+                value = [value]
 
             # Assign the validated value
             if value is not None:

@@ -16,6 +16,8 @@ def option(
     required: bool = False,
     default: Any = None,
     is_flag: bool = False,
+    multiple: bool = False,
+    always_list: bool = False,
     validators: list[AbstractValidator] | None = None,
 ) -> AnyCallable:
     def decorator(command_wrapper: CommandMethodWrapper) -> CommandMethodWrapper:
@@ -30,6 +32,8 @@ def option(
                 required=required,
                 default=default,
                 is_flag=is_flag,
+                multiple=multiple,
+                always_list=always_list,
                 validators=validators or [],
             )
         )
