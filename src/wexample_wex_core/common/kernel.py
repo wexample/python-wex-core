@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, cast
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
-from wexample_app.output.app_stdout_output_handler import AppStdoutOutputHandler
 from wexample_helpers.classes.private_field import private_field
 from wexample_helpers.decorator.base_class import base_class
 from wexample_prompt.enums.verbosity_level import VerbosityLevel
@@ -76,6 +75,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 request_id=arguments[0],
                 name=arguments[1],
                 arguments=arguments[2:],
+                output_target=self._config_arg_output_target,
+                output_format=self._config_arg_output_format,
             )
         ]
 
@@ -194,6 +195,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         registry.instantiate_all(kernel=self)
 
     def _init_command_line_kernel(self: AbstractKernel) -> None:
+        from wexample_app.output.app_stdout_output_handler import AppStdoutOutputHandler
+        from wexample_helpers.helpers.array import array_unique
+
         super()._init_command_line_kernel()
         # We can then use config.
         self.io.default_context_verbosity = self._config_arg_verbosity
@@ -201,6 +205,11 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             self._config_arg_indentation_level or self.io.indentation,
             int(self.io.terminal_width / 3),
         )
+
+        self._config_arg_output_format = self._config_arg_output_format or "text"
+        self._config_arg_output_target = array_unique(self._config_arg_output_target or [
+            AppStdoutOutputHandler.get_name()
+        ])
 
     def _init_middlewares(self) -> None:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager

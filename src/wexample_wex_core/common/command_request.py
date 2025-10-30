@@ -13,6 +13,12 @@ if TYPE_CHECKING:
 @base_class
 class CommandRequest(BaseCommandRequest):
     request_id: str = public_field(description="A unique id from the initial execution")
+    output_target: list[str] = public_field(
+        description="The list of output targets"
+    )
+    output_format: str = public_field(
+        description="The list of output targets"
+    )
 
     def get_addon_manager(self):
         return self.resolver.get_request_addon_manager(self)
