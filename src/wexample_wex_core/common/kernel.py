@@ -149,17 +149,17 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             ),
             Option(
                 name="output_format",
-                is_flag=True,
-                type=bool,
+                type=str,
                 value="str",
                 description="The way to render the output",
             ),
             Option(
                 name="output_target",
-                is_flag=True,
-                type=bool,
+                type=str,
                 value="str",
                 description="The emplacement where placing the output (stdout, file, ...)",
+                multiple=True,
+                always_list=True
             ),
             Option(
                 name="indentation_level",
