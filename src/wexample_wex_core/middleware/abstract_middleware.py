@@ -34,9 +34,9 @@ class AbstractMiddleware(
         factory=list,
         description="List of normalized option objects for middleware configuration",
     )
-    options: list[dict[str, Any] | Option] = public_field(
+    options: list[Option] = public_field(
         factory=list,
-        description="Raw option definitions or Option objects provided to the middleware",
+        description="Option objects provided to the middleware",
     )
     parallel: None | bool | str = public_field(
         default=False,
@@ -130,6 +130,7 @@ class AbstractMiddleware(
         ]
 
     def get_first_option(self) -> Option | None:
+        # TODO pourquoi firs ? path devrait pouvoir se trouver n'importe où, ca ne devrait pas évoquer path
         """Get the path option from the normalized options."""
         if self.normalized_options:
             return self.normalized_options[0]
@@ -143,21 +144,9 @@ class AbstractMiddleware(
     ) -> bool:
         return True
 
-    def _get_middleware_options(self) -> list[dict[str, Any]]:
+    def _get_middleware_options(self) -> list[Option]:
         return []
 
     def _init_options(self) -> list[Option]:
-        from wexample_app.command.option import Option
-
-        """Convert options from various formats to Option objects."""
-        normalized = []
-
-        for option in self._get_middleware_options():
-            if isinstance(option, dict):
-                normalized.append(Option(**option))
-            elif isinstance(option, Option):
-                normalized.append(option)
-            else:
-                raise TypeError(f"Unsupported option type: {type(option)}")
-
-        return normalized
+        """Get middleware options."""
+        return self._get_middleware_options()

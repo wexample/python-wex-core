@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from wexample_helpers.classes.field import public_field
 from wexample_helpers.decorator.base_class import base_class
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.context.execution_context import ExecutionContext
-
+    from wexample_app.command.option import Option
 
 @base_class
 class AbstractEachPathMiddleware(AbstractMiddleware):
@@ -106,17 +106,18 @@ class AbstractEachPathMiddleware(AbstractMiddleware):
 
         return True
 
-    def _get_middleware_options(self) -> list[dict[str, Any]]:
+    def _get_middleware_options(self) -> list[Option]:
         """Get the default file option definition."""
+        from wexample_app.command.option import Option
         from wexample_helpers.const.globals import PATH_NAME_PATH
 
         return [
-            {
-                "name": PATH_NAME_PATH,
-                "type": str,
-                "required": True,
-                "description": "Path to local file or directory",
-            }
+            Option(
+                name=PATH_NAME_PATH,
+                type=str,
+                required=True,
+                description="Path to local file or directory",
+            )
         ]
 
     def _get_option_file_path(self, function_kwargs: Kwargs) -> str | None:
