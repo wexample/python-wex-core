@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
     from wexample_app.command.option import Option
 
+
 @base_class
 class AbstractEachPathMiddleware(AbstractMiddleware):
     expand_glob: bool = public_field(

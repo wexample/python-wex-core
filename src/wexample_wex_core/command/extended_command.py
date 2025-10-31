@@ -137,7 +137,7 @@ class ExtendedCommand(Command):
             # If only one response, return it directly instead of wrapping in MultipleResponse
             if len(output.responses) == 1:
                 return output.responses[0]
-            
+
             return output
 
         # Delegate context creation to resolver.
@@ -192,7 +192,7 @@ class ExtendedCommand(Command):
             if value is not None and option.validators:
                 # For multiple values, validate each item individually
                 values_to_validate = value if isinstance(value, list) else [value]
-                
+
                 for val in values_to_validate:
                     for validator in option.validators:
                         if not validator.validate(val):
@@ -242,7 +242,9 @@ class ExtendedCommand(Command):
         async def execute_single_pass(
             execution_context: ExecutionContext,
         ) -> AbstractResponse:
-            from wexample_prompt.output.prompt_buffer_output_handler import PromptBufferOutputHandler
+            from wexample_prompt.output.prompt_buffer_output_handler import (
+                PromptBufferOutputHandler,
+            )
 
             output = PromptBufferOutputHandler()
             # Detach io manager to print log result at the end.

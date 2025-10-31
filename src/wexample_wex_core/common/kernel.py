@@ -95,7 +95,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         
         Replaces default stdout handler with handlers from registry according to output targets.
         """
-
         available_handlers = self._get_available_output_handlers()
         # Clear default handlers and add specified ones
         outputs = []

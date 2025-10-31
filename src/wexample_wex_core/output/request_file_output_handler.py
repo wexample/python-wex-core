@@ -12,10 +12,11 @@ from wexample_wex_core.common.command_request import CommandRequest
 class RequestFileOutputHandler(AppFileOutputHandler):
     """Extended file output handler for core kernel with predefined output path."""
 
-    file_path: Path = public_field(
-        default=None,
-        description="Path to the output file"
-    )
+    file_path: Path = public_field(default=None, description="Path to the output file")
 
     def _get_file_path(self, request: CommandRequest) -> Path:
-        return request.kernel.workdir.get_tmp().get_path() / "output" / f"output-{request.request_id}"
+        return (
+            request.kernel.workdir.get_tmp().get_path()
+            / "output"
+            / f"output-{request.request_id}"
+        )

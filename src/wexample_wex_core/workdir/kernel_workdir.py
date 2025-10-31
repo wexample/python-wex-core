@@ -62,7 +62,7 @@ class KernelWorkdir(AbstractKernelChild, Workdir):
                         "shortcut": KernelWorkdir.SHORTCUT_REGISTRY,
                         "type": DiskItemType.FILE,
                         "should_exist": True,
-                    }
+                    },
                 ],
             }
         )
