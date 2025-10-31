@@ -16,7 +16,7 @@ dependencies = [
     "wexample-app==0.0.54",
     "wexample-filestate-git==0.0.43",
     "wexample-filestate==0.0.55",
-    "wexample-helpers-git==0.0.54",
+    "wexample-helpers-git==0.0.55",
 ]
 
 [project.readme]
