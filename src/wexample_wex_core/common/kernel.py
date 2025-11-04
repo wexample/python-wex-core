@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING, cast
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
-from wexample_app.const.output import OUTPUT_FORMAT_STR, OUTPUT_TARGET_STDOUT
+from wexample_app.const.output import OUTPUT_FORMAT_STR, OUTPUT_TARGET_NONE
+from wexample_app.output.app_none_output_handler import AppNoneOutputHandler
 from wexample_helpers.classes.private_field import private_field
 from wexample_helpers.decorator.base_class import base_class
 from wexample_prompt.enums.verbosity_level import VerbosityLevel
@@ -55,6 +56,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=False,
         description="Default verbosity",
     )
+    _config_arg_force_request_id: str | None = private_field(
+        default=None,
+        description="When request comes from another external process",
+    )
     _registry: KernelRegistry = private_field(description="The configuration registry")
 
     def get_addons(self) -> dict[str, AbstractAddonManager]:
@@ -77,6 +82,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         )
 
         return {
+            OUTPUT_TARGET_NONE: AppNoneOutputHandler,
             OUTPUT_TARGET_STDOUT: AppStdoutOutputHandler,
             OUTPUT_TARGET_FILE: RequestFileOutputHandler,
         }
@@ -86,8 +92,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         super()._init_command_line_core_args()
 
         self._config_arg_output_format = self._config_arg_output_format or OUTPUT_FORMAT_STR
+        # By default, the kernel does not return data, but only display io messages.
+        # The output should be explicitly asked to be returned in file or output.
         self._config_arg_output_target = array_unique(self._config_arg_output_target or [
-            OUTPUT_TARGET_STDOUT
+            OUTPUT_TARGET_NONE
         ])
 
     def create_output_handlers(self) -> [AbstractAppOutputHandler]:
@@ -130,7 +138,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return [
             self._get_command_request_class()(
                 kernel=self,
-                request_id=arguments[0],
+                request_id=self._config_arg_force_request_id or arguments[0],
                 name=arguments[1],
                 arguments=arguments[2:],
                 output_target=self._config_arg_output_target,
@@ -237,6 +245,12 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 is_flag=False,
                 type=int,
                 description="Number of indentation levels to use",
+            ),
+            Option(
+                name="force_request_id",
+                short_name="force_request_id",
+                type=str,
+                description="When an external process launches the request",
             ),
         ]
 
