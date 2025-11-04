@@ -24,9 +24,7 @@ class AppManagerShellResult(ShellResult):
 
     @classmethod
     def from_shell_result(
-            cls,
-            result: ShellResult,
-            request_id: str
+        cls, result: ShellResult, request_id: str
     ) -> "AppManagerShellResult":
         """Convert ShellResult to AppManagerShellResult."""
         return cls(
@@ -42,12 +40,15 @@ class AppManagerShellResult(ShellResult):
         )
 
     def __post_init__(self) -> None:
-        path = self.cwd / APP_PATH_APP_MANAGER / APP_DIR_PATH_RELATIVE_OUTPUT / self.request_id
+        path = (
+            self.cwd
+            / APP_PATH_APP_MANAGER
+            / APP_DIR_PATH_RELATIVE_OUTPUT
+            / self.request_id
+        )
 
         # Store output for later usage.
-        self.output_json = json_load_if_valid(
-            path=path
-        )
+        self.output_json = json_load_if_valid(path=path)
 
         # We avoid storing requests output.
         file_remove_if_exists(path)

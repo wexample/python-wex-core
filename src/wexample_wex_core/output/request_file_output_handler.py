@@ -16,7 +16,5 @@ class RequestFileOutputHandler(AppFileOutputHandler):
 
     def _get_file_path(self, request: CommandRequest) -> Path:
         return (
-                request.kernel.workdir.get_tmp().get_path()
-                / "output"
-                / request.request_id
+            request.kernel.workdir.get_tmp().get_path() / "output" / request.request_id
         )

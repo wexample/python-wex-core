@@ -69,7 +69,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
     def _get_available_output_handlers(self):
         """Get available output handlers for core kernel.
-        
+
         Returns:
             Dictionary with stdout and file handlers
         """
@@ -89,18 +89,21 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
     def _init_command_line_core_args(self) -> None:
         from wexample_helpers.helpers.array import array_unique
+
         super()._init_command_line_core_args()
 
-        self._config_arg_output_format = self._config_arg_output_format or OUTPUT_FORMAT_STR
+        self._config_arg_output_format = (
+            self._config_arg_output_format or OUTPUT_FORMAT_STR
+        )
         # By default, the kernel does not return data, but only display io messages.
         # The output should be explicitly asked to be returned in file or output.
-        self._config_arg_output_target = array_unique(self._config_arg_output_target or [
-            OUTPUT_TARGET_NONE
-        ])
+        self._config_arg_output_target = array_unique(
+            self._config_arg_output_target or [OUTPUT_TARGET_NONE]
+        )
 
     def create_output_handlers(self) -> [AbstractAppOutputHandler]:
         """Initialize output handlers based on _config_arg_output_target.
-        
+
         Replaces default stdout handler with handlers from registry according to output targets.
         """
         available_handlers = self._get_available_output_handlers()
@@ -118,7 +121,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return self._registry
 
     def setup(
-            self, addons: list[type[AbstractAddonManager]] | None = None
+        self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> AbstractKernel:
         response = super().setup()
 
@@ -132,7 +135,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return response
 
     def _build_single_command_request_from_arguments(
-            self, arguments: CommandLineArgumentsList
+        self, arguments: CommandLineArgumentsList
     ):
         # Core command request takes a request id.
         return [
@@ -147,10 +150,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def _create_workdir_state_manager(
-            self,
-            entrypoint_path: str,
-            io: IoManager,
-            config: DictConfig | None = None,
+        self,
+        entrypoint_path: str,
+        io: IoManager,
+        config: DictConfig | None = None,
     ) -> FileStateManager:
         return self._get_workdir_state_manager_class().create_from_kernel(
             kernel=self, config=config or {}, io=io
@@ -238,7 +241,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 value="str",
                 description="The emplacement where placing the output (stdout, file, ...)",
                 multiple=True,
-                always_list=True
+                always_list=True,
             ),
             Option(
                 name="indentation_level",
@@ -260,7 +263,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return KernelWorkdir
 
     def _init_addons(
-            self, addons: list[type[AbstractAddonManager]] | None = None
+        self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> None:
         from wexample_app.service.service_registry import ServiceRegistry
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON

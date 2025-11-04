@@ -9,6 +9,7 @@ from wexample_helpers.decorator.base_class import base_class
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
+
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.const.types import ParsedArgs
     from wexample_wex_core.context.execution_context import ExecutionContext
@@ -28,6 +29,7 @@ class ExtendedCommand(Command):
         from wexample_app.helpers.response import response_normalize
         from wexample_app.response.failure_response import FailureResponse
         from wexample_app.response.multiple_response import MultipleResponse
+
         from wexample_wex_core.const.middleware import (
             MIDDLEWARE_OPTION_VALUE_ALLWAYS,
             MIDDLEWARE_OPTION_VALUE_OPTIONAL,
