@@ -28,6 +28,10 @@ if TYPE_CHECKING:
 
 @base_class
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
+    _config_arg_force_request_id: str | None = private_field(
+        default=None,
+        description="When request comes from another external process",
+    )
     _config_arg_indentation_level: int | None = private_field(
         default=None,
         description="Prompt messages indentation level",
@@ -44,21 +48,17 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=False,
         description="Disable verbosity, every log or message, useful to capture structured output",
     )
-    _config_arg_vvv: bool = private_field(
+    _config_arg_v: bool = private_field(
         default=False,
-        description="Maximum verbosity",
+        description="Default verbosity",
     )
     _config_arg_vv: bool = private_field(
         default=False,
         description="High verbosity",
     )
-    _config_arg_v: bool = private_field(
+    _config_arg_vvv: bool = private_field(
         default=False,
-        description="Default verbosity",
-    )
-    _config_arg_force_request_id: str | None = private_field(
-        default=None,
-        description="When request comes from another external process",
+        description="Maximum verbosity",
     )
     _registry: KernelRegistry = private_field(description="The configuration registry")
 

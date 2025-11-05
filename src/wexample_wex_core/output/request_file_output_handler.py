@@ -5,6 +5,7 @@ from pathlib import Path
 from wexample_app.output.app_file_output_handler import AppFileOutputHandler
 from wexample_helpers.classes.field import public_field
 from wexample_helpers.decorator.base_class import base_class
+
 from wexample_wex_core.common.command_request import CommandRequest
 
 

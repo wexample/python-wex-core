@@ -25,7 +25,7 @@ class AppManagerShellResult(ShellResult):
     @classmethod
     def from_shell_result(
         cls, result: ShellResult, request_id: str
-    ) -> "AppManagerShellResult":
+    ) -> AppManagerShellResult:
         """Convert ShellResult to AppManagerShellResult."""
         return cls(
             args=result.args,
