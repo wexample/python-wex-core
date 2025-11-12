@@ -14,16 +14,17 @@ from wexample_prompt.enums.verbosity_level import VerbosityLevel
 if TYPE_CHECKING:
     from wexample_app.command.option import Option
     from wexample_app.const.types import CommandLineArgumentsList
+    from wexample_app.output.abstract_app_output_handler import AbstractAppOutputHandler
     from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
     from wexample_app.runner.abstract_command_runner import AbstractCommandRunner
     from wexample_config.const.types import DictConfig
     from wexample_filestate.utils.file_state_manager import FileStateManager
     from wexample_prompt.common.io_manager import IoManager
+
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
     from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
-    from wexample_app.output.abstract_app_output_handler import AbstractAppOutputHandler
 
 
 @base_class
@@ -62,45 +63,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     )
     _registry: KernelRegistry = private_field(description="The configuration registry")
 
-    def get_addons(self) -> dict[str, AbstractAddonManager]:
-        from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
-
-        return self.get_registry(REGISTRY_KERNEL_ADDON).get_all()
-
-    def _get_available_output_handlers(self):
-        """Get available output handlers for core kernel.
-
-        Returns:
-            Dictionary with stdout and file handlers
-        """
-        from wexample_app.const.output import OUTPUT_TARGET_FILE, OUTPUT_TARGET_STDOUT
-        from wexample_app.output.app_stdout_output_handler import (
-            AppStdoutOutputHandler,
-        )
-        from wexample_wex_core.output.request_file_output_handler import (
-            RequestFileOutputHandler,
-        )
-
-        return {
-            OUTPUT_TARGET_NONE: AppNoneOutputHandler,
-            OUTPUT_TARGET_STDOUT: AppStdoutOutputHandler,
-            OUTPUT_TARGET_FILE: RequestFileOutputHandler,
-        }
-
-    def _init_command_line_core_args(self) -> None:
-        from wexample_helpers.helpers.array import array_unique
-
-        super()._init_command_line_core_args()
-
-        self._config_arg_output_format = (
-            self._config_arg_output_format or OUTPUT_FORMAT_STR
-        )
-        # By default, the kernel does not return data, but only display io messages.
-        # The output should be explicitly asked to be returned in file or output.
-        self._config_arg_output_target = array_unique(
-            self._config_arg_output_target or [OUTPUT_TARGET_NONE]
-        )
-
     def create_output_handlers(self) -> [AbstractAppOutputHandler]:
         """Initialize output handlers based on _config_arg_output_target.
 
@@ -116,6 +78,11 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 outputs.append(handler_class(kernel=self))
 
         return outputs
+
+    def get_addons(self) -> dict[str, AbstractAddonManager]:
+        from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
+
+        return self.get_registry(REGISTRY_KERNEL_ADDON).get_all()
 
     def get_configuration_registry(self) -> KernelRegistry:
         return self._registry
@@ -158,6 +125,27 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return self._get_workdir_state_manager_class().create_from_kernel(
             kernel=self, config=config or {}, io=io
         )
+
+    def _get_available_output_handlers(self):
+        """Get available output handlers for core kernel.
+
+        Returns:
+            Dictionary with stdout and file handlers
+        """
+        from wexample_app.const.output import OUTPUT_TARGET_FILE, OUTPUT_TARGET_STDOUT
+        from wexample_app.output.app_stdout_output_handler import (
+            AppStdoutOutputHandler,
+        )
+
+        from wexample_wex_core.output.request_file_output_handler import (
+            RequestFileOutputHandler,
+        )
+
+        return {
+            OUTPUT_TARGET_NONE: AppNoneOutputHandler,
+            OUTPUT_TARGET_STDOUT: AppStdoutOutputHandler,
+            OUTPUT_TARGET_FILE: RequestFileOutputHandler,
+        }
 
     def _get_command_request_class(self) -> type[CommandRequest]:
         from wexample_wex_core.common.command_request import CommandRequest
@@ -266,11 +254,26 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> None:
         from wexample_app.service.service_registry import ServiceRegistry
+
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
 
         cast(ServiceRegistry, self.set_registry(REGISTRY_KERNEL_ADDON))
         registry = self.register_items(REGISTRY_KERNEL_ADDON, addons or [])
         registry.instantiate_all(kernel=self)
+
+    def _init_command_line_core_args(self) -> None:
+        from wexample_helpers.helpers.array import array_unique
+
+        super()._init_command_line_core_args()
+
+        self._config_arg_output_format = (
+            self._config_arg_output_format or OUTPUT_FORMAT_STR
+        )
+        # By default, the kernel does not return data, but only display io messages.
+        # The output should be explicitly asked to be returned in file or output.
+        self._config_arg_output_target = array_unique(
+            self._config_arg_output_target or [OUTPUT_TARGET_NONE]
+        )
 
     def _init_command_line_kernel(self: AbstractKernel) -> None:
         super()._init_command_line_kernel()

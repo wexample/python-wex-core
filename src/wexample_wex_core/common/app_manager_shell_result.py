@@ -14,13 +14,27 @@ from wexample_helpers.helpers.json import json_load_if_valid
 
 @dataclass
 class AppManagerShellResult(ShellResult):
-    request_id: str = private_field(
-        description="The request id that produced the response",
-    )
     output_json: None | str = private_field(
         default=None,
         description="The parsed output json",
     )
+    request_id: str = private_field(
+        description="The request id that produced the response",
+    )
+
+    def __post_init__(self) -> None:
+        path = (
+            self.cwd
+            / APP_PATH_APP_MANAGER
+            / APP_DIR_PATH_RELATIVE_OUTPUT
+            / self.request_id
+        )
+
+        # Store output for later usage.
+        self.output_json = json_load_if_valid(path=path)
+
+        # We avoid storing requests output.
+        file_remove_if_exists(path)
 
     @classmethod
     def from_shell_result(
@@ -38,20 +52,6 @@ class AppManagerShellResult(ShellResult):
             stdout=result.stdout,
             request_id=request_id,
         )
-
-    def __post_init__(self) -> None:
-        path = (
-            self.cwd
-            / APP_PATH_APP_MANAGER
-            / APP_DIR_PATH_RELATIVE_OUTPUT
-            / self.request_id
-        )
-
-        # Store output for later usage.
-        self.output_json = json_load_if_valid(path=path)
-
-        # We avoid storing requests output.
-        file_remove_if_exists(path)
 
     def get_output(self) -> Any:
         return self.output_json
