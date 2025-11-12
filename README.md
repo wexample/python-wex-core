@@ -1,6 +1,6 @@
 # wexample-wex-core
 
-Version: 6.0.64
+Version: 6.0.65
 
 Wex core
 
