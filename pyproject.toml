@@ -15,7 +15,7 @@ dependencies = [
     "click",
     "wexample-app==0.0.66",
     "wexample-filestate-git==0.0.55",
-    "wexample-filestate==0.0.69",
+    "wexample-filestate==0.0.70",
     "wexample-helpers-git==0.0.91",
 ]
 
