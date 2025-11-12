@@ -1,4 +1,5 @@
 from __future__ import annotations
 
-MIDDLEWARE_OPTION_VALUE_OPTIONAL: str = "optional"
+# filestate: python-constant-sort
 MIDDLEWARE_OPTION_VALUE_ALLWAYS: str = "allways"
+MIDDLEWARE_OPTION_VALUE_OPTIONAL: str = "optional"

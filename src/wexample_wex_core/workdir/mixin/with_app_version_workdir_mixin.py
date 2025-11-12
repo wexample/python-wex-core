@@ -2,27 +2,19 @@ from __future__ import annotations
 
 from typing import Any
 
-from wexample_filestate.workdir.mixin.with_version_workdir_mixin import (
+from wexample_app.workdir.mixin.with_version_workdir_mixin import (
     WithVersionWorkdirMixin,
 )
-from wexample_helpers.helpers.string import string_ensure_end_with_new_line
+from wexample_helpers.decorator.base_class import base_class
 
 
+@base_class
 class WithAppVersionWorkdirMixin(WithVersionWorkdirMixin):
     def _get_version_default_content(self) -> Any:
-        from wexample_filestate.config_value.content_config_value import (
-            ContentConfigValue,
+        from wexample_wex_core.config_value.version_content_config_value import (
+            VersionContentConfigValue,
         )
-        from wexample_wex_core.workdir.project_workdir import ProjectWorkdir
 
-        class VersionBuilder(ContentConfigValue):
-            workdir: ProjectWorkdir
-
-            def build_content(self, type_check: bool = True) -> str:
-                return string_ensure_end_with_new_line(
-                    self.workdir.get_config()
-                    .get_config_item(key="version", default=self.raw)
-                    .get_str()
-                )
-
-        return VersionBuilder(raw=super()._get_version_default_content(), workdir=self)
+        return VersionContentConfigValue(
+            raw=super()._get_version_default_content(), workdir=self
+        )
