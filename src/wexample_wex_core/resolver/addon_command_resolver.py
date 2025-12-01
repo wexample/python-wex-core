@@ -29,6 +29,7 @@ class AddonCommandResolver(AbstractCommandResolver):
 
     def build_command_function_name(self, request: CommandRequest) -> str | None:
         from wexample_helpers.helpers.string import string_to_snake_case
+
         from wexample_wex_core.const.globals import COMMAND_SEPARATOR_FUNCTION_PARTS
 
         return COMMAND_SEPARATOR_FUNCTION_PARTS.join(
