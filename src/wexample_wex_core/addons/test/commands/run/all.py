@@ -14,37 +14,42 @@ if TYPE_CHECKING:
 def test__run__all(context: ExecutionContext) -> None:
     import pytest
 
-    from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+    from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolver
 
-    # Change to project root directory
     workdir = context.kernel.workdir.get_path()
     os.chdir(workdir)
 
     context.io.log(f"Starting pytest test suite from {workdir}")
 
-    # TODO Finaliser le registre pour pouvoir lister les tests
-    #  Voir /home/weeger/Desktop/WIP/WEB/WEXAMPLE/WEX/local/wex/src/core/file/KernelRegistryFileStructure.py
-    #  Voir /home/weeger/Desktop/WIP/WEB/WEXAMPLE/WEX/local/wex/src/core/file/AbstractFileSystemStructure.py
-    #  - Recopier un maximum de propriétés utiles dur genre on_missing ou atre
-    #  - Créer KernelRegistryFileStructure basé sur YamlFile + KernelChild
-    #  - Créer le registre comme avant et le sauver dans tmp.
-    #  - Le registre identifier les fichier test pour chaque commande, qu'on réutilisera ici.
-    # Build pytest arguments explicitly to avoid using sys.argv
-    pytest_args = [
-        "tests",  # Run tests from the tests directory
-        "--color=yes",  # Enable colored output
-        "-v",  # Verbose output
-    ]
+    # Collect test paths from the addon command registry
+    resolvers = context.kernel.get_resolvers()
+    addon_resolver = resolvers.get("addon")
+    test_paths: list[str] = []
+    missing_tests: list[str] = []
 
-    # Add addons tests directories
-    for addon in context.kernel.get_addons().values():
-        assert isinstance(addon, AbstractAddonManager)
-        context.io.log(f"Adding tests from addon: {addon.get_snake_short_class_name()}")
-        pytest_args.append(addon.workdir.get_path().resolve() / "tests")
+    if isinstance(addon_resolver, AddonCommandResolver):
+        addon_data = addon_resolver.build_registry_data()
 
-    context.io.log(f"Running pytest with args: {' '.join(pytest_args)}")
+        for addon_name, commands in addon_data.items():
+            for command_key, command_entry in commands.items():
+                if command_entry["test"]:
+                    test_paths.append(command_entry["test"])
+                else:
+                    missing_tests.append(command_entry["command"])
 
-    # Run pytest with explicit arguments
+    # Always include the project-level tests directory if present
+    project_tests = str(workdir / "tests")
+    if os.path.isdir(project_tests) and project_tests not in test_paths:
+        test_paths.insert(0, project_tests)
+
+    if missing_tests:
+        context.io.log(f"{len(missing_tests)} command(s) have no test file:")
+        for cmd in missing_tests:
+            context.io.log(f"  - {cmd}", indentation=1)
+
+    pytest_args = [*test_paths, "--color=yes", "-v"]
+
+    context.io.log(f"Running pytest across {len(test_paths)} path(s)...")
     exit_code = pytest.main(pytest_args)
 
     if exit_code == 0:

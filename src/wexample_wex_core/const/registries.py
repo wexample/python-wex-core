@@ -1,7 +1,15 @@
 from __future__ import annotations
 
-from wexample_helpers.const.types import StringKeysDict
+from typing import TypedDict
 
 REGISTRY_KERNEL_ADDON: str = "addon"
 
-RegistryResolverData = StringKeysDict
+
+class RegistryCommandData(TypedDict):
+    command: str
+    path: str
+    test: str | None
+
+
+RegistryAddonData = dict[str, RegistryCommandData]
+RegistryResolverData = dict[str, RegistryAddonData]

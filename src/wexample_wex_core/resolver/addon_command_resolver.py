@@ -57,14 +57,40 @@ class AddonCommandResolver(AbstractCommandResolver):
             / f"{command}.{extension}"
         )
 
-    def build_registry_data(self, test: bool = False) -> RegistryResolverData:
+    def build_registry_data(self) -> RegistryResolverData:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+        from wexample_wex_core.const.registries import RegistryAddonData, RegistryCommandData
 
         registry: RegistryResolverData = {}
 
         for addon in self.kernel.get_addons().values():
             assert isinstance(addon, AbstractAddonManager)
-            registry[addon.get_snake_short_class_name()] = {}
+
+            addon_name = addon.get_snake_short_class_name()
+            addon_data: RegistryAddonData = {}
+            commands_dir = addon.workdir.get_path() / "commands"
+
+            if commands_dir.exists():
+                for group_dir in sorted(commands_dir.iterdir()):
+                    if not group_dir.is_dir() or group_dir.name.startswith("_"):
+                        continue
+
+                    for cmd_file in sorted(group_dir.iterdir()):
+                        if cmd_file.suffix != ".py" or cmd_file.name.startswith("_"):
+                            continue
+
+                        group = group_dir.name
+                        cmd = cmd_file.stem
+                        command_key = f"{group}/{cmd}"
+                        test_path = addon.workdir.get_path() / "tests" / group / f"{cmd}.py"
+
+                        addon_data[command_key] = RegistryCommandData(
+                            command=f"{addon_name}::{command_key}",
+                            path=str(cmd_file),
+                            test=str(test_path) if test_path.exists() else None,
+                        )
+
+            registry[addon_name] = addon_data
 
         return registry
 
