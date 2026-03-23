@@ -15,6 +15,10 @@ if TYPE_CHECKING:
 
 @base_class
 class CommandMethodWrapper(BaseClass):
+    aliases: list[str] = public_field(
+        factory=list,
+        description="Alternative names to invoke this command",
+    )
     description: str | None = public_field(
         default=None,
         description="Optional human-readable description of the command method",

@@ -58,7 +58,10 @@ class AddonCommandResolver(AbstractCommandResolver):
         )
 
     def build_registry_data(self) -> RegistryResolverData:
+        import importlib.util
+
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+        from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
         from wexample_wex_core.const.registries import RegistryAddonData, RegistryCommandData
 
         registry: RegistryResolverData = {}
@@ -84,15 +87,59 @@ class AddonCommandResolver(AbstractCommandResolver):
                         command_key = f"{group}/{cmd}"
                         test_path = addon.workdir.get_path() / "tests" / group / f"{cmd}.py"
 
+                        # Load module to extract decorator metadata (description, aliases)
+                        description: str | None = None
+                        aliases: list[str] = []
+                        try:
+                            func_name = f"{addon_name}__{group}__{cmd}"
+                            spec = importlib.util.spec_from_file_location(func_name, cmd_file)
+                            if spec and spec.loader:
+                                mod = importlib.util.module_from_spec(spec)
+                                spec.loader.exec_module(mod)  # type: ignore[union-attr]
+                                wrapper = getattr(mod, func_name, None)
+                                if isinstance(wrapper, CommandMethodWrapper):
+                                    description = wrapper.description
+                                    aliases = list(wrapper.aliases)
+                        except Exception:
+                            pass
+
                         addon_data[command_key] = RegistryCommandData(
                             command=f"{addon_name}::{command_key}",
                             path=str(cmd_file),
                             test=str(test_path) if test_path.exists() else None,
+                            description=description,
+                            alias=aliases,
                         )
 
             registry[addon_name] = addon_data
 
         return registry
+
+    def supports(self, request: CommandRequest) -> object:
+        match = self.build_match(request.name)
+
+        if match:
+            return match
+
+        # Transparent alias resolution: if the input matches a registered alias,
+        # redirect to the canonical command name before pattern matching.
+        canonical = self._resolve_alias(request.name)
+        if canonical:
+            request.name = canonical
+            return self.build_match(canonical)
+
+        return None
+
+    def _resolve_alias(self, name: str) -> str | None:
+        try:
+            registry = self.kernel.get_configuration_registry()
+            for addon_data in registry.get_addon_commands().values():
+                for cmd_data in addon_data.values():
+                    if name in cmd_data.get("alias", []):
+                        return cmd_data["command"]
+        except Exception:
+            pass
+        return None
 
     def get_request_addon_manager(
         self, request: CommandRequest

@@ -9,6 +9,8 @@ class RegistryCommandData(TypedDict):
     command: str
     path: str
     test: str | None
+    description: str | None
+    alias: list[str]
 
 
 RegistryAddonData = dict[str, RegistryCommandData]
