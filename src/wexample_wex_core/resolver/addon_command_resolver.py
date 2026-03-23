@@ -90,18 +90,15 @@ class AddonCommandResolver(AbstractCommandResolver):
                         # Load module to extract decorator metadata (description, aliases)
                         description: str | None = None
                         aliases: list[str] = []
-                        try:
-                            func_name = f"{addon_name}__{group}__{cmd}"
-                            spec = importlib.util.spec_from_file_location(func_name, cmd_file)
-                            if spec and spec.loader:
-                                mod = importlib.util.module_from_spec(spec)
-                                spec.loader.exec_module(mod)  # type: ignore[union-attr]
-                                wrapper = getattr(mod, func_name, None)
-                                if isinstance(wrapper, CommandMethodWrapper):
-                                    description = wrapper.description
-                                    aliases = list(wrapper.aliases)
-                        except Exception:
-                            pass
+                        func_name = f"{addon_name}__{group}__{cmd}"
+                        spec = importlib.util.spec_from_file_location(func_name, cmd_file)
+                        if spec and spec.loader:
+                            mod = importlib.util.module_from_spec(spec)
+                            spec.loader.exec_module(mod)  # type: ignore[union-attr]
+                            wrapper = getattr(mod, func_name, None)
+                            if isinstance(wrapper, CommandMethodWrapper):
+                                description = wrapper.description
+                                aliases = list(wrapper.aliases)
 
                         addon_data[command_key] = RegistryCommandData(
                             command=f"{addon_name}::{command_key}",
@@ -121,8 +118,11 @@ class AddonCommandResolver(AbstractCommandResolver):
         if match:
             return match
 
-        # Transparent alias resolution: if the input matches a registered alias,
-        # redirect to the canonical command name before pattern matching.
+        # Transparent alias resolution — only attempted if the registry has been hydrated.
+        registry = self.kernel.get_configuration_registry()
+        if not registry.get_addon_commands():
+            return None
+
         canonical = self._resolve_alias(request.name)
         if canonical:
             request.name = canonical
@@ -131,14 +131,10 @@ class AddonCommandResolver(AbstractCommandResolver):
         return None
 
     def _resolve_alias(self, name: str) -> str | None:
-        try:
-            registry = self.kernel.get_configuration_registry()
-            for addon_data in registry.get_addon_commands().values():
-                for cmd_data in addon_data.values():
-                    if name in cmd_data.get("alias", []):
-                        return cmd_data["command"]
-        except Exception:
-            pass
+        for addon_data in self.kernel.get_configuration_registry().get_addon_commands().values():
+            for cmd_data in addon_data.values():
+                if name in cmd_data.get("alias", []):
+                    return cmd_data["command"]
         return None
 
     def get_request_addon_manager(
