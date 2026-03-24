@@ -1,5 +1,5 @@
 from wexample_app.const.output import OUTPUT_TARGET_NONE
-from wexample_app.response.null_response import NullResponse
+from wexample_wex_core.response.dict_response import DictResponse
 
 
 def test_ping_in_registry(kernel):
@@ -23,4 +23,4 @@ def test_ping_executes(kernel):
 
     response = kernel.execute_kernel_command(request)
 
-    assert isinstance(response, NullResponse)
+    assert isinstance(response, DictResponse)
