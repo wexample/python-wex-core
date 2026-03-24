@@ -14,18 +14,30 @@ COMMAND_SEPARATOR_ADDON: str = "::"
 COMMAND_SEPARATOR_FUNCTION_PARTS: str = "__"
 COMMAND_SEPARATOR_GROUP: str = "/"
 
+# Command prefix characters
+# filestate: python-constant-sort
+COMMAND_CHAR_APP: str = "."
+COMMAND_CHAR_SERVICE: str = "@"
+COMMAND_CHAR_USER: str = "~"
+
 # Command types
 # filestate: python-constant-sort
 COMMAND_TYPE_ADDON: str = "addon"
+COMMAND_TYPE_APP: str = "app"
 COMMAND_TYPE_SERVICE: str = "service"
+COMMAND_TYPE_USER: str = "user"
 
 # Command patterns
 # filestate: python-constant-sort
 COMMAND_PATTERN_ADDON: str = r"^(?:([\w_-]+)::)?([\w_-]+)/([\w_-]+)$"
+COMMAND_PATTERN_APP: str = r"^\.([\w_-]+)/([\w_-]+)$"
 COMMAND_PATTERN_SERVICE: str = r"^@([\w_-]+)::([\w_-]+)/([\w_-]+)$"
+COMMAND_PATTERN_USER: str = r"^~([\w_-]+)/([\w_-]+)$"
 
 COMMAND_PATTERNS: list[str] = [
     # filestate: python-iterable-sort
     COMMAND_PATTERN_ADDON,
+    COMMAND_PATTERN_APP,
     COMMAND_PATTERN_SERVICE,
+    COMMAND_PATTERN_USER,
 ]
