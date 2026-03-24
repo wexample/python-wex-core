@@ -153,18 +153,22 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return CommandRequest
 
     def _get_command_resolvers(self) -> list[type[AbstractCommandResolver]]:
+        from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
         from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolver
-        from wexample_wex_core.resolver.app_command_resolver import AppCommandResolver
         from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
         from wexample_wex_core.resolver.user_command_resolver import UserCommandResolver
 
-        return [
+        resolvers: list[type[AbstractCommandResolver]] = [
             # filestate: python-iterable-sort
             AddonCommandResolver,
-            AppCommandResolver,
             ServiceCommandResolver,
             UserCommandResolver,
         ]
+
+        for addon in self.get_addons().values():
+            resolvers.extend(cast(AbstractAddonManager, addon).get_command_resolver_classes())
+
+        return resolvers
 
     def _get_command_runners(self) -> list[type[AbstractCommandRunner]]:
         from wexample_wex_core.runner.core_python_command_runner import (

@@ -13,6 +13,7 @@ from wexample_helpers.classes.mixin.has_two_steps_init import HasTwoStepInit
 from wexample_helpers.decorator.base_class import base_class
 
 if TYPE_CHECKING:
+    from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
     from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 
@@ -49,6 +50,9 @@ class AbstractAddonManager(
         from wexample_helpers.helpers.module import module_get_path
 
         return module_get_path(cls.get_package_module())
+
+    def get_command_resolver_classes(self) -> list[type[AbstractCommandResolver]]:
+        return []
 
     def get_middlewares_classes(self) -> list[type[AbstractMiddleware]]:
         return []
