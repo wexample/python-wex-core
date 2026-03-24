@@ -9,6 +9,8 @@ def test_ping_in_registry(kernel):
     assert "ping/pong" in addon_commands["default"]
 
 
+# TODO: move to wex-core/src/wexample_wex_core/addons/default/commands/ping/test_pong.py
+#       and register as the official test for default::ping/pong in the registry (RegistryCommandData.test)
 def test_ping_executes(kernel):
     from wexample_wex_core.common.command_request import CommandRequest
 
