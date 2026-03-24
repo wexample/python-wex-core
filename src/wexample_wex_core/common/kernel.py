@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, cast
 
 from wexample_app.common.abstract_kernel import AbstractKernel
@@ -61,6 +62,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=False,
         description="Maximum verbosity",
     )
+    _logger: logging.Logger = private_field(description="Python logger for operational/debug messages")
     _registry: KernelRegistry = private_field(description="The configuration registry")
 
     def create_output_handlers(self) -> [AbstractAppOutputHandler]:
@@ -87,12 +89,17 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def get_configuration_registry(self) -> KernelRegistry:
         return self._registry
 
+    @property
+    def logger(self) -> logging.Logger:
+        return self._logger
+
     def setup(
         self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> AbstractKernel:
         response = super().setup()
 
         self._init_command_line_kernel()
+        self._init_logging()
         self._init_addons(addons=addons)
         self._init_resolvers()
         self._init_runners()
@@ -253,6 +260,33 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
         return KernelWorkdir
+
+    def _init_logging(self) -> None:
+        import sys
+
+        from wexample_wex_core.const.globals import CORE_COMMAND_NAME
+
+        level_map = {
+            VerbosityLevel.QUIET: logging.CRITICAL,
+            VerbosityLevel.DEFAULT: logging.WARNING,
+            VerbosityLevel.MEDIUM: logging.INFO,
+            VerbosityLevel.HIGH: logging.INFO,
+            VerbosityLevel.MAXIMUM: logging.DEBUG,
+        }
+
+        verbosity = self.io.default_context_verbosity
+        level = level_map.get(verbosity, logging.WARNING)
+
+        logger = logging.getLogger(str(CORE_COMMAND_NAME))
+        logger.setLevel(level)
+
+        if not logger.handlers:
+            handler = logging.StreamHandler(sys.stderr)
+            handler.setLevel(level)
+            handler.setFormatter(logging.Formatter("%(name)s %(levelname)s: %(message)s"))
+            logger.addHandler(handler)
+
+        self._logger = logger
 
     def _init_addons(
         self, addons: list[type[AbstractAddonManager]] | None = None
