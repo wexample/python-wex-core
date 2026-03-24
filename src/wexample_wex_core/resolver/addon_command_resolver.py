@@ -7,9 +7,8 @@ from wexample_wex_core.const.registries import RegistryResolverData
 from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+    from wexample_wex_core.common.command_address import CommandAddress
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.const.registries import RegistryResolverData
 
@@ -30,37 +29,37 @@ class AddonCommandResolver(AbstractCommandResolver):
     def build_command_function_name(self, request: CommandRequest) -> str | None:
         from wexample_helpers.helpers.string import string_to_snake_case
 
-        from wexample_wex_core.const.globals import COMMAND_SEPARATOR_FUNCTION_PARTS
+        from wexample_wex_core.common.command_address import CommandAddress
 
-        return COMMAND_SEPARATOR_FUNCTION_PARTS.join(
-            string_to_snake_case(part)
-            for part in self.get_function_name_parts(request.match.groups())
+        address = CommandAddress(
+            addon=string_to_snake_case(request.match.group(1)),
+            group=string_to_snake_case(request.match.group(2)),
+            name=string_to_snake_case(request.match.group(3)),
         )
+        return address.to_function_name()
 
     def build_command_path(
         self, request: CommandRequest, extension: str
     ) -> Path | None:
         from wexample_helpers.helpers.string import string_to_snake_case
 
-        match = request.match
+        from wexample_wex_core.common.command_address import CommandAddress
 
-        # Extract addon, group and command from match
-        group = string_to_snake_case(match.group(2))
-        command = string_to_snake_case(match.group(3))
-
-        addon_manager = self.get_request_addon_manager(request)
-
-        return (
-            addon_manager.workdir.get_path()
-            / "commands"
-            / group
-            / f"{command}.{extension}"
+        address = CommandAddress(
+            addon=string_to_snake_case(request.match.group(1)),
+            group=string_to_snake_case(request.match.group(2)),
+            name=string_to_snake_case(request.match.group(3)),
         )
+        addon_manager = self.get_request_addon_manager(request)
+        commands_base = addon_manager.workdir.get_path() / "commands"
+
+        return commands_base / address.to_relative_path(extension=extension)
 
     def build_registry_data(self) -> RegistryResolverData:
         import importlib.util
 
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+        from wexample_wex_core.common.command_address import CommandAddress
         from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
         from wexample_wex_core.const.registries import RegistryAddonData, RegistryCommandData
 
@@ -71,10 +70,10 @@ class AddonCommandResolver(AbstractCommandResolver):
 
             addon_name = addon.get_snake_short_class_name()
             addon_data: RegistryAddonData = {}
-            commands_dir = addon.workdir.get_path() / "commands"
+            commands_base = addon.workdir.get_path() / "commands"
 
-            if commands_dir.exists():
-                for group_dir in sorted(commands_dir.iterdir()):
+            if commands_base.exists():
+                for group_dir in sorted(commands_base.iterdir()):
                     if not group_dir.is_dir() or group_dir.name.startswith("_"):
                         continue
 
@@ -82,15 +81,18 @@ class AddonCommandResolver(AbstractCommandResolver):
                         if cmd_file.suffix != ".py" or cmd_file.name.startswith("_"):
                             continue
 
-                        group = group_dir.name
-                        cmd = cmd_file.stem
-                        command_key = f"{group}/{cmd}"
-                        test_path = addon.workdir.get_path() / "tests" / group / f"{cmd}.py"
+                        address = CommandAddress.from_path(
+                            path=cmd_file,
+                            addon_name=addon_name,
+                            commands_base=commands_base,
+                        )
+                        tests_base = addon.workdir.get_path() / "tests"
+                        test_path = tests_base / address.to_relative_path()
 
                         # Load module to extract decorator metadata (description, aliases)
                         description: str | None = None
                         aliases: list[str] = []
-                        func_name = f"{addon_name}__{group}__{cmd}"
+                        func_name = address.to_function_name()
                         spec = importlib.util.spec_from_file_location(func_name, cmd_file)
                         if spec and spec.loader:
                             mod = importlib.util.module_from_spec(spec)
@@ -100,8 +102,8 @@ class AddonCommandResolver(AbstractCommandResolver):
                                 description = wrapper.description
                                 aliases = list(wrapper.aliases)
 
-                        addon_data[command_key] = RegistryCommandData(
-                            command=f"{addon_name}::{command_key}",
+                        addon_data[address.to_command_key()] = RegistryCommandData(
+                            command=address.to_command(),
                             path=str(cmd_file),
                             test=str(test_path) if test_path.exists() else None,
                             description=description,
@@ -151,7 +153,6 @@ class AddonCommandResolver(AbstractCommandResolver):
         addon_registry = self.kernel.get_registry("addon")
 
         if not addon_registry.has(addon_name):
-            # Get list of available addons for better error reporting
             available_addons = list(addon_registry.get_all().keys())
             raise AddonNotRegisteredException(
                 addon_name=addon_name, available_addons=available_addons
