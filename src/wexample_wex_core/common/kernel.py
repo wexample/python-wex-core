@@ -269,17 +269,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         from wexample_wex_core.const.globals import CORE_COMMAND_NAME
 
-        level_map = {
-            VerbosityLevel.QUIET: logging.CRITICAL,
-            VerbosityLevel.DEFAULT: logging.WARNING,
-            VerbosityLevel.MEDIUM: logging.INFO,
-            VerbosityLevel.HIGH: logging.INFO,
-            VerbosityLevel.MAXIMUM: logging.DEBUG,
-        }
-
-        verbosity = self.io.default_context_verbosity
-        level = level_map.get(verbosity, logging.WARNING)
-
+        level = logging.WARNING
         logger = logging.getLogger(str(CORE_COMMAND_NAME))
         logger.setLevel(level)
 
