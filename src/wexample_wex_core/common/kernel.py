@@ -68,16 +68,16 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def set_output_target(self, targets: list[str]) -> None:
         self._config_arg_output_target = targets
 
-    def create_output_handlers(self) -> [AbstractAppOutputHandler]:
-        """Initialize output handlers based on _config_arg_output_target.
+    def create_output_handlers(self, targets: list[str] | None = None) -> [AbstractAppOutputHandler]:
+        """Initialize output handlers based on targets, falling back to kernel default.
 
-        Replaces default stdout handler with handlers from registry according to output targets.
+        Args:
+            targets: Override targets for this call. Falls back to _config_arg_output_target.
         """
         available_handlers = self._get_available_output_handlers()
-        # Clear default handlers and add specified ones
         outputs = []
 
-        for target in self._config_arg_output_target:
+        for target in (targets or self._config_arg_output_target):
             if target in available_handlers:
                 handler_class = available_handlers[target]
                 outputs.append(handler_class(kernel=self))

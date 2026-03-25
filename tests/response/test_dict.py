@@ -1,72 +1,59 @@
 import json
 
-from wexample_app.const.output import OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_STR, OUTPUT_TARGET_NONE, OUTPUT_TARGET_STDOUT
-from wexample_wex_core.common.command_request import CommandRequest
+import pytest
+
+from wexample_app.const.output import OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_STR, OUTPUT_TARGET_NONE
 from wexample_wex_core.response.dict_response import DictResponse
 
-
-def test_dict_response_str(kernel, capsys):
-    response = DictResponse(kernel=kernel, content={"status": "pong", "version": "6"})
-    response.get_formatted(OUTPUT_FORMAT_STR)
-    out = capsys.readouterr().out
-
-    assert "status" in out
-    assert "pong" in out
-    assert "version" in out
-    assert "6" in out
+from tests.response.abstract_response_test import AbstractResponseTest
 
 
-def test_dict_response_str_with_title(kernel, capsys):
-    response = DictResponse(kernel=kernel, content={"a": "1"}, title="My title")
-    response.get_formatted(OUTPUT_FORMAT_STR)
-    out = capsys.readouterr().out
+class TestDictResponse(AbstractResponseTest):
+    def create_response(self, kernel) -> DictResponse:
+        return DictResponse(kernel=kernel, content={"color": "red", "size": "large"})
 
-    assert "My title" in out
-    assert "a" in out
-    assert "1" in out
+    def get_command_name(self) -> str:
+        return "default::ping/pong"
 
+    def test_str_contains_keys_and_values(self, kernel, capsys):
+        self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
+        out = capsys.readouterr().out
 
-def test_dict_response_json(kernel):
-    response = DictResponse(kernel=kernel, content={"status": "pong", "version": "6"})
-    output = response.get_formatted(OUTPUT_FORMAT_JSON)
-    data = json.loads(output)
+        assert "color" in out
+        assert "red" in out
+        assert "size" in out
+        assert "large" in out
 
-    assert data == {"status": "pong", "version": "6"}
+    def test_str_with_title(self, kernel, capsys):
+        DictResponse(kernel=kernel, content={"color": "red"}, title="My title").get_formatted(OUTPUT_FORMAT_STR)
+        out = capsys.readouterr().out
 
+        assert "My title" in out
+        assert "color" in out
+        assert "red" in out
 
-def test_ping_returns_dict_response(kernel):
-    request = CommandRequest(
-        kernel=kernel,
-        request_id="test-ping",
-        name="default::ping/pong",
-        output_target=[OUTPUT_TARGET_NONE],
-    )
-    response = kernel.execute_kernel_command(request)
+    def test_str_nested(self, kernel, capsys):
+        DictResponse(kernel=kernel, content={"outer": {"inner": "value"}}).get_formatted(OUTPUT_FORMAT_STR)
+        out = capsys.readouterr().out
 
-    assert isinstance(response, DictResponse)
-    assert response.content == {"status": "pong"}
+        assert "outer" in out
+        assert "inner" in out
+        assert "value" in out
 
+    def test_str_empty(self, kernel, capsys):
+        DictResponse(kernel=kernel, content={}).get_formatted(OUTPUT_FORMAT_STR)
+        out = capsys.readouterr().out
 
-def test_output_target_none_suppresses_output(kernel, capsys):
-    request = CommandRequest(
-        kernel=kernel,
-        request_id="test-none",
-        name="default::ping/pong",
-        output_target=[OUTPUT_TARGET_NONE],
-    )
-    kernel.execute_kernel_command_and_print(request)
+        assert out == "" or out.strip() == ""
 
-    assert capsys.readouterr().out == ""
+    def test_json_exact_content(self, kernel):
+        output = self.create_response(kernel).get_formatted(OUTPUT_FORMAT_JSON)
+        assert json.loads(output) == {"color": "red", "size": "large"}
 
+    def test_ping_returns_dict_response(self, kernel):
+        response = kernel.execute_kernel_command(self._make_request(kernel, output_target=[OUTPUT_TARGET_NONE]))
+        assert isinstance(response, DictResponse)
 
-def test_output_target_stdout_prints_output(kernel_stdout, capsys):
-    request = CommandRequest(
-        kernel=kernel_stdout,
-        request_id="test-stdout",
-        name="default::ping/pong",
-        output_target=[OUTPUT_TARGET_STDOUT],
-    )
-    kernel_stdout.execute_kernel_command_and_print(request)
-
-    out = capsys.readouterr().out
-    assert "status" in out and "pong" in out
+    def test_ping_response_content(self, kernel):
+        response = kernel.execute_kernel_command(self._make_request(kernel, output_target=[OUTPUT_TARGET_NONE]))
+        assert response.content == {"status": "pong"}
