@@ -55,8 +55,18 @@ class AbstractResponseTest(AbstractKernelTest):
         kernel.execute_kernel_command_and_print(request)
         assert capsys.readouterr().out != ""
 
-    def get_command_name(self) -> str:
+    def get_command(self):
         raise NotImplementedError
+
+    def get_resolver_class(self):
+        from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolver
+
+        return AddonCommandResolver
+
+    def get_command_name(self) -> str:
+        from wexample_wex_core.common.command_address import CommandAddress
+
+        return self.get_resolver_class().address_to_command(CommandAddress.from_function(self.get_command()))
 
     def _make_request(self, kernel, output_target: list[str] | None = None) -> CommandRequest:
         return CommandRequest(

@@ -10,6 +10,7 @@ from wexample_helpers.classes.abstract_method import abstract_method
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
+    from wexample_wex_core.common.command_address import CommandAddress
     from wexample_helpers.const.types import Kwargs, StringsList, StructuredData
 
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
@@ -67,6 +68,16 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
             request=request,
             function_kwargs=function_kwargs,
         )
+
+    @classmethod
+    def address_to_command(cls, address: CommandAddress) -> str:
+        """Convert a CommandAddress to its command string representation."""
+        from wexample_wex_core.const.globals import (
+            COMMAND_SEPARATOR_ADDON,
+            COMMAND_SEPARATOR_GROUP,
+        )
+
+        return f"{address.addon}{COMMAND_SEPARATOR_ADDON}{address.group}{COMMAND_SEPARATOR_GROUP}{address.name}"
 
     @abstract_method
     def build_registry_data(self) -> StructuredData:

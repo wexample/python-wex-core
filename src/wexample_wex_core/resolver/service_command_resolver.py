@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 if TYPE_CHECKING:
+    from wexample_wex_core.common.command_address import CommandAddress
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.const.registries import RegistryResolverData
 
@@ -15,6 +16,12 @@ _COMMANDS_SUBDIR = "commands"
 
 class ServiceCommandResolver(AbstractCommandResolver):
     """Resolves commands scoped to a named service: ``@service::group/command``."""
+
+    @classmethod
+    def address_to_command(cls, address: CommandAddress) -> str:
+        from wexample_wex_core.const.globals import COMMAND_CHAR_SERVICE
+
+        return f"{COMMAND_CHAR_SERVICE}{super().address_to_command(address)}"
 
     @classmethod
     def get_pattern(cls) -> str:
@@ -125,7 +132,7 @@ class ServiceCommandResolver(AbstractCommandResolver):
                                     aliases = list(wrapper.aliases)
 
                             addon_data[address.to_command_key()] = RegistryCommandData(
-                                command=f"@{address.to_command()}",
+                                command=self.address_to_command(address),
                                 path=str(cmd_file),
                                 test=None,
                                 description=description,

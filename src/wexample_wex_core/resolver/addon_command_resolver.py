@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from wexample_wex_core.const.registries import RegistryResolverData
 from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 if TYPE_CHECKING:
@@ -103,7 +102,7 @@ class AddonCommandResolver(AbstractCommandResolver):
                                 aliases = list(wrapper.aliases)
 
                         addon_data[address.to_command_key()] = RegistryCommandData(
-                            command=address.to_command(),
+                            command=self.address_to_command(address),
                             path=str(cmd_file),
                             test=str(test_path) if test_path.exists() else None,
                             description=description,

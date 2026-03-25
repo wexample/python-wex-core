@@ -121,7 +121,7 @@ class UserCommandResolver(AbstractCommandResolver):
                             aliases = list(wrapper.aliases)
 
                     addon_data[address.to_command_key()] = RegistryCommandData(
-                        command=address.to_command(),
+                        command=self.address_to_command(address),
                         path=str(cmd_file),
                         test=None,
                         description=description,

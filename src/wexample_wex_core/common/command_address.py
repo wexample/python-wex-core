@@ -22,24 +22,21 @@ class CommandAddress:
     # ------------------------------------------------------------------
 
     @classmethod
+    def from_function(cls, function) -> CommandAddress:
+        """Build from a command function or CommandMethodWrapper, e.g. ``default__ping__pong``."""
+        from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+
+        if isinstance(function, CommandMethodWrapper):
+            return cls.from_function_name(function.function.__name__)
+        return cls.from_function_name(function.__name__)
+
+    @classmethod
     def from_function_name(cls, function_name: str) -> CommandAddress:
         """Build from a Python function name, e.g. ``default__registry__build``."""
         from wexample_wex_core.const.globals import COMMAND_SEPARATOR_FUNCTION_PARTS
 
         parts = function_name.split(COMMAND_SEPARATOR_FUNCTION_PARTS, 2)
         return cls(addon=parts[0], group=parts[1], name=parts[2])
-
-    @classmethod
-    def from_command(cls, command: str) -> CommandAddress:
-        """Build from a command string, e.g. ``default::registry/build``."""
-        from wexample_wex_core.const.globals import (
-            COMMAND_SEPARATOR_ADDON,
-            COMMAND_SEPARATOR_GROUP,
-        )
-
-        addon, rest = command.split(COMMAND_SEPARATOR_ADDON, 1)
-        group, name = rest.split(COMMAND_SEPARATOR_GROUP, 1)
-        return cls(addon=addon, group=group, name=name)
 
     @classmethod
     def from_path(
@@ -56,15 +53,6 @@ class CommandAddress:
     # ------------------------------------------------------------------
     # Conversions
     # ------------------------------------------------------------------
-
-    def to_command(self) -> str:
-        """Return the canonical command string, e.g. ``default::registry/build``."""
-        from wexample_wex_core.const.globals import (
-            COMMAND_SEPARATOR_ADDON,
-            COMMAND_SEPARATOR_GROUP,
-        )
-
-        return f"{self.addon}{COMMAND_SEPARATOR_ADDON}{self.group}{COMMAND_SEPARATOR_GROUP}{self.name}"
 
     def to_command_key(self) -> str:
         """Return the within-addon key, e.g. ``registry/build``."""

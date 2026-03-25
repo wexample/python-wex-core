@@ -12,8 +12,11 @@ class TestDictResponse(AbstractResponseTest):
     def create_response(self, kernel) -> DictResponse:
         return DictResponse(kernel=kernel, content={"color": "red", "size": "large"})
 
-    def get_command_name(self) -> str:
-        return "default::ping/pong"
+    def get_command(self):
+        from wexample_wex_core.addons.default.commands.ping.pong import default__ping__pong
+
+        return default__ping__pong
+
 
     def test_str_contains_keys_and_values(self, kernel, capsys):
         self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
