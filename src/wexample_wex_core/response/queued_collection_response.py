@@ -19,14 +19,14 @@ QueueStep = AbstractResponse | Callable | Any
 class QueuedCollectionResponse(AbstractResponse):
     """Execute a list of steps sequentially.
 
-    Each step is executed in order. If a step returns or is a
-    QueuedCollectionStopResponse, the queue halts entirely.
-    If a step returns QueuedCollectionStopCurrentStepResponse, that step
-    is skipped and the queue continues.
+    Each step can be:
+    - An AbstractResponse (rendered as-is)
+    - A callable (called with previous_value if its signature accepts it)
+    - A plain value (str, int, dict, list…) wrapped via response_normalize
+    - A nested QueuedCollectionResponse (executed inline, last value propagated)
 
-    Callable steps receive `previous_value` as keyword argument if their
-    signature accepts it, allowing pipelines where each step uses the
-    previous result.
+    QueuedCollectionStopResponse halts the entire queue.
+    QueuedCollectionStopCurrentStepResponse skips the step and continues.
     """
 
     content: list[QueueStep] = public_field(
@@ -39,9 +39,6 @@ class QueuedCollectionResponse(AbstractResponse):
         from wexample_helpers.helpers.args import args_in_function
 
         from wexample_app.helpers.response import response_normalize
-        from wexample_wex_core.response.queue_collection.queued_collection_stop_current_step_response import (
-            QueuedCollectionStopCurrentStepResponse,
-        )
 
         if callable(step):
             kwargs = {}
@@ -55,17 +52,49 @@ class QueuedCollectionResponse(AbstractResponse):
 
         return response_normalize(kernel=self.kernel, response=step)
 
-    def get_formatted(self, output_format: str) -> str:
-        from wexample_app.const.output import OUTPUT_FORMAT_STR
-        from wexample_wex_core.response.queue_collection.queued_collection_stop_response import (
-            QueuedCollectionStopResponse,
-        )
+    def _extract_value(self, response: AbstractResponse) -> Any:
+        """Extract the meaningful value from a response for use as previous_value."""
+        # Nested queued collection: run it and return its last produced value
+        if isinstance(response, QueuedCollectionResponse):
+            return response._run_and_get_last_value()
+
+        return response.content
+
+    def _run_and_get_last_value(self) -> Any:
+        """Execute all steps and return the last produced value (used by nested collections)."""
         from wexample_wex_core.response.queue_collection.queued_collection_stop_current_step_response import (
             QueuedCollectionStopCurrentStepResponse,
         )
+        from wexample_wex_core.response.queue_collection.queued_collection_stop_response import (
+            QueuedCollectionStopResponse,
+        )
 
         previous_value: Any = None
-        results: list[str] = []
+
+        for step in self.content:
+            response = self._resolve_step(step, previous_value)
+
+            if isinstance(response, QueuedCollectionStopResponse):
+                break
+
+            if isinstance(response, QueuedCollectionStopCurrentStepResponse):
+                continue
+
+            previous_value = self._extract_value(response)
+
+        return previous_value
+
+    def get_formatted(self, output_format: str) -> str:
+        from wexample_app.const.output import OUTPUT_FORMAT_STR
+        from wexample_wex_core.response.queue_collection.queued_collection_stop_current_step_response import (
+            QueuedCollectionStopCurrentStepResponse,
+        )
+        from wexample_wex_core.response.queue_collection.queued_collection_stop_response import (
+            QueuedCollectionStopResponse,
+        )
+
+        previous_value: Any = None
+        json_results: list = []
 
         for step in self.content:
             response = self._resolve_step(step, previous_value)
@@ -77,19 +106,28 @@ class QueuedCollectionResponse(AbstractResponse):
                 continue
 
             output = response.get_formatted(output_format)
-            previous_value = response.content
+            previous_value = self._extract_value(response)
 
-            if output_format != OUTPUT_FORMAT_STR:
-                results.append(output)
+            if output_format == OUTPUT_FORMAT_STR:
+                # Non-prompt responses return their string instead of printing it
+                if output:
+                    from wexample_prompt.responses.log_prompt_response import LogPromptResponse
+                    self.kernel.io.print_response(LogPromptResponse.create_log(output))
+            else:
+                if output:
+                    import json
+                    try:
+                        json_results.append(json.loads(output))
+                    except (ValueError, TypeError):
+                        json_results.append(output)
 
         if output_format == OUTPUT_FORMAT_STR:
             return ""
 
         import json
-        return json.dumps(results, indent=2)
+        return json.dumps(json_results, indent=2)
 
     def get_printable(self) -> ResponsePrintable:
-        # Fallback: join printable of each step (used when get_formatted is not called)
         parts = []
         for step in self.content:
             if isinstance(step, AbstractResponse):
