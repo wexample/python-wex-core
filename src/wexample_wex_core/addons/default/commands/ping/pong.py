@@ -14,9 +14,10 @@ PING_TYPE_DICT = "dict"
 PING_TYPE_LIST = "list"
 PING_TYPE_TABLE = "table"
 PING_TYPE_COLLECTION = "collection"
+PING_TYPE_QUEUED = "queued"
 
 
-@option(name="type", type=str, required=True, description="Response type to return (dict, list, table, collection)")
+@option(name="type", type=str, required=True, description="Response type to return (dict, list, table, collection, queued)")
 @command(type=COMMAND_TYPE_ADDON)
 def default__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
     from wexample_wex_core.response.dict_response import DictResponse
@@ -40,6 +41,20 @@ def default__ping__pong(context: ExecutionContext, type: str) -> AbstractRespons
             content=[
                 DictResponse(kernel=context.kernel, content={"status": "pong"}),
                 ListResponse(kernel=context.kernel, content=["pong", "ping", "pang"]),
+            ],
+        )
+
+    if type == PING_TYPE_QUEUED:
+        from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
+
+        return QueuedCollectionResponse(
+            kernel=context.kernel,
+            content=[
+                DictResponse(kernel=context.kernel, content={"step": "one"}),
+                lambda previous_value: ListResponse(
+                    kernel=context.kernel,
+                    content=["step-two", str(previous_value)],
+                ),
             ],
         )
 
