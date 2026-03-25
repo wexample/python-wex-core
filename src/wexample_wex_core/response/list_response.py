@@ -32,15 +32,5 @@ class ListResponse(AbstractResponse):
 
     def _get_formatted_prompt_response(self) -> AbstractPromptResponse | None:
         from wexample_prompt.responses.data.list_prompt_response import ListPromptResponse
-        from wexample_prompt.responses.data.multiple_prompt_response import MultiplePromptResponse
-        from wexample_prompt.responses.titles.title_prompt_response import TitlePromptResponse
 
-        list_response = ListPromptResponse.create_list(items=self.content)
-
-        if self.title:
-            return MultiplePromptResponse.create_multiple(responses=[
-                TitlePromptResponse.create_title(text=self.title),
-                list_response,
-            ])
-
-        return list_response
+        return ListPromptResponse.create_list(items=self.content, title=self.title)
