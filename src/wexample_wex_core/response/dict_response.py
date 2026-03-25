@@ -10,6 +10,7 @@ from wexample_helpers.decorator.base_class import base_class
 from wexample_app.response.abstract_response import AbstractResponse
 
 if TYPE_CHECKING:
+    from wexample_prompt.responses.abstract_prompt_response import AbstractPromptResponse
     from wexample_app.const.types import ResponsePrintable
 
 
@@ -28,3 +29,11 @@ class DictResponse(AbstractResponse):
 
     def _get_formatted_json_content(self) -> str:
         return json.dumps(self.content, indent=2)
+
+    def _get_formatted_prompt_response(self) -> AbstractPromptResponse | None:
+        from wexample_prompt.responses.data.properties_prompt_response import PropertiesPromptResponse
+
+        return PropertiesPromptResponse.create_properties(
+            properties=self.content,
+            title=self.title,
+        )

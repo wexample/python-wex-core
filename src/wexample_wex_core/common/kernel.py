@@ -65,6 +65,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _logger: logging.Logger = private_field(description="Python logger for operational/debug messages")
     _registry: KernelRegistry = private_field(description="The configuration registry")
 
+    def set_output_target(self, targets: list[str]) -> None:
+        self._config_arg_output_target = targets
+
     def create_output_handlers(self) -> [AbstractAppOutputHandler]:
         """Initialize output handlers based on _config_arg_output_target.
 

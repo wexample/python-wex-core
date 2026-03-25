@@ -13,3 +13,11 @@ def kernel(tmp_path):
     k = Kernel(entrypoint_path=wex_dir)
     k.setup(addons=[DefaultAddonManager])
     return k
+
+
+@pytest.fixture
+def kernel_stdout(kernel):
+    from wexample_app.const.output import OUTPUT_TARGET_STDOUT
+
+    kernel.set_output_target([OUTPUT_TARGET_STDOUT])
+    return kernel
