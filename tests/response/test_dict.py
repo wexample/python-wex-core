@@ -17,6 +17,9 @@ class TestDictResponse(AbstractResponseTest):
 
         return default__ping__pong
 
+    def get_command_arguments(self) -> dict:
+        return {"type": "dict"}
+
 
     def test_str_contains_keys_and_values(self, kernel, capsys):
         self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)

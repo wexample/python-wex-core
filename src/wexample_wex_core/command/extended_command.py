@@ -284,15 +284,12 @@ class ExtendedCommand(Command):
         """Parse raw command line arguments into a dictionary of option name to value.
 
         Accepts either a CLI-style list (["--type", "dict"]) or a dict ({"type": "dict"})
-        which is converted to list first using the command wrapper's options.
+        which is used directly without conversion.
         """
-        from wexample_app.helpers.argument import argument_dict_to_list, argument_parse_options
-
         if isinstance(arguments, dict):
-            arguments = argument_dict_to_list(
-                options=self.command_wrapper.options,
-                args=arguments,
-            )
+            return arguments
+
+        from wexample_app.helpers.argument import argument_parse_options
 
         return argument_parse_options(
             arguments=arguments,

@@ -68,10 +68,14 @@ class AbstractResponseTest(AbstractKernelTest):
 
         return self.get_resolver_class().address_to_command(CommandAddress.from_function(self.get_command()))
 
-    def _make_request(self, kernel, output_target: list[str] | None = None) -> CommandRequest:
+    def get_command_arguments(self) -> dict:
+        return {}
+
+    def _make_request(self, kernel, output_target: list[str] | None = None, arguments: dict | list | None = None) -> CommandRequest:
         return CommandRequest(
             kernel=kernel,
             request_id="test-request",
             name=self.get_command_name(),
             output_target=output_target,
+            arguments=arguments if arguments is not None else self.get_command_arguments(),
         )

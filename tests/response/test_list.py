@@ -11,9 +11,12 @@ class TestListResponse(AbstractResponseTest):
         return ListResponse(kernel=kernel, content=["alpha", "beta", "gamma"])
 
     def get_command(self):
-        from wexample_wex_core.addons.default.commands.ping.list import default__ping__list
+        from wexample_wex_core.addons.default.commands.ping.pong import default__ping__pong
 
-        return default__ping__list
+        return default__ping__pong
+
+    def get_command_arguments(self) -> dict:
+        return {"type": "list"}
 
     def test_str_contains_items(self, kernel, capsys):
         self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)

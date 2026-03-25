@@ -20,6 +20,7 @@ class TestPing(AbstractKernelTest):
             request_id="test-ping",
             name="default::ping/pong",
             output_target=[OUTPUT_TARGET_NONE],
+            arguments={"type": "dict"},
         )
 
         response = kernel.execute_kernel_command(request)
