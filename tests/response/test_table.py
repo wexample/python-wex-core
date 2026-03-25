@@ -15,9 +15,9 @@ class TestTableResponse(AbstractResponseTest):
         )
 
     def get_command(self):
-        from wexample_wex_core.addons.default.commands.ping.pong import default__ping__pong
+        from wexample_wex_core.addons.demo.commands.ping.pong import demo__ping__pong
 
-        return default__ping__pong
+        return demo__ping__pong
 
     def get_command_arguments(self) -> dict:
         return {"type": "table"}

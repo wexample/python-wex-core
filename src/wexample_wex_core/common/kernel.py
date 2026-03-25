@@ -308,6 +308,12 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
     def _init_command_line_kernel(self: AbstractKernel) -> None:
         super()._init_command_line_kernel()
+
+        # CLI defaults to stdout output (programmatic use defaults to none)
+        if not self._config_arg_output_target or self._config_arg_output_target == [OUTPUT_TARGET_NONE]:
+            from wexample_app.const.output import OUTPUT_TARGET_STDOUT
+            self._config_arg_output_target = [OUTPUT_TARGET_STDOUT]
+
         # We can then use config.
         if self._config_arg_quiet:
             self.io.default_context_verbosity = VerbosityLevel.QUIET

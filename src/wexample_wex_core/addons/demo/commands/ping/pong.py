@@ -19,7 +19,7 @@ PING_TYPE_QUEUED = "queued"
 
 @option(name="type", type=str, required=True, description="Response type to return (dict, list, table, collection, queued)")
 @command(type=COMMAND_TYPE_ADDON)
-def default__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
+def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
     from wexample_wex_core.response.dict_response import DictResponse
     from wexample_wex_core.response.list_response import ListResponse
     from wexample_wex_core.response.response_collection_response import ResponseCollectionResponse
