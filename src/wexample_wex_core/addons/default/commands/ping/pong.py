@@ -13,13 +13,15 @@ if TYPE_CHECKING:
 PING_TYPE_DICT = "dict"
 PING_TYPE_LIST = "list"
 PING_TYPE_TABLE = "table"
+PING_TYPE_COLLECTION = "collection"
 
 
-@option(name="type", type=str, required=True, description="Response type to return (dict, list, table)")
+@option(name="type", type=str, required=True, description="Response type to return (dict, list, table, collection)")
 @command(type=COMMAND_TYPE_ADDON)
 def default__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
     from wexample_wex_core.response.dict_response import DictResponse
     from wexample_wex_core.response.list_response import ListResponse
+    from wexample_wex_core.response.response_collection_response import ResponseCollectionResponse
     from wexample_wex_core.response.table_response import TableResponse
 
     if type == PING_TYPE_LIST:
@@ -30,6 +32,15 @@ def default__ping__pong(context: ExecutionContext, type: str) -> AbstractRespons
             kernel=context.kernel,
             headers=["name", "status"],
             content=[["ping", "ok"], ["pong", "ok"]],
+        )
+
+    if type == PING_TYPE_COLLECTION:
+        return ResponseCollectionResponse(
+            kernel=context.kernel,
+            content=[
+                DictResponse(kernel=context.kernel, content={"status": "pong"}),
+                ListResponse(kernel=context.kernel, content=["pong", "ping", "pang"]),
+            ],
         )
 
     return DictResponse(kernel=context.kernel, content={"status": "pong"})
