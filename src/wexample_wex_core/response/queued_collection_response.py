@@ -11,8 +11,9 @@ from wexample_app.response.abstract_response import AbstractResponse
 if TYPE_CHECKING:
     from wexample_app.const.types import ResponsePrintable
 
-# A step can be a response, a callable, or a plain value
 QueueStep = AbstractResponse | Callable | Any
+
+_SENTINEL = object()
 
 
 @base_class
@@ -34,10 +35,12 @@ class QueuedCollectionResponse(AbstractResponse):
         description="Ordered list of steps to execute sequentially",
     )
 
-    def _resolve_step(self, step: QueueStep, previous_value: Any) -> AbstractResponse:
-        """Normalize a step into an AbstractResponse."""
-        from wexample_helpers.helpers.args import args_in_function
+    def __attrs_post_init__(self) -> None:
+        self._execute_super_attrs_post_init_if_exists()
+        self._last_value: Any = _SENTINEL
 
+    def _resolve_step(self, step: QueueStep, previous_value: Any) -> AbstractResponse:
+        from wexample_helpers.helpers.args import args_in_function
         from wexample_app.helpers.response import response_normalize
 
         if callable(step):
@@ -53,36 +56,13 @@ class QueuedCollectionResponse(AbstractResponse):
         return response_normalize(kernel=self.kernel, response=step)
 
     def _extract_value(self, response: AbstractResponse) -> Any:
-        """Extract the meaningful value from a response for use as previous_value."""
-        # Nested queued collection: run it and return its last produced value
+        """Extract the meaningful value from an already-executed response."""
         if isinstance(response, QueuedCollectionResponse):
-            return response._run_and_get_last_value()
+            # Already executed — read stored last value, don't re-run
+            last = response._last_value
+            return last if last is not _SENTINEL else None
 
         return response.content
-
-    def _run_and_get_last_value(self) -> Any:
-        """Execute all steps and return the last produced value (used by nested collections)."""
-        from wexample_wex_core.response.queue_collection.queued_collection_stop_current_step_response import (
-            QueuedCollectionStopCurrentStepResponse,
-        )
-        from wexample_wex_core.response.queue_collection.queued_collection_stop_response import (
-            QueuedCollectionStopResponse,
-        )
-
-        previous_value: Any = None
-
-        for step in self.content:
-            response = self._resolve_step(step, previous_value)
-
-            if isinstance(response, QueuedCollectionStopResponse):
-                break
-
-            if isinstance(response, QueuedCollectionStopCurrentStepResponse):
-                continue
-
-            previous_value = self._extract_value(response)
-
-        return previous_value
 
     def get_formatted(self, output_format: str) -> str:
         from wexample_app.const.output import OUTPUT_FORMAT_STR
@@ -108,18 +88,14 @@ class QueuedCollectionResponse(AbstractResponse):
             output = response.get_formatted(output_format)
             previous_value = self._extract_value(response)
 
-            if output_format == OUTPUT_FORMAT_STR:
-                # Non-prompt responses return their string instead of printing it
-                if output:
-                    from wexample_prompt.responses.log_prompt_response import LogPromptResponse
-                    self.kernel.io.print_response(LogPromptResponse.create_log(output))
-            else:
-                if output:
-                    import json
-                    try:
-                        json_results.append(json.loads(output))
-                    except (ValueError, TypeError):
-                        json_results.append(output)
+            if output_format != OUTPUT_FORMAT_STR and output:
+                import json
+                try:
+                    json_results.append(json.loads(output))
+                except (ValueError, TypeError):
+                    json_results.append(output)
+
+        self._last_value = previous_value
 
         if output_format == OUTPUT_FORMAT_STR:
             return ""
