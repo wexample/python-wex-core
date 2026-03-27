@@ -16,10 +16,11 @@ PING_TYPE_LIST = "list"
 PING_TYPE_TABLE = "table"
 PING_TYPE_COLLECTION = "collection"
 PING_TYPE_QUEUED = "queued"
+PING_TYPE_SHELL = "shell"
 
 
 @alias("ping")
-@option(name="type", type=str, required=True, description="Response type to return (dict, list, table, collection, queued)")
+@option(name="type", type=str, required=True, description="Response type to return (dict, list, table, collection, queued, shell)")
 @command(type=COMMAND_TYPE_ADDON)
 def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
     from wexample_wex_core.response.dict_response import DictResponse
@@ -45,6 +46,11 @@ def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
                 ListResponse(kernel=context.kernel, content=["pong", "ping", "pang"]),
             ],
         )
+
+    if type == PING_TYPE_SHELL:
+        from wexample_wex_core.response.shell_command_response import ShellCommandResponse
+
+        return ShellCommandResponse(kernel=context.kernel, content=["echo", "pong"])
 
     if type == PING_TYPE_QUEUED:
         from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
