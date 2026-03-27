@@ -88,9 +88,10 @@ class AddonCommandResolver(AbstractCommandResolver):
                         tests_base = addon.workdir.get_path() / "tests"
                         test_path = tests_base / address.to_relative_path()
 
-                        # Load module to extract decorator metadata (description, aliases)
+                        # Load module to extract decorator metadata (description, aliases, attachments)
                         description: str | None = None
                         aliases: list[str] = []
+                        attachments: dict[str, list] = {"before": [], "after": []}
                         func_name = address.to_function_name()
                         spec = importlib.util.spec_from_file_location(func_name, cmd_file)
                         if spec and spec.loader:
@@ -100,6 +101,10 @@ class AddonCommandResolver(AbstractCommandResolver):
                             if isinstance(wrapper, CommandMethodWrapper):
                                 description = wrapper.description
                                 aliases = list(wrapper.aliases)
+                                attachments = {
+                                    pos: list(items)
+                                    for pos, items in wrapper.attachments.items()
+                                }
 
                         addon_data[address.to_command_key()] = RegistryCommandData(
                             command=self.address_to_command(address),
@@ -107,6 +112,7 @@ class AddonCommandResolver(AbstractCommandResolver):
                             test=str(test_path) if test_path.exists() else None,
                             description=description,
                             alias=aliases,
+                            attachments=attachments,
                         )
 
             registry[addon_name] = addon_data

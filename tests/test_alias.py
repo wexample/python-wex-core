@@ -10,14 +10,14 @@ class TestAlias(AbstractKernelTest):
     def test_alias_in_registry(self, kernel):
         addon_commands = kernel.get_configuration_registry().get_addon_commands()
         cmd_data = addon_commands["demo"]["ping/pong"]
-        assert "demo::ping/ping" in cmd_data["alias"]
+        assert "ping" in cmd_data["alias"]
 
     def test_alias_resolves_to_canonical(self, kernel):
-        """Calling demo::ping/ping (alias) executes demo::ping/pong."""
+        """Calling 'ping' (alias) executes demo::ping/pong."""
         request = CommandRequest(
             kernel=kernel,
             request_id="test-alias",
-            name="demo::ping/ping",
+            name="ping",
             output_target=[OUTPUT_TARGET_NONE],
             arguments={"type": "dict"},
         )

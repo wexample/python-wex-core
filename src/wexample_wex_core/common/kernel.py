@@ -65,6 +65,37 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _logger: logging.Logger = private_field(description="Python logger for operational/debug messages")
     _registry: KernelRegistry = private_field(description="The configuration registry")
 
+    def execute_kernel_command(self, request: CommandRequest) -> AbstractResponse:
+        from wexample_app.response.abstract_response import AbstractResponse
+
+        self._execute_attached(request, "before")
+        response = super().execute_kernel_command(request)
+        self._execute_attached(request, "after")
+        return response
+
+    def _execute_attached(self, request: CommandRequest, position: str) -> None:
+        from wexample_app.const.output import OUTPUT_TARGET_NONE
+
+        registry = self.get_configuration_registry()
+        if not registry.get_addon_commands():
+            return
+
+        target_command = request.name
+        for addon_data in registry.get_addon_commands().values():
+            for cmd_data in addon_data.values():
+                for attachment in cmd_data.get("attachments", {}).get(position, []):
+                    if attachment["command"] != target_command:
+                        continue
+
+                    attached_request = self._get_command_request_class()(
+                        kernel=self,
+                        request_id=f"{request.request_id}_{position}_{cmd_data['command']}",
+                        name=cmd_data["command"],
+                        output_target=[OUTPUT_TARGET_NONE],
+                        arguments=request.arguments if attachment.get("pass_args") else {},
+                    )
+                    super().execute_kernel_command(attached_request)
+
     def set_output_target(self, targets: list[str]) -> None:
         self._config_arg_output_target = targets
 
