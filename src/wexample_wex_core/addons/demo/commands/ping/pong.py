@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
+from wexample_wex_core.decorator.alias import alias
 from wexample_wex_core.decorator.command import command
 from wexample_wex_core.decorator.option import option
 
@@ -17,6 +18,7 @@ PING_TYPE_COLLECTION = "collection"
 PING_TYPE_QUEUED = "queued"
 
 
+@alias("demo::ping/ping")
 @option(name="type", type=str, required=True, description="Response type to return (dict, list, table, collection, queued)")
 @command(type=COMMAND_TYPE_ADDON)
 def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:

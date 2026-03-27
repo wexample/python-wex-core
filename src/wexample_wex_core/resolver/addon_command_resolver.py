@@ -114,22 +114,16 @@ class AddonCommandResolver(AbstractCommandResolver):
         return registry
 
     def supports(self, request: CommandRequest) -> object:
-        match = self.build_match(request.name)
-
-        if match:
-            return match
-
-        # Transparent alias resolution — only attempted if the registry has been hydrated.
+        # Alias resolution takes priority — checked before direct pattern match.
+        # This allows aliases like "demo::ping/ping" to override a matching path.
         registry = self.kernel.get_configuration_registry()
-        if not registry.get_addon_commands():
-            return None
+        if registry.get_addon_commands():
+            canonical = self._resolve_alias(request.name)
+            if canonical:
+                request.name = canonical
+                return self.build_match(canonical)
 
-        canonical = self._resolve_alias(request.name)
-        if canonical:
-            request.name = canonical
-            return self.build_match(canonical)
-
-        return None
+        return self.build_match(request.name)
 
     def _resolve_alias(self, name: str) -> str | None:
         for addon_data in self.kernel.get_configuration_registry().get_addon_commands().values():

@@ -104,6 +104,13 @@ class TestProgressCollectionResponse(AbstractResponseTest):
         assert "main" in out
         assert "sub" in out
 
+    def test_empty_collection(self, kernel):
+        ProgressCollectionResponse(
+            kernel=kernel,
+            title="Empty",
+            content=[],
+        ).get_formatted(OUTPUT_FORMAT_STR)
+
     def test_progress_inside_queued(self, kernel, capsys):
         from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
 
