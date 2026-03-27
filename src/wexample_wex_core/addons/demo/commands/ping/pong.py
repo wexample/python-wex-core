@@ -18,7 +18,7 @@ PING_TYPE_COLLECTION = "collection"
 PING_TYPE_QUEUED = "queued"
 
 
-@alias("demo::ping/ping")
+@alias("ping")
 @option(name="type", type=str, required=True, description="Response type to return (dict, list, table, collection, queued)")
 @command(type=COMMAND_TYPE_ADDON)
 def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
