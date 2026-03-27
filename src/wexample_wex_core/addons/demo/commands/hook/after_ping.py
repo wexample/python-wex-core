@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 def demo__hook__after_ping(context: ExecutionContext) -> AbstractResponse:
     from wexample_app.response.default_response import DefaultResponse
 
+    context.kernel.io.log("@attach after demo::ping/pong — hook ran!")
     # Store on kernel so the test can observe the side-effect across module boundaries.
     context.kernel._test_after_ping_ran = True
     return DefaultResponse(kernel=context.kernel, content="hook ran")
