@@ -53,6 +53,10 @@ class ProgressCollectionResponse(QueuedCollectionResponse):
         json_results: list = []
         handle_finished = False
 
+        if total == 0:
+            self._last_value = None
+            return "" if output_format == OUTPUT_FORMAT_STR else "[]"
+
         # Create progress handle — either sub-progress from parent or new root progress
         if self._parent_handle is not None:
             handle = self._parent_handle.create_range_handle(
