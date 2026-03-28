@@ -49,8 +49,11 @@ def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
         )
 
     if type == PING_TYPE_FUNCTION:
-        return context.kernel.run_function(
-            demo__ping__pong,
+        from wexample_wex_core.response.function_response import FunctionResponse
+
+        return FunctionResponse(
+            kernel=context.kernel,
+            content=demo__ping__pong,
             arguments={"type": PING_TYPE_DICT},
         )
 
