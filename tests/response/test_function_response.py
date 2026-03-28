@@ -2,7 +2,7 @@ from wexample_app.const.output import OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_STR, OUT
 
 from tests.abstract_kernel_test import AbstractKernelTest
 from wexample_wex_core.addons.demo.commands.ping.pong import demo__ping__pong, PING_TYPE_DICT
-from wexample_wex_core.response.dict_response import DictResponse
+from wexample_app.response.dict_response import DictResponse
 from wexample_wex_core.response.function_response import FunctionResponse
 
 

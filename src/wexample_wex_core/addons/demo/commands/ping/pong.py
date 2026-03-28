@@ -24,8 +24,8 @@ PING_TYPE_FUNCTION = "function"
 @option(name="type", type=str, required=True, description="Response type to return (dict, list, table, collection, queued, shell)")
 @command(type=COMMAND_TYPE_ADDON)
 def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
-    from wexample_wex_core.response.dict_response import DictResponse
-    from wexample_wex_core.response.list_response import ListResponse
+    from wexample_app.response.dict_response import DictResponse
+    from wexample_app.response.list_response import ListResponse
     from wexample_wex_core.response.response_collection_response import ResponseCollectionResponse
     from wexample_wex_core.response.table_response import TableResponse
 

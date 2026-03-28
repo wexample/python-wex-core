@@ -1,6 +1,6 @@
 from wexample_app.const.output import OUTPUT_TARGET_NONE
 from wexample_wex_core.common.command_request import CommandRequest
-from wexample_wex_core.response.dict_response import DictResponse
+from wexample_app.response.dict_response import DictResponse
 
 from tests.abstract_kernel_test import AbstractKernelTest
 

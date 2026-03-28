@@ -3,7 +3,7 @@ import json
 import pytest
 
 from wexample_app.const.output import OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_STR, OUTPUT_TARGET_NONE
-from wexample_wex_core.response.dict_response import DictResponse
+from wexample_app.response.dict_response import DictResponse
 
 from tests.response.abstract_response_test import AbstractResponseTest
 

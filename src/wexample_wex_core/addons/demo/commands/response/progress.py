@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 @command(type=COMMAND_TYPE_ADDON)
 def demo__response__progress(context: ExecutionContext) -> ProgressCollectionResponse:
     import time
-    from wexample_wex_core.response.dict_response import DictResponse
+    from wexample_app.response.dict_response import DictResponse
     from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
     from wexample_wex_core.response.progress_collection_response import ProgressCollectionResponse
 

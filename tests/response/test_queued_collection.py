@@ -1,6 +1,6 @@
 from wexample_app.const.output import OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_STR, OUTPUT_TARGET_NONE
-from wexample_wex_core.response.dict_response import DictResponse
-from wexample_wex_core.response.list_response import ListResponse
+from wexample_app.response.dict_response import DictResponse
+from wexample_app.response.list_response import ListResponse
 from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
 from wexample_wex_core.response.queue_collection.queued_collection_stop_response import QueuedCollectionStopResponse
 from wexample_wex_core.response.queue_collection.queued_collection_stop_current_step_response import QueuedCollectionStopCurrentStepResponse

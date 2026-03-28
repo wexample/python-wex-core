@@ -14,8 +14,8 @@ DEMO_COLLECTION_FIRST_VALUE = "first-function-result"
 
 @command(type=COMMAND_TYPE_ADDON)
 def demo__response__collection(context: ExecutionContext) -> QueuedCollectionResponse:
-    from wexample_wex_core.response.dict_response import DictResponse
-    from wexample_wex_core.response.list_response import ListResponse
+    from wexample_app.response.dict_response import DictResponse
+    from wexample_app.response.list_response import ListResponse
     from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
 
     kernel = context.kernel

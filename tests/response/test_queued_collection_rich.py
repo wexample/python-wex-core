@@ -6,14 +6,14 @@ from wexample_wex_core.addons.demo.commands.response.collection import (
 from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
 from wexample_wex_core.response.queue_collection.queued_collection_stop_response import QueuedCollectionStopResponse
 from wexample_wex_core.response.queue_collection.queued_collection_stop_current_step_response import QueuedCollectionStopCurrentStepResponse
-from wexample_wex_core.response.dict_response import DictResponse
+from wexample_app.response.dict_response import DictResponse
 
 from tests.response.abstract_response_test import AbstractResponseTest
 
 
 class TestQueuedCollectionRich(AbstractResponseTest):
     def create_response(self, kernel) -> QueuedCollectionResponse:
-        from wexample_wex_core.response.list_response import ListResponse
+        from wexample_app.response.list_response import ListResponse
 
         return QueuedCollectionResponse(
             kernel=kernel,
