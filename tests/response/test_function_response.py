@@ -56,10 +56,11 @@ class TestFunctionResponse(AbstractKernelTest):
     def test_via_ping_command(self, kernel):
         from wexample_wex_core.addons.demo.commands.ping.pong import PING_TYPE_FUNCTION
         from wexample_wex_core.common.command_request import CommandRequest
+        from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
         request = CommandRequest(
             kernel=kernel,
-            name="demo::ping/pong",
+            name=AbstractCommandResolver.build_command_from_function(demo__ping__pong),
             output_target=[OUTPUT_TARGET_NONE],
             arguments={"type": PING_TYPE_FUNCTION},
         )
