@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _config_arg_force_request_id: str | None = private_field(
         default=None,
-        description="When request comes from another external process",
+        description="Force a specific request ID when set by an external process",
     )
     _config_arg_indentation_level: int | None = private_field(
         default=None,
@@ -65,6 +65,24 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _logger: logging.Logger = private_field(description="Python logger for operational/debug messages")
     _registry: KernelRegistry = private_field(description="The configuration registry")
 
+    def run_function(
+        self,
+        wrapper: CommandMethodWrapper,
+        arguments: dict | None = None,
+        output_target: list[str] | None = None,
+    ) -> AbstractResponse:
+        from wexample_app.const.output import OUTPUT_TARGET_NONE
+        from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
+
+        command_name = AbstractCommandResolver.build_command_from_function(wrapper)
+        request = self._get_command_request_class()(
+            kernel=self,
+            name=command_name,
+            arguments=arguments or {},
+            output_target=output_target or [OUTPUT_TARGET_NONE],
+        )
+        return self.execute_kernel_command(request)
+
     def execute_kernel_command(self, request: CommandRequest) -> AbstractResponse:
         from wexample_app.response.abstract_response import AbstractResponse
 
@@ -89,7 +107,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
                     attached_request = self._get_command_request_class()(
                         kernel=self,
-                        request_id=f"{request.request_id}_{position}_{cmd_data['command']}",
                         name=cmd_data["command"],
                         output_target=[OUTPUT_TARGET_NONE],
                         arguments=request.arguments if attachment.get("pass_args") else {},
@@ -145,17 +162,16 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def _build_single_command_request_from_arguments(
         self, arguments: CommandLineArgumentsList
     ):
-        # Core command request takes a request id.
-        return [
-            self._get_command_request_class()(
-                kernel=self,
-                request_id=self._config_arg_force_request_id or arguments[0],
-                name=arguments[1],
-                arguments=arguments[2:],
-                output_target=self._config_arg_output_target,
-                output_format=self._config_arg_output_format,
-            )
-        ]
+        kwargs = dict(
+            kernel=self,
+            name=arguments[0],
+            arguments=arguments[1:],
+            output_target=self._config_arg_output_target,
+            output_format=self._config_arg_output_format,
+        )
+        if self._config_arg_force_request_id:
+            kwargs["request_id"] = self._config_arg_force_request_id
+        return [self._get_command_request_class()(**kwargs)]
 
     def _create_workdir_state_manager(
         self,
@@ -283,10 +299,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 description="Number of indentation levels to use",
             ),
             Option(
-                name="force_request_id",
-                short_name="force_request_id",
+                name="force-request-id",
                 type=str,
-                description="When an external process launches the request",
+                description="Force a specific request ID (used by external processes)",
             ),
         ]
 

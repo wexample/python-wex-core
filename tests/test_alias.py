@@ -16,7 +16,6 @@ class TestAlias(AbstractKernelTest):
         """Calling 'ping' (alias) executes demo::ping/pong."""
         request = CommandRequest(
             kernel=kernel,
-            request_id="test-alias",
             name="ping",
             output_target=[OUTPUT_TARGET_NONE],
             arguments={"type": "dict"},
@@ -34,7 +33,6 @@ class TestAlias(AbstractKernelTest):
         """Calling 'hi' (short alias) executes default::check/hi."""
         request = CommandRequest(
             kernel=kernel,
-            request_id="test-hi",
             name="hi",
             output_target=[OUTPUT_TARGET_NONE],
         )

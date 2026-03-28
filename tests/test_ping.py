@@ -17,7 +17,6 @@ class TestPing(AbstractKernelTest):
     def test_ping_executes(self, kernel):
         request = CommandRequest(
             kernel=kernel,
-            request_id="test-ping",
             name="demo::ping/pong",
             output_target=[OUTPUT_TARGET_NONE],
             arguments={"type": "dict"},

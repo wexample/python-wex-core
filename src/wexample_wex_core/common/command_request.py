@@ -12,7 +12,10 @@ if TYPE_CHECKING:
 
 @base_class
 class CommandRequest(BaseCommandRequest):
-    request_id: str = public_field(description="A unique id from the initial execution")
+    request_id: str = public_field(
+        factory=lambda: __import__("uuid").uuid4().hex,
+        description="Unique identifier for this request (auto-generated if not provided)",
+    )
 
     def get_addon_manager(self):
         return self.resolver.get_request_addon_manager(self)

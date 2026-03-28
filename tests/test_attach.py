@@ -17,7 +17,6 @@ class TestAttach(AbstractKernelTest):
 
         request = CommandRequest(
             kernel=kernel,
-            request_id="test-attach",
             name="demo::ping/pong",
             output_target=[OUTPUT_TARGET_NONE],
             arguments={"type": "dict"},

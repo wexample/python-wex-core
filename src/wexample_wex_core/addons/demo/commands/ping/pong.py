@@ -17,6 +17,7 @@ PING_TYPE_TABLE = "table"
 PING_TYPE_COLLECTION = "collection"
 PING_TYPE_QUEUED = "queued"
 PING_TYPE_SHELL = "shell"
+PING_TYPE_FUNCTION = "function"
 
 
 @alias("ping")
@@ -45,6 +46,12 @@ def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
                 DictResponse(kernel=context.kernel, content={"status": "pong"}),
                 ListResponse(kernel=context.kernel, content=["pong", "ping", "pang"]),
             ],
+        )
+
+    if type == PING_TYPE_FUNCTION:
+        return context.kernel.run_function(
+            demo__ping__pong,
+            arguments={"type": PING_TYPE_DICT},
         )
 
     if type == PING_TYPE_SHELL:
