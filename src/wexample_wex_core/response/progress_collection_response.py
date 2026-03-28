@@ -57,6 +57,12 @@ class ProgressCollectionResponse(QueuedCollectionResponse):
             self._last_value = None
             return "" if output_format == OUTPUT_FORMAT_STR else "[]"
 
+        # If output is suppressed, skip the progress bar entirely.
+        from wexample_app.const.output import OUTPUT_TARGET_NONE
+        output_targets = getattr(self.kernel, "_config_arg_output_target", None) or []
+        if output_targets and all(t == OUTPUT_TARGET_NONE for t in output_targets):
+            return super().get_formatted(output_format)
+
         # Create progress handle — either sub-progress from parent or new root progress
         if self._parent_handle is not None:
             handle = self._parent_handle.create_range_handle(
