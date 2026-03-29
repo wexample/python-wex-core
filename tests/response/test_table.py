@@ -1,7 +1,7 @@
 import json
 
 from wexample_app.const.output import OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_STR, OUTPUT_TARGET_NONE
-from wexample_wex_core.response.table_response import TableResponse
+from wexample_app.response.table_response import TableResponse
 
 from tests.response.abstract_response_test import AbstractResponseTest
 

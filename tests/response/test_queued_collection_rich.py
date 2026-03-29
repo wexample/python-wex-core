@@ -3,9 +3,9 @@ from wexample_wex_core.addons.demo.commands.response.collection import (
     DEMO_COLLECTION_FIRST_VALUE,
     demo__response__collection,
 )
-from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
-from wexample_wex_core.response.queue_collection.queued_collection_stop_response import QueuedCollectionStopResponse
-from wexample_wex_core.response.queue_collection.queued_collection_stop_current_step_response import QueuedCollectionStopCurrentStepResponse
+from wexample_app.response.queued_collection_response import QueuedCollectionResponse
+from wexample_app.response.queue_collection.queued_collection_stop_response import QueuedCollectionStopResponse
+from wexample_app.response.queue_collection.queued_collection_stop_current_step_response import QueuedCollectionStopCurrentStepResponse
 from wexample_app.response.dict_response import DictResponse
 
 from tests.response.abstract_response_test import AbstractResponseTest
@@ -31,7 +31,7 @@ class TestQueuedCollectionRich(AbstractResponseTest):
         return {}
 
     def test_plain_values_render(self, kernel, capsys):
-        from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
+        from wexample_app.response.queued_collection_response import QueuedCollectionResponse
 
         QueuedCollectionResponse(
             kernel=kernel,

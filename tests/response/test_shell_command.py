@@ -1,8 +1,8 @@
 from wexample_app.const.output import OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_STR
 
 from tests.abstract_kernel_test import AbstractKernelTest
-from wexample_wex_core.response.shell_command_response import ShellCommandResponse
-from wexample_wex_core.response.interactive_shell_command_response import InteractiveShellCommandResponse
+from wexample_app.response.shell_command_response import ShellCommandResponse
+from wexample_app.response.interactive_shell_command_response import InteractiveShellCommandResponse
 
 
 class TestShellCommandResponse(AbstractKernelTest):

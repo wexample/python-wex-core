@@ -7,7 +7,7 @@ from wexample_wex_core.decorator.command import command
 
 if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
-    from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
+    from wexample_app.response.queued_collection_response import QueuedCollectionResponse
 
 DEMO_COLLECTION_FIRST_VALUE = "first-function-result"
 
@@ -16,7 +16,7 @@ DEMO_COLLECTION_FIRST_VALUE = "first-function-result"
 def demo__response__collection(context: ExecutionContext) -> QueuedCollectionResponse:
     from wexample_app.response.dict_response import DictResponse
     from wexample_app.response.list_response import ListResponse
-    from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
+    from wexample_app.response.queued_collection_response import QueuedCollectionResponse
 
     kernel = context.kernel
 

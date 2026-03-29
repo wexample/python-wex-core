@@ -26,8 +26,8 @@ PING_TYPE_FUNCTION = "function"
 def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
     from wexample_app.response.dict_response import DictResponse
     from wexample_app.response.list_response import ListResponse
-    from wexample_wex_core.response.response_collection_response import ResponseCollectionResponse
-    from wexample_wex_core.response.table_response import TableResponse
+    from wexample_app.response.response_collection_response import ResponseCollectionResponse
+    from wexample_app.response.table_response import TableResponse
 
     if type == PING_TYPE_LIST:
         return ListResponse(kernel=context.kernel, content=["pong", "ping", "pang"])
@@ -49,21 +49,21 @@ def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
         )
 
     if type == PING_TYPE_FUNCTION:
-        from wexample_wex_core.response.function_response import FunctionResponse
+        from wexample_app.response.dict_response import DictResponse
+        from wexample_app.response.function_response import FunctionResponse
 
         return FunctionResponse(
             kernel=context.kernel,
-            content=demo__ping__pong,
-            arguments={"type": PING_TYPE_DICT},
+            content=lambda: DictResponse(kernel=context.kernel, content={"status": "pong"}),
         )
 
     if type == PING_TYPE_SHELL:
-        from wexample_wex_core.response.shell_command_response import ShellCommandResponse
+        from wexample_app.response.shell_command_response import ShellCommandResponse
 
         return ShellCommandResponse(kernel=context.kernel, content=["echo", "pong"])
 
     if type == PING_TYPE_QUEUED:
-        from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
+        from wexample_app.response.queued_collection_response import QueuedCollectionResponse
 
         return QueuedCollectionResponse(
             kernel=context.kernel,

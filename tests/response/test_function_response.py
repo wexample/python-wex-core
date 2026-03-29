@@ -1,62 +1,48 @@
+import json
+
 from wexample_app.const.output import OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_STR, OUTPUT_TARGET_NONE
+from wexample_app.response.dict_response import DictResponse
+from wexample_app.response.function_response import FunctionResponse
 
 from tests.abstract_kernel_test import AbstractKernelTest
-from wexample_wex_core.addons.demo.commands.ping.pong import demo__ping__pong, PING_TYPE_DICT
-from wexample_app.response.dict_response import DictResponse
-from wexample_wex_core.response.function_response import FunctionResponse
+from wexample_wex_core.addons.demo.commands.ping.pong import PING_TYPE_FUNCTION, demo__ping__pong
+from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 
 class TestFunctionResponse(AbstractKernelTest):
-    def test_executes_function(self, kernel):
-        response = FunctionResponse(
+    def _make_dict_response(self, kernel) -> FunctionResponse:
+        return FunctionResponse(
             kernel=kernel,
-            content=demo__ping__pong,
-            arguments={"type": PING_TYPE_DICT},
+            content=lambda: DictResponse(kernel=kernel, content={"status": "pong"}),
         )
+
+    def test_executes_callable(self, kernel):
+        response = self._make_dict_response(kernel)
         assert isinstance(response._get_inner_response(), DictResponse)
 
     def test_str_format(self, kernel):
-        response = FunctionResponse(
-            kernel=kernel,
-            content=demo__ping__pong,
-            arguments={"type": PING_TYPE_DICT},
-        )
-        output = response.get_formatted(OUTPUT_FORMAT_STR)
+        output = self._make_dict_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
         assert output is not None
 
     def test_json_format(self, kernel):
-        import json
-
-        response = FunctionResponse(
-            kernel=kernel,
-            content=demo__ping__pong,
-            arguments={"type": PING_TYPE_DICT},
-        )
-        result = json.loads(response.get_formatted(OUTPUT_FORMAT_JSON))
-        assert result == {"status": "pong"}
+        output = self._make_dict_response(kernel).get_formatted(OUTPUT_FORMAT_JSON)
+        assert json.loads(output) == {"status": "pong"}
 
     def test_cached_execution(self, kernel):
         call_count = 0
 
-        def counting_wrapper(*args, **kwargs):
+        def counted():
             nonlocal call_count
             call_count += 1
-            return demo__ping__pong(*args, **kwargs)
+            return DictResponse(kernel=kernel, content={"status": "pong"})
 
-        response = FunctionResponse(
-            kernel=kernel,
-            content=demo__ping__pong,
-            arguments={"type": PING_TYPE_DICT},
-        )
+        response = FunctionResponse(kernel=kernel, content=counted)
         response.get_formatted(OUTPUT_FORMAT_STR)
         response.get_formatted(OUTPUT_FORMAT_JSON)
-        # Inner response is cached — function executed only once
-        assert response._inner_response is not None
+        assert call_count == 1
 
     def test_via_ping_command(self, kernel):
-        from wexample_wex_core.addons.demo.commands.ping.pong import PING_TYPE_FUNCTION
         from wexample_wex_core.common.command_request import CommandRequest
-        from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
         request = CommandRequest(
             kernel=kernel,

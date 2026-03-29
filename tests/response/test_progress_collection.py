@@ -1,7 +1,7 @@
 from wexample_app.const.output import OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_STR, OUTPUT_TARGET_NONE
 from wexample_app.response.dict_response import DictResponse
-from wexample_wex_core.response.progress_collection_response import ProgressCollectionResponse
-from wexample_wex_core.response.queue_collection.queued_collection_stop_response import QueuedCollectionStopResponse
+from wexample_app.response.progress_collection_response import ProgressCollectionResponse
+from wexample_app.response.queue_collection.queued_collection_stop_response import QueuedCollectionStopResponse
 
 from tests.response.abstract_response_test import AbstractResponseTest
 
@@ -112,7 +112,7 @@ class TestProgressCollectionResponse(AbstractResponseTest):
         ).get_formatted(OUTPUT_FORMAT_STR)
 
     def test_progress_inside_queued(self, kernel, capsys):
-        from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
+        from wexample_app.response.queued_collection_response import QueuedCollectionResponse
 
         QueuedCollectionResponse(
             kernel=kernel,
@@ -133,7 +133,7 @@ class TestProgressCollectionResponse(AbstractResponseTest):
         assert "sub" in out
 
     def test_queued_inside_progress(self, kernel, capsys):
-        from wexample_wex_core.response.queued_collection_response import QueuedCollectionResponse
+        from wexample_app.response.queued_collection_response import QueuedCollectionResponse
 
         ProgressCollectionResponse(
             kernel=kernel,
