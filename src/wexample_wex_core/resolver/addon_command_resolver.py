@@ -55,12 +55,7 @@ class AddonCommandResolver(AbstractCommandResolver):
         return commands_base / address.to_relative_path(extension=extension)
 
     def build_registry_data(self) -> RegistryResolverData:
-        import importlib.util
-
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
-        from wexample_wex_core.common.command_address import CommandAddress
-        from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-        from wexample_wex_core.const.registries import RegistryAddonData, RegistryCommandData
 
         registry: RegistryResolverData = {}
 
@@ -68,79 +63,8 @@ class AddonCommandResolver(AbstractCommandResolver):
             assert isinstance(addon, AbstractAddonManager)
 
             addon_name = addon.get_snake_short_class_name()
-            addon_data: RegistryAddonData = {}
             commands_base = addon.workdir.get_path() / "commands"
-
-            if commands_base.exists():
-                for group_dir in sorted(commands_base.iterdir()):
-                    if not group_dir.is_dir() or group_dir.name.startswith("_"):
-                        continue
-
-                    for cmd_file in sorted(group_dir.iterdir()):
-                        if cmd_file.name.startswith("_"):
-                            continue
-                        if cmd_file.suffix not in (".py", ".yml"):
-                            continue
-
-                        address = CommandAddress.from_path(
-                            path=cmd_file,
-                            addon_name=addon_name,
-                            commands_base=commands_base,
-                        )
-                        tests_base = addon.workdir.get_path() / "tests"
-                        test_path = tests_base / address.to_relative_path()
-
-                        description: str | None = None
-                        aliases: list[str] = []
-                        attachments: dict[str, list] = {"before": [], "after": []}
-                        sudo: bool = False
-
-                        if cmd_file.suffix == ".py":
-                            func_name = address.to_function_name()
-                            spec = importlib.util.spec_from_file_location(func_name, cmd_file)
-                            if spec and spec.loader:
-                                mod = importlib.util.module_from_spec(spec)
-                                spec.loader.exec_module(mod)  # type: ignore[union-attr]
-                                wrapper = getattr(mod, func_name, None)
-                                if isinstance(wrapper, CommandMethodWrapper):
-                                    description = wrapper.description
-                                    aliases = list(wrapper.aliases)
-                                    attachments = {
-                                        pos: list(items)
-                                        for pos, items in wrapper.attachments.items()
-                                    }
-                                    sudo = wrapper.sudo
-                        elif cmd_file.suffix == ".yml":
-                            import yaml
-                            with open(cmd_file) as f:
-                                yaml_data = yaml.safe_load(f) or {}
-                            description = yaml_data.get("description")
-                            for dec in yaml_data.get("decorators", []):
-                                dec_name = dec.get("name")
-                                dec_args = dec.get("args", {})
-                                if dec_name == "sudo":
-                                    sudo = True
-                                elif dec_name == "alias":
-                                    aliases.append(dec_args if isinstance(dec_args, str) else str(dec_args))
-                                elif dec_name == "attach":
-                                    if isinstance(dec_args, dict):
-                                        position = dec_args.get("position", "after")
-                                        attachments[position].append({
-                                            "command": dec_args.get("command", ""),
-                                            "pass_args": dec_args.get("pass_args", False),
-                                        })
-
-                        addon_data[address.to_command_key()] = RegistryCommandData(
-                            command=self.address_to_command(address),
-                            path=str(cmd_file),
-                            test=str(test_path) if test_path.exists() else None,
-                            description=description,
-                            alias=aliases,
-                            attachments=attachments,
-                            sudo=sudo,
-                        )
-
-            registry[addon_name] = addon_data
+            registry[addon_name] = self._scan_commands_dir(commands_base, addon_name)
 
         return registry
 
