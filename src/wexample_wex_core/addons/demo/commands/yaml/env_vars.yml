@@ -1,0 +1,10 @@
+description: "Demo — env var injection and ignore_error/workdir"
+scripts:
+  - runner: bash
+    script: echo "User is ${USER}, path is ${PATH_CURRENT}"
+  - runner: bash
+    script: exit 1
+    ignore_error: true
+  - runner: bash
+    script: pwd
+    workdir: /tmp

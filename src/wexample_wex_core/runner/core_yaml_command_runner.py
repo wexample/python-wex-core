@@ -80,7 +80,13 @@ class CoreYamlCommandRunner(YamlCommandRunner):
 
     @staticmethod
     def _build_variables(kwargs: dict, yaml_path: Path) -> dict[str, str]:
-        variables: dict[str, str] = {"PATH_CURRENT": str(yaml_path.parent)}
+        import os
+
+        # Lower priority: environment variables
+        variables: dict[str, str] = {k: v for k, v in os.environ.items()}
+        # Built-ins override env
+        variables["PATH_CURRENT"] = str(yaml_path.parent)
+        # Option values have highest priority
         for key, value in kwargs.items():
             if key != "context" and value is not None:
                 variables[key.upper()] = str(value)

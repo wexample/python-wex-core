@@ -22,15 +22,24 @@ class BashScriptRunner(AbstractScriptRunner):
         script = step.get("script")
         file = step.get("file")
 
+        ignore_error: bool = step.get("ignore_error", False)
+        workdir: str | None = step.get("workdir")
+        if workdir:
+            workdir = yaml_substitute(workdir, variables)
+
         if script:
             return InteractiveShellCommandResponse(
                 kernel=kernel,
                 content=["bash", "-c", yaml_substitute(script, variables)],
+                ignore_error=ignore_error,
+                workdir=workdir,
             )
         elif file:
             return InteractiveShellCommandResponse(
                 kernel=kernel,
                 content=["bash", yaml_substitute(file, variables)],
+                ignore_error=ignore_error,
+                workdir=workdir,
             )
 
         return None
