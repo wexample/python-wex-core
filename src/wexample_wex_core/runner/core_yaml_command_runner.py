@@ -128,6 +128,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
                     f"Unknown YAML script runner: '{runner_name}'. "
                     f"Available: {list(kernel.script_runner_registry.all().keys())}"
                 )
+            self._validate_step_keys(step, runner)
             return runner.run(step, variables, kernel), capture_var
 
         return None, None
@@ -148,6 +149,24 @@ class CoreYamlCommandRunner(YamlCommandRunner):
             output_target=[OUTPUT_TARGET_NONE],
         )
         return kernel.execute_kernel_command(sub_request)
+
+    # ------------------------------------------------------------------
+    # Validation
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _validate_step_keys(step: dict, runner) -> None:
+        """Raise if the step contains keys not declared by the runner."""
+        # Structural keys always valid — not runner-specific
+        structural = {"runner", "variable"}
+        valid = structural | set(runner.get_step_options())
+        unknown = set(step.keys()) - valid
+
+        if unknown:
+            raise ValueError(
+                f"Unknown option(s) {sorted(unknown)} for runner '{runner.get_runner_name()}'. "
+                f"Valid options: {sorted(valid - structural)}"
+            )
 
     # ------------------------------------------------------------------
     # Response collection

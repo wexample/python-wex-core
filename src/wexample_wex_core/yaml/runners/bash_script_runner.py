@@ -6,6 +6,7 @@ from wexample_wex_core.yaml.abstract_script_runner import AbstractScriptRunner
 
 if TYPE_CHECKING:
     from wexample_wex_core.common.kernel import Kernel
+    from wexample_wex_core.yaml.types import BashStepDict
 
 
 class BashScriptRunner(AbstractScriptRunner):
@@ -15,9 +16,9 @@ class BashScriptRunner(AbstractScriptRunner):
 
     @classmethod
     def get_step_options(cls) -> list[str]:
-        return super().get_step_options() + ["workdir"]
+        return super().get_step_options() + ["script", "file", "workdir"]
 
-    def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
+    def run(self, step: BashStepDict, variables: dict[str, str], kernel: Kernel) -> Any:
         from wexample_app.response.interactive_shell_command_response import (
             InteractiveShellCommandResponse,
         )

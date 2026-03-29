@@ -143,6 +143,38 @@ class TestYamlRunner(AbstractKernelTest):
         # No exception raised
         response.get_formatted(OUTPUT_FORMAT_STR)
 
+    def test_unknown_step_option_raises(self, kernel):
+        """A typo like 'wokdir' raises immediately at execution time."""
+        from wexample_wex_core.common.command_request import CommandRequest
+
+        # Write a temp YAML with an unknown option
+        import tempfile
+        from pathlib import Path
+
+        yaml_content = """
+description: "test"
+scripts:
+  - runner: bash
+    script: echo hello
+    wokdir: /tmp
+"""
+        with tempfile.NamedTemporaryFile(suffix=".yml", mode="w", delete=False) as f:
+            f.write(yaml_content)
+            tmp_path = Path(f.name)
+
+        try:
+            from wexample_wex_core.runner.core_yaml_command_runner import CoreYamlCommandRunner
+            from wexample_wex_core.yaml.yaml_command_definition import YamlCommandDefinition
+
+            runner = CoreYamlCommandRunner(kernel=kernel)
+            definition = YamlCommandDefinition.from_path(tmp_path)
+            wrapper = runner._build_wrapper(definition)
+
+            with pytest.raises(ValueError, match="wokdir"):
+                wrapper.function(context=None)
+        finally:
+            tmp_path.unlink()
+
     def test_step_options_contract(self, kernel):
         """Each runner declares its supported options; ignore_error is universal."""
         from wexample_wex_core.yaml.runners.bash_script_runner import BashScriptRunner

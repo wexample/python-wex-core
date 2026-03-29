@@ -17,9 +17,11 @@ class AbstractScriptRunner(ABC):
 
     @classmethod
     def get_step_options(cls) -> list[str]:
-        """Declare supported step-level options.
+        """Declare all valid keys for this runner's steps.
 
-        Used for documentation and YAML validation.
+        Used for YAML validation — any key not listed here triggers an error.
+        Structural keys (``runner``, ``variable``) are always valid and need
+        not be listed here.
         Subclasses should call ``super().get_step_options() + [...]``.
         """
         return ["ignore_error"]

@@ -6,6 +6,7 @@ from wexample_wex_core.yaml.abstract_script_runner import AbstractScriptRunner
 
 if TYPE_CHECKING:
     from wexample_wex_core.common.kernel import Kernel
+    from wexample_wex_core.yaml.types import PythonStepDict
 
 
 class PythonScriptRunner(AbstractScriptRunner):
@@ -13,7 +14,11 @@ class PythonScriptRunner(AbstractScriptRunner):
     def get_runner_name(cls) -> str:
         return "python"
 
-    def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
+    @classmethod
+    def get_step_options(cls) -> list[str]:
+        return super().get_step_options() + ["script", "file"]
+
+    def run(self, step: PythonStepDict, variables: dict[str, str], kernel: Kernel) -> Any:
         from wexample_wex_core.yaml.python_script_response import PythonScriptResponse
 
         # step strings are already substituted by the time run() is called
