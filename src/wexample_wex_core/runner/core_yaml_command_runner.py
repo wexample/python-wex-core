@@ -14,8 +14,11 @@ if TYPE_CHECKING:
 
 
 class CoreYamlCommandRunner(YamlCommandRunner):
-    # Cache parsed definitions: avoid re-reading YAML on every execution.
-    _definition_cache: dict[Path, YamlCommandDefinition] = {}
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        # Instance-level cache: avoid re-reading YAML on every execution,
+        # but don't share state across runner instances (e.g. between tests).
+        self._definition_cache: dict[Path, YamlCommandDefinition] = {}
 
     def build_runnable_command(self, request: CommandRequest) -> Command | None:
         from wexample_wex_core.command.extended_command import ExtendedCommand

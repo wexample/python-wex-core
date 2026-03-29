@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 from wexample_app.const.output import OUTPUT_TARGET_NONE
 
 from tests.abstract_kernel_test import AbstractKernelTest
@@ -102,6 +104,34 @@ class TestYamlRunner(AbstractKernelTest):
 
         assert isinstance(response, InteractiveShellCommandResponse)
         assert response.workdir == "/tmp"
+
+    def test_python_runner_returns_lazy_response(self, kernel):
+        """Python runner returns a PythonScriptResponse, not executing immediately."""
+        from wexample_wex_core.yaml.python_script_response import PythonScriptResponse
+        from wexample_wex_core.yaml.runners.python_script_runner import PythonScriptRunner
+
+        runner = PythonScriptRunner()
+        step = {"runner": "python", "script": "x = 1 + 1"}
+        response = runner.run(step, {}, kernel)
+
+        assert isinstance(response, PythonScriptResponse)
+        assert response._executed is False  # not yet run
+
+    def test_python_runner_error_raised_at_render(self, kernel):
+        """Python script errors surface at render time, not at build time."""
+        from wexample_app.const.output import OUTPUT_FORMAT_STR
+        from wexample_wex_core.yaml.runners.python_script_runner import PythonScriptRunner
+
+        runner = PythonScriptRunner()
+        step = {"runner": "python", "script": "raise ValueError('boom')"}
+        response = runner.run(step, {}, kernel)
+
+        # Build succeeded — no error yet
+        assert response is not None
+
+        # Error surfaces at render
+        with pytest.raises(ValueError, match="boom"):
+            response.get_formatted(OUTPUT_FORMAT_STR)
 
     def test_workdir_substitution(self, kernel):
         """workdir supports ${VAR} substitution."""

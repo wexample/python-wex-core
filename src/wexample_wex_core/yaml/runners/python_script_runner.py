@@ -14,6 +14,7 @@ class PythonScriptRunner(AbstractScriptRunner):
         return "python"
 
     def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
+        from wexample_wex_core.yaml.python_script_response import PythonScriptResponse
         from wexample_wex_core.yaml.yaml_variable import yaml_substitute
 
         script = step.get("script")
@@ -23,7 +24,11 @@ class PythonScriptRunner(AbstractScriptRunner):
             with open(yaml_substitute(file, variables)) as f:
                 script = f.read()
 
-        if script:
-            exec(yaml_substitute(script, variables), {"kernel": kernel, **variables})  # noqa: S102
+        if not script:
+            return None
 
-        return None
+        return PythonScriptResponse(
+            kernel=kernel,
+            code=yaml_substitute(script, variables),
+            scope={"kernel": kernel, **variables},
+        )
