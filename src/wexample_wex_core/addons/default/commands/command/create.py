@@ -63,14 +63,8 @@ def default__command__create(
     context.io.success(f"Created: {target}")
 
     # Rebuild registry so the new command is immediately available
-    from wexample_app.const.output import OUTPUT_TARGET_NONE
-    from wexample_wex_core.common.command_request import CommandRequest
+    from wexample_wex_core.addons.default.commands.registry.build import default__registry__build
 
-    context.kernel.execute_kernel_command(CommandRequest(
-        kernel=context.kernel,
-        name="default::registry/build",
-        arguments={},
-        output_target=[OUTPUT_TARGET_NONE],
-    ))
+    context.kernel.run_function(default__registry__build)
 
     return StrResponse(kernel=context.kernel, content=str(target))
