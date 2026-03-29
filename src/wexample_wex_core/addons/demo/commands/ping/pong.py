@@ -11,17 +11,21 @@ if TYPE_CHECKING:
     from wexample_app.response.abstract_response import AbstractResponse
     from wexample_wex_core.context.execution_context import ExecutionContext
 
-PING_TYPE_DICT = "dict"
-PING_TYPE_LIST = "list"
-PING_TYPE_TABLE = "table"
+PING_TYPE_BOOL = "bool"
 PING_TYPE_COLLECTION = "collection"
+PING_TYPE_DICT = "dict"
+PING_TYPE_FUNCTION = "function"
+PING_TYPE_INT = "int"
+PING_TYPE_LIST = "list"
+PING_TYPE_NULL = "null"
 PING_TYPE_QUEUED = "queued"
 PING_TYPE_SHELL = "shell"
-PING_TYPE_FUNCTION = "function"
+PING_TYPE_STR = "str"
+PING_TYPE_TABLE = "table"
 
 
 @alias("ping")
-@option(name="type", type=str, required=True, description="Response type to return (dict, list, table, collection, queued, shell)")
+@option(name="type", type=str, required=True, description="Response type to return (bool, dict, function, int, list, null, queued, shell, str, table, collection)")
 @command(type=COMMAND_TYPE_ADDON)
 def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
     from wexample_app.response.dict_response import DictResponse
@@ -75,5 +79,25 @@ def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
                 ),
             ],
         )
+
+    if type == PING_TYPE_STR:
+        from wexample_app.response.str_response import StrResponse
+
+        return StrResponse(kernel=context.kernel, content="pong")
+
+    if type == PING_TYPE_INT:
+        from wexample_app.response.int_response import IntResponse
+
+        return IntResponse(kernel=context.kernel, content=42)
+
+    if type == PING_TYPE_BOOL:
+        from wexample_app.response.boolean_response import BooleanResponse
+
+        return BooleanResponse(kernel=context.kernel, content=True)
+
+    if type == PING_TYPE_NULL:
+        from wexample_app.response.null_response import NullResponse
+
+        return NullResponse(kernel=context.kernel)
 
     return DictResponse(kernel=context.kernel, content={"status": "pong"})
