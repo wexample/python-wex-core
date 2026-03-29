@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
     from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
+    from wexample_wex_core.yaml.script_runner_registry import ScriptRunnerRegistry
 
 
 @base_class
@@ -64,6 +65,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     )
     _logger: logging.Logger = private_field(description="Python logger for operational/debug messages")
     _registry: KernelRegistry = private_field(description="The configuration registry")
+    _script_runner_registry: ScriptRunnerRegistry = private_field(description="Registry of YAML script runners")
 
     def run_function(
         self,
@@ -161,6 +163,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return self._registry
 
     @property
+    def script_runner_registry(self) -> ScriptRunnerRegistry:
+        return self._script_runner_registry
+
+    @property
     def logger(self) -> logging.Logger:
         return self._logger
 
@@ -176,6 +182,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_runners()
         self._init_middlewares()
         self._init_registry()
+        self._init_script_runner_registry()
 
         return response
 
@@ -407,6 +414,11 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             classes.extend(cast(AbstractAddonManager, addon).get_middlewares_classes())
 
         self.register_items("middlewares", classes)
+
+    def _init_script_runner_registry(self) -> None:
+        from wexample_wex_core.yaml.script_runner_registry import ScriptRunnerRegistry
+
+        self._script_runner_registry = ScriptRunnerRegistry()
 
     def _init_registry(self) -> None:
         from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
