@@ -77,7 +77,9 @@ class AddonCommandResolver(AbstractCommandResolver):
                         continue
 
                     for cmd_file in sorted(group_dir.iterdir()):
-                        if cmd_file.suffix != ".py" or cmd_file.name.startswith("_"):
+                        if cmd_file.name.startswith("_"):
+                            continue
+                        if cmd_file.suffix not in (".py", ".yml"):
                             continue
 
                         address = CommandAddress.from_path(
@@ -88,25 +90,45 @@ class AddonCommandResolver(AbstractCommandResolver):
                         tests_base = addon.workdir.get_path() / "tests"
                         test_path = tests_base / address.to_relative_path()
 
-                        # Load module to extract decorator metadata (description, aliases, attachments)
                         description: str | None = None
                         aliases: list[str] = []
                         attachments: dict[str, list] = {"before": [], "after": []}
                         sudo: bool = False
-                        func_name = address.to_function_name()
-                        spec = importlib.util.spec_from_file_location(func_name, cmd_file)
-                        if spec and spec.loader:
-                            mod = importlib.util.module_from_spec(spec)
-                            spec.loader.exec_module(mod)  # type: ignore[union-attr]
-                            wrapper = getattr(mod, func_name, None)
-                            if isinstance(wrapper, CommandMethodWrapper):
-                                description = wrapper.description
-                                aliases = list(wrapper.aliases)
-                                attachments = {
-                                    pos: list(items)
-                                    for pos, items in wrapper.attachments.items()
-                                }
-                                sudo = wrapper.sudo
+
+                        if cmd_file.suffix == ".py":
+                            func_name = address.to_function_name()
+                            spec = importlib.util.spec_from_file_location(func_name, cmd_file)
+                            if spec and spec.loader:
+                                mod = importlib.util.module_from_spec(spec)
+                                spec.loader.exec_module(mod)  # type: ignore[union-attr]
+                                wrapper = getattr(mod, func_name, None)
+                                if isinstance(wrapper, CommandMethodWrapper):
+                                    description = wrapper.description
+                                    aliases = list(wrapper.aliases)
+                                    attachments = {
+                                        pos: list(items)
+                                        for pos, items in wrapper.attachments.items()
+                                    }
+                                    sudo = wrapper.sudo
+                        elif cmd_file.suffix == ".yml":
+                            import yaml
+                            with open(cmd_file) as f:
+                                yaml_data = yaml.safe_load(f) or {}
+                            description = yaml_data.get("description")
+                            for dec in yaml_data.get("decorators", []):
+                                dec_name = dec.get("name")
+                                dec_args = dec.get("args", {})
+                                if dec_name == "sudo":
+                                    sudo = True
+                                elif dec_name == "alias":
+                                    aliases.append(dec_args if isinstance(dec_args, str) else str(dec_args))
+                                elif dec_name == "attach":
+                                    if isinstance(dec_args, dict):
+                                        position = dec_args.get("position", "after")
+                                        attachments[position].append({
+                                            "command": dec_args.get("command", ""),
+                                            "pass_args": dec_args.get("pass_args", False),
+                                        })
 
                         addon_data[address.to_command_key()] = RegistryCommandData(
                             command=self.address_to_command(address),

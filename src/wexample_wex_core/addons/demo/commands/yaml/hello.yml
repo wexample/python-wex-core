@@ -1,0 +1,10 @@
+description: "Demo YAML command — prints a greeting using a bash script"
+options:
+  - name: name
+    type: str
+    required: false
+    default: "World"
+    help: "Name to greet"
+scripts:
+  - runner: bash
+    script: echo "Hello, ${NAME}!"
