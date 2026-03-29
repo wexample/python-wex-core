@@ -92,6 +92,7 @@ class AddonCommandResolver(AbstractCommandResolver):
                         description: str | None = None
                         aliases: list[str] = []
                         attachments: dict[str, list] = {"before": [], "after": []}
+                        sudo: bool = False
                         func_name = address.to_function_name()
                         spec = importlib.util.spec_from_file_location(func_name, cmd_file)
                         if spec and spec.loader:
@@ -105,6 +106,7 @@ class AddonCommandResolver(AbstractCommandResolver):
                                     pos: list(items)
                                     for pos, items in wrapper.attachments.items()
                                 }
+                                sudo = wrapper.sudo
 
                         addon_data[address.to_command_key()] = RegistryCommandData(
                             command=self.address_to_command(address),
@@ -113,6 +115,7 @@ class AddonCommandResolver(AbstractCommandResolver):
                             description=description,
                             alias=aliases,
                             attachments=attachments,
+                            sudo=sudo,
                         )
 
             registry[addon_name] = addon_data

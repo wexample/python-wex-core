@@ -17,6 +17,7 @@ class RegistryCommandData(TypedDict):
     description: str | None
     alias: list[str]
     attachments: dict[str, list[RegistryAttachment]]
+    sudo: bool
 
 
 RegistryAddonData = dict[str, RegistryCommandData]

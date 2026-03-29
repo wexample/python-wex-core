@@ -84,12 +84,32 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return self.execute_kernel_command(request)
 
     def execute_kernel_command(self, request: CommandRequest) -> AbstractResponse:
+        import os
+
         from wexample_app.response.abstract_response import AbstractResponse
 
+        self._enforce_sudo_if_needed(request)
         self._execute_attached(request, "before")
         response = super().execute_kernel_command(request)
         self._execute_attached(request, "after")
         return response
+
+    def _enforce_sudo_if_needed(self, request: CommandRequest) -> None:
+        import os
+        import sys
+
+        if os.geteuid() == 0:
+            return
+
+        registry = self.get_configuration_registry()
+        if not registry.get_addon_commands():
+            return
+
+        for addon_data in registry.get_addon_commands().values():
+            for cmd_data in addon_data.values():
+                if cmd_data.get("command") == request.name and cmd_data.get("sudo"):
+                    os.execvp("sudo", ["sudo", sys.executable] + sys.argv)
+                    return
 
     def _execute_attached(self, request: CommandRequest, position: str) -> None:
         from wexample_app.const.output import OUTPUT_TARGET_NONE
