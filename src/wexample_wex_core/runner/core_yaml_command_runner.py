@@ -165,7 +165,4 @@ class CoreYamlCommandRunner(YamlCommandRunner):
             ResponseCollectionResponse,
         )
 
-        collection = ResponseCollectionResponse(kernel=kernel)
-        for r in responses:
-            collection.append(r)
-        return collection
+        return ResponseCollectionResponse(kernel=kernel, content=responses)
