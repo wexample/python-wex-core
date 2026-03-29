@@ -13,31 +13,32 @@ class BashScriptRunner(AbstractScriptRunner):
     def get_runner_name(cls) -> str:
         return "bash"
 
+    @classmethod
+    def get_step_options(cls) -> list[str]:
+        return super().get_step_options() + ["workdir"]
+
     def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
         from wexample_app.response.interactive_shell_command_response import (
             InteractiveShellCommandResponse,
         )
-        from wexample_wex_core.yaml.yaml_variable import yaml_substitute
 
-        script = step.get("script")
-        file = step.get("file")
-
+        # step strings are already substituted by the time run() is called
         ignore_error: bool = step.get("ignore_error", False)
         workdir: str | None = step.get("workdir")
-        if workdir:
-            workdir = yaml_substitute(workdir, variables)
+        script = step.get("script")
+        file = step.get("file")
 
         if script:
             return InteractiveShellCommandResponse(
                 kernel=kernel,
-                content=["bash", "-c", yaml_substitute(script, variables)],
+                content=["bash", "-c", script],
                 ignore_error=ignore_error,
                 workdir=workdir,
             )
         elif file:
             return InteractiveShellCommandResponse(
                 kernel=kernel,
-                content=["bash", yaml_substitute(file, variables)],
+                content=["bash", file],
                 ignore_error=ignore_error,
                 workdir=workdir,
             )

@@ -126,23 +126,39 @@ class TestYamlRunner(AbstractKernelTest):
         step = {"runner": "python", "script": "raise ValueError('boom')"}
         response = runner.run(step, {}, kernel)
 
-        # Build succeeded — no error yet
-        assert response is not None
+        assert response is not None  # build succeeded — no error yet
 
-        # Error surfaces at render
         with pytest.raises(ValueError, match="boom"):
             response.get_formatted(OUTPUT_FORMAT_STR)
 
-    def test_workdir_substitution(self, kernel):
-        """workdir supports ${VAR} substitution."""
-        from wexample_app.response.interactive_shell_command_response import (
-            InteractiveShellCommandResponse,
-        )
+    def test_python_runner_ignore_error(self, kernel):
+        """ignore_error:true silences Python exceptions."""
+        from wexample_app.const.output import OUTPUT_FORMAT_STR
+        from wexample_wex_core.yaml.runners.python_script_runner import PythonScriptRunner
+
+        runner = PythonScriptRunner()
+        step = {"runner": "python", "script": "raise ValueError('boom')", "ignore_error": True}
+        response = runner.run(step, {}, kernel)
+
+        # No exception raised
+        response.get_formatted(OUTPUT_FORMAT_STR)
+
+    def test_step_options_contract(self, kernel):
+        """Each runner declares its supported options; ignore_error is universal."""
         from wexample_wex_core.yaml.runners.bash_script_runner import BashScriptRunner
+        from wexample_wex_core.yaml.runners.python_script_runner import PythonScriptRunner
 
-        runner = BashScriptRunner()
+        assert "ignore_error" in BashScriptRunner.get_step_options()
+        assert "ignore_error" in PythonScriptRunner.get_step_options()
+        assert "workdir" in BashScriptRunner.get_step_options()
+        assert "workdir" not in PythonScriptRunner.get_step_options()
+
+    def test_workdir_substitution(self, kernel):
+        """${VAR} in workdir is substituted globally before the runner is called."""
+        from wexample_wex_core.yaml.yaml_variable import yaml_substitute_step
+
         step = {"runner": "bash", "script": "pwd", "workdir": "${MY_DIR}"}
-        response = runner.run(step, {"MY_DIR": "/tmp"}, kernel)
+        substituted = yaml_substitute_step(step, {"MY_DIR": "/tmp"})
 
-        assert isinstance(response, InteractiveShellCommandResponse)
-        assert response.workdir == "/tmp"
+        assert substituted["workdir"] == "/tmp"
+        assert substituted["script"] == "pwd"

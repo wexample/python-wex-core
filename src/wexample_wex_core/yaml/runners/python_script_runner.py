@@ -15,13 +15,13 @@ class PythonScriptRunner(AbstractScriptRunner):
 
     def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
         from wexample_wex_core.yaml.python_script_response import PythonScriptResponse
-        from wexample_wex_core.yaml.yaml_variable import yaml_substitute
 
+        # step strings are already substituted by the time run() is called
         script = step.get("script")
         file = step.get("file")
 
         if file:
-            with open(yaml_substitute(file, variables)) as f:
+            with open(file) as f:
                 script = f.read()
 
         if not script:
@@ -29,6 +29,7 @@ class PythonScriptRunner(AbstractScriptRunner):
 
         return PythonScriptResponse(
             kernel=kernel,
-            code=yaml_substitute(script, variables),
-            scope={"kernel": kernel, **variables},
+            code=script,
+            ignore_error=step.get("ignore_error", False),
+            scope={"kernel": kernel},
         )

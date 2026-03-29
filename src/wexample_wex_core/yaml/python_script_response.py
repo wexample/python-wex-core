@@ -17,6 +17,10 @@ class PythonScriptResponse(AbstractResponse):
     """Run a Python script lazily on first render, symmetric with ShellCommandResponse."""
 
     code: str = public_field(description="Python source code to execute")
+    ignore_error: bool = public_field(
+        default=False,
+        description="If True, silently swallow exceptions raised by the script",
+    )
     scope: dict = public_field(
         factory=dict,
         description="Variables injected into the script's local scope (kernel, env vars, options)",
@@ -38,7 +42,7 @@ class PythonScriptResponse(AbstractResponse):
     def get_formatted(self, output_format: str) -> str:
         if not self._executed:
             self._run()
-        if self._error:
+        if self._error and not self.ignore_error:
             raise self._error
         return ""
 

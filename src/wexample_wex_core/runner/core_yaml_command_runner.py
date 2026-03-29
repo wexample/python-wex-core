@@ -60,10 +60,12 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         yaml_path = definition.path
 
         def _execute(**kwargs: Any) -> Any:
+            from wexample_wex_core.yaml.yaml_variable import yaml_substitute_step
+
             variables = self._build_variables(kwargs, yaml_path)
             responses = []
 
-            for step in scripts:
+            for step in [yaml_substitute_step(s, variables) for s in scripts]:
                 response, capture_var = self._execute_step(step, variables, kernel)
 
                 if capture_var and response is not None:
@@ -136,19 +138,13 @@ class CoreYamlCommandRunner(YamlCommandRunner):
     ) -> Any:
         from wexample_app.const.output import OUTPUT_TARGET_NONE
         from wexample_wex_core.common.command_request import CommandRequest
-        from wexample_wex_core.yaml.yaml_variable import yaml_substitute
 
+        # step is already fully substituted at this point
         args = step.get("args", {})
-        resolved_args = (
-            {k: yaml_substitute(str(v), variables) for k, v in args.items()}
-            if isinstance(args, dict)
-            else {}
-        )
-
         sub_request = CommandRequest(
             kernel=kernel,
             name=step["command"],
-            arguments=resolved_args,
+            arguments=args if isinstance(args, dict) else {},
             output_target=[OUTPUT_TARGET_NONE],
         )
         return kernel.execute_kernel_command(sub_request)

@@ -15,6 +15,15 @@ class AbstractScriptRunner(ABC):
     def get_runner_name(cls) -> str:
         """Return the runner identifier used in the YAML `runner:` field."""
 
+    @classmethod
+    def get_step_options(cls) -> list[str]:
+        """Declare supported step-level options.
+
+        Used for documentation and YAML validation.
+        Subclasses should call ``super().get_step_options() + [...]``.
+        """
+        return ["ignore_error"]
+
     @abstractmethod
     def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
         """Execute the step and return a response (or None)."""
