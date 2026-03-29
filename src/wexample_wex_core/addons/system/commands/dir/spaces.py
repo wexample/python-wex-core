@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
+from wexample_helpers.helpers.file import file_get_human_readable_size
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 from wexample_wex_core.decorator.command import command
 from wexample_wex_core.decorator.option import option
@@ -24,14 +25,6 @@ def _dir_size(path: Path) -> int:
     except OSError:
         pass
     return total
-
-
-def _human_readable(size: int) -> str:
-    for unit in ("B", "KB", "MB", "GB", "TB"):
-        if size < 1024:
-            return f"{size:.1f} {unit}"
-        size /= 1024
-    return f"{size:.1f} PB"
 
 
 @option("path", type=str, short_name="p", required=False, default=None, description="Directory to inspect (default: cwd)")
@@ -55,6 +48,6 @@ def system__dir__spaces(context: "ExecutionContext", path: Optional[str] = None)
                 continue
         else:
             continue
-        rows.append([_human_readable(size), entry.name])
+        rows.append([file_get_human_readable_size(size), entry.name])
 
     return TableResponse(kernel=context.kernel, headers=["Size", "Name"], content=rows)

@@ -4,19 +4,12 @@ from typing import TYPE_CHECKING
 
 import psutil
 
+from wexample_helpers.helpers.file import file_get_human_readable_size
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 from wexample_wex_core.decorator.command import command
 
 if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
-
-
-def _human_readable(size: int) -> str:
-    for unit in ("B", "KB", "MB", "GB", "TB"):
-        if size < 1024:
-            return f"{size:.1f} {unit}"
-        size /= 1024
-    return f"{size:.1f} PB"
 
 
 @command(type=COMMAND_TYPE_ADDON, description="Return space usage of current system disks")
@@ -30,9 +23,9 @@ def system__disk__spaces(context: "ExecutionContext"):
         except PermissionError:
             continue
         rows.append([
-            _human_readable(usage.total),
-            _human_readable(usage.used),
-            _human_readable(usage.free),
+            file_get_human_readable_size(usage.total),
+            file_get_human_readable_size(usage.used),
+            file_get_human_readable_size(usage.free),
             f"{usage.percent}%",
             partition.mountpoint,
             partition.device,
