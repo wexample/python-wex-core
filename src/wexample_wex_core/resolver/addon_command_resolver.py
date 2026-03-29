@@ -54,6 +54,26 @@ class AddonCommandResolver(AbstractCommandResolver):
 
         return commands_base / address.to_relative_path(extension=extension)
 
+    def build_new_command_target(
+        self, command: str, extension: str
+    ) -> tuple[Path, dict] | None:
+        from wexample_helpers.helpers.string import string_to_snake_case
+
+        match = self.build_match(command)
+        if not match or not match.group(1):
+            return None  # addon name is required for creation
+
+        addon_name = string_to_snake_case(match.group(1))
+        group = string_to_snake_case(match.group(2))
+        name = string_to_snake_case(match.group(3))
+
+        addon = self.kernel.get_addons().get(addon_name)
+        if not addon:
+            return None
+
+        target = addon.workdir.get_path() / "commands" / group / f"{name}.{extension}"
+        return target, {"_type": "addon", "addon": addon_name, "group": group, "name": name}
+
     def build_registry_data(self) -> RegistryResolverData:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
 

@@ -99,6 +99,22 @@ class UserCommandResolver(AbstractCommandResolver):
         return match
 
     # ------------------------------------------------------------------
+    # Command creation
+    # ------------------------------------------------------------------
+
+    def build_new_command_target(
+        self, command: str, extension: str
+    ) -> tuple[Path, dict] | None:
+        match = self.build_match(command)
+        if not match:
+            return None
+
+        group = match.group(1).replace("-", "_")
+        name = match.group(2).replace("-", "_")
+        target = Path.home() / _USER_WEX_DIR / _COMMANDS_SUBDIR / group / f"{name}.{extension}"
+        return target, {"_type": "user", "group": group, "name": name}
+
+    # ------------------------------------------------------------------
     # Registry
     # ------------------------------------------------------------------
 

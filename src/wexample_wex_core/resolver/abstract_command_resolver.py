@@ -103,6 +103,17 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
     def build_registry_data(self) -> StructuredData:
         pass
 
+    def build_new_command_target(
+        self, command: str, extension: str
+    ) -> tuple[Path, dict] | None:
+        """Return ``(target_path, template_vars)`` for creating a new command file.
+
+        ``template_vars`` must include ``_type`` (template name without extension).
+        Return ``None`` if this resolver does not support command creation or the
+        command string does not match this resolver's pattern.
+        """
+        return None
+
     def _scan_commands_dir(
         self, commands_base: Path, addon_name: str
     ) -> RegistryAddonData:
