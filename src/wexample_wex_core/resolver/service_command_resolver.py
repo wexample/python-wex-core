@@ -80,12 +80,7 @@ class ServiceCommandResolver(AbstractCommandResolver):
         return None
 
     def build_registry_data(self) -> RegistryResolverData:
-        import importlib.util
-
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
-        from wexample_wex_core.common.command_address import CommandAddress
-        from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
-        from wexample_wex_core.const.registries import RegistryAddonData, RegistryCommandData
 
         registry: RegistryResolverData = {}
 
@@ -102,42 +97,7 @@ class ServiceCommandResolver(AbstractCommandResolver):
 
                 service_name = service_dir.name
                 commands_base = service_dir / _COMMANDS_SUBDIR
-                addon_data: RegistryAddonData = {}
-
-                if commands_base.is_dir():
-                    for group_dir in sorted(commands_base.iterdir()):
-                        if not group_dir.is_dir() or group_dir.name.startswith("_"):
-                            continue
-
-                        for cmd_file in sorted(group_dir.iterdir()):
-                            if cmd_file.suffix != ".py" or cmd_file.name.startswith("_"):
-                                continue
-
-                            address = CommandAddress.from_path(
-                                path=cmd_file,
-                                addon_name=service_name,
-                                commands_base=commands_base,
-                            )
-
-                            description: str | None = None
-                            aliases: list[str] = []
-                            func_name = address.to_function_name()
-                            spec = importlib.util.spec_from_file_location(func_name, cmd_file)
-                            if spec and spec.loader:
-                                mod = importlib.util.module_from_spec(spec)
-                                spec.loader.exec_module(mod)  # type: ignore[union-attr]
-                                wrapper = getattr(mod, func_name, None)
-                                if isinstance(wrapper, CommandMethodWrapper):
-                                    description = wrapper.description
-                                    aliases = list(wrapper.aliases)
-
-                            addon_data[address.to_command_key()] = RegistryCommandData(
-                                command=self.address_to_command(address),
-                                path=str(cmd_file),
-                                test=None,
-                                description=description,
-                                alias=aliases,
-                            )
+                addon_data = self._scan_commands_dir(commands_base, service_name)
 
                 if service_name not in registry:
                     registry[service_name] = addon_data
