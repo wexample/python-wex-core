@@ -4,11 +4,13 @@ from typing import TYPE_CHECKING
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 from wexample_wex_core.decorator.command import command
+from wexample_wex_core.decorator.alias import alias
 
 if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
+@alias("rebuild")
 @command(type=COMMAND_TYPE_ADDON)
 def default__registry__build(context: ExecutionContext) -> None:
     from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile

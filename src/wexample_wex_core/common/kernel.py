@@ -154,6 +154,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         return outputs
 
+    def get_logo(self) -> str | None:
+        """Return the CLI logo string, or None if this kernel has no logo defined."""
+        return None
+
     def get_addons(self) -> dict[str, AbstractAddonManager]:
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
 
