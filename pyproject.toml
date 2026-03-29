@@ -13,7 +13,7 @@ dependencies = [
     "attrs>=23.1.0",
     "cattrs>=23.1.0",
     "click",
-    "wexample-app==0.0.71",
+"wexample-app==0.0.71",
     "wexample-filestate-git==0.0.59",
     "wexample-filestate==0.0.74",
     "wexample-helpers-git==0.0.96",

@@ -11,7 +11,7 @@ from wexample_helpers.decorator.base_class import base_class
 if TYPE_CHECKING:
     from wexample_helpers.const.types import StructuredData
 
-    from wexample_wex_core.const.registries import RegistryAddonData, RegistryResolverData
+    from wexample_wex_core.const.registries import RegistryAddonData, RegistryCommandData, RegistryResolverData
 
 
 @base_class
@@ -29,6 +29,45 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
 
     def get_addon_commands(self) -> RegistryAddonData:
         return self._resolvers.get("addon", {})
+
+    def get_all_commands(self) -> dict[str, RegistryCommandData]:
+        """Flat dict of all commands across all resolvers, keyed by command name."""
+        return {
+            cmd["command"]: cmd
+            for resolver in self._resolvers.values()
+            for addon in resolver.values()
+            for cmd in addon.values()
+        }
+
+    def get_all_command_names(self) -> list[str]:
+        """All command names including aliases, for autocomplete."""
+        names = []
+        for cmd in self.get_all_commands().values():
+            names.append(cmd["command"])
+            names.extend(cmd.get("alias", []))
+        return names
+
+    def get_sudo_commands(self) -> dict[str, RegistryCommandData]:
+        """All commands that require sudo."""
+        return {
+            name: cmd
+            for name, cmd in self.get_all_commands().items()
+            if cmd.get("sudo")
+        }
+
+    def find_command(self, name: str) -> RegistryCommandData | None:
+        """Find a command by exact name or alias."""
+        all_commands = self.get_all_commands()
+        if name in all_commands:
+            return all_commands[name]
+        for cmd in all_commands.values():
+            if name in cmd.get("alias", []):
+                return cmd
+        return None
+
+    def suggest(self, prefix: str) -> list[str]:
+        """Return all command names (and aliases) matching the given prefix."""
+        return [name for name in self.get_all_command_names() if name.startswith(prefix)]
 
     def hydrate(self, data: StructuredData) -> None:
         self._env = data.get("env", self._env)
