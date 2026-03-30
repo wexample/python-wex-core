@@ -1,6 +1,12 @@
+from __future__ import annotations
+
 import json
 
-from wexample_app.const.output import OUTPUT_FORMAT_JSON, OUTPUT_FORMAT_STR, OUTPUT_TARGET_NONE
+from wexample_app.const.output import (
+    OUTPUT_FORMAT_JSON,
+    OUTPUT_FORMAT_STR,
+    OUTPUT_TARGET_NONE,
+)
 from wexample_app.response.list_response import ListResponse
 
 from tests.response.abstract_response_test import AbstractResponseTest
@@ -18,7 +24,23 @@ class TestListResponse(AbstractResponseTest):
     def get_command_arguments(self) -> dict:
         return {"type": "list"}
 
-    def test_str_contains_items(self, kernel, capsys):
+    def test_json_exact_content(self, kernel) -> None:
+        output = self.create_response(kernel).get_formatted(OUTPUT_FORMAT_JSON)
+        assert json.loads(output) == ["alpha", "beta", "gamma"]
+
+    def test_ping_response_content(self, kernel) -> None:
+        response = kernel.execute_kernel_command(
+            self._make_request(kernel, output_target=[OUTPUT_TARGET_NONE])
+        )
+        assert response.content == ["pong", "ping", "pang"]
+
+    def test_ping_returns_list_response(self, kernel) -> None:
+        response = kernel.execute_kernel_command(
+            self._make_request(kernel, output_target=[OUTPUT_TARGET_NONE])
+        )
+        assert isinstance(response, ListResponse)
+
+    def test_str_contains_items(self, kernel, capsys) -> None:
         self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
         out = capsys.readouterr().out
 
@@ -26,27 +48,17 @@ class TestListResponse(AbstractResponseTest):
         assert "beta" in out
         assert "gamma" in out
 
-    def test_str_with_title(self, kernel, capsys):
-        ListResponse(kernel=kernel, content=["alpha"], title="My title").get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
-
-        assert "My title" in out
-        assert "alpha" in out
-
-    def test_str_empty(self, kernel, capsys):
+    def test_str_empty(self, kernel, capsys) -> None:
         ListResponse(kernel=kernel, content=[]).get_formatted(OUTPUT_FORMAT_STR)
         out = capsys.readouterr().out
 
         assert out == "" or out.strip() == ""
 
-    def test_json_exact_content(self, kernel):
-        output = self.create_response(kernel).get_formatted(OUTPUT_FORMAT_JSON)
-        assert json.loads(output) == ["alpha", "beta", "gamma"]
+    def test_str_with_title(self, kernel, capsys) -> None:
+        ListResponse(kernel=kernel, content=["alpha"], title="My title").get_formatted(
+            OUTPUT_FORMAT_STR
+        )
+        out = capsys.readouterr().out
 
-    def test_ping_returns_list_response(self, kernel):
-        response = kernel.execute_kernel_command(self._make_request(kernel, output_target=[OUTPUT_TARGET_NONE]))
-        assert isinstance(response, ListResponse)
-
-    def test_ping_response_content(self, kernel):
-        response = kernel.execute_kernel_command(self._make_request(kernel, output_target=[OUTPUT_TARGET_NONE]))
-        assert response.content == ["pong", "ping", "pang"]
+        assert "My title" in out
+        assert "alpha" in out

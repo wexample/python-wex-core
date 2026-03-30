@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 @option("port", type=int, short_name="p", required=True, description="Port number")
 @as_sudo()
 @command(type=COMMAND_TYPE_ADDON, description="Kill the process listening on a port")
-def system__kill__by_port(context: "ExecutionContext", port: int) -> None:
+def system__kill__by_port(context: ExecutionContext, port: int) -> None:
     proc = system_find_process_by_port(port)
 
     if proc:

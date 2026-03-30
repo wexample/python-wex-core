@@ -17,8 +17,11 @@ _DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 @option("port", type=int, short_name="p", required=True, description="Port number")
-@command(type=COMMAND_TYPE_ADDON, description="Return info about the process listening on a port")
-def system__process__by_port(context: "ExecutionContext", port: int):
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="Return info about the process listening on a port",
+)
+def system__process__by_port(context: ExecutionContext, port: int) -> DictResponse:
     from wexample_app.response.dict_response import DictResponse
 
     proc = system_find_process_by_port(port)
@@ -30,7 +33,9 @@ def system__process__by_port(context: "ExecutionContext", port: int):
                 "port": port,
                 "pid": proc.pid,
                 "status": proc.status(),
-                "started": datetime.fromtimestamp(proc.create_time()).strftime(_DATE_FORMAT),
+                "started": datetime.fromtimestamp(proc.create_time()).strftime(
+                    _DATE_FORMAT
+                ),
                 "command": proc.cmdline(),
                 "running": True,
             }

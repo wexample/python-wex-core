@@ -18,7 +18,9 @@ class PythonScriptRunner(AbstractScriptRunner):
     def get_step_options(cls) -> list[str]:
         return super().get_step_options() + ["script", "file"]
 
-    def run(self, step: PythonStepDict, variables: dict[str, str], kernel: Kernel) -> Any:
+    def run(
+        self, step: PythonStepDict, variables: dict[str, str], kernel: Kernel
+    ) -> Any:
         from wexample_wex_core.yaml.python_script_response import PythonScriptResponse
 
         # step strings are already substituted by the time run() is called

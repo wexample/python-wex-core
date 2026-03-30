@@ -10,7 +10,9 @@ if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
-@command(type=COMMAND_TYPE_ADDON, description="Return the current system local IP address")
-def system__system__ip(context: "ExecutionContext") -> str:
+@command(
+    type=COMMAND_TYPE_ADDON, description="Return the current system local IP address"
+)
+def system__system__ip(context: ExecutionContext) -> str:
     host_name = socket.gethostname()
     return socket.gethostbyname(host_name)

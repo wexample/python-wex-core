@@ -47,7 +47,9 @@ class ServiceCommandResolver(AbstractCommandResolver):
         )
         return address.to_function_name()
 
-    def build_command_path(self, request: CommandRequest, extension: str) -> Path | None:
+    def build_command_path(
+        self, request: CommandRequest, extension: str
+    ) -> Path | None:
         from wexample_helpers.helpers.string import string_to_snake_case
 
         from wexample_wex_core.common.command_address import CommandAddress
@@ -63,21 +65,6 @@ class ServiceCommandResolver(AbstractCommandResolver):
             name=string_to_snake_case(request.match.group(3)),
         )
         return service_dir / _COMMANDS_SUBDIR / address.to_relative_path(extension)
-
-    def _find_service_dir(self, service_name: str) -> Path | None:
-        """Scan all addon directories for a matching service."""
-        from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
-
-        for addon in self.kernel.get_addons().values():
-            assert isinstance(addon, AbstractAddonManager)
-            services_base = addon.workdir.get_path() / _SERVICES_SUBDIR
-            if not services_base.is_dir():
-                continue
-            service_dir = services_base / service_name
-            if service_dir.is_dir():
-                return service_dir
-
-        return None
 
     def build_registry_data(self) -> RegistryResolverData:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
@@ -105,3 +92,18 @@ class ServiceCommandResolver(AbstractCommandResolver):
                     registry[service_name].update(addon_data)
 
         return registry
+
+    def _find_service_dir(self, service_name: str) -> Path | None:
+        """Scan all addon directories for a matching service."""
+        from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+
+        for addon in self.kernel.get_addons().values():
+            assert isinstance(addon, AbstractAddonManager)
+            services_base = addon.workdir.get_path() / _SERVICES_SUBDIR
+            if not services_base.is_dir():
+                continue
+            service_dir = services_base / service_name
+            if service_dir.is_dir():
+                return service_dir
+
+        return None

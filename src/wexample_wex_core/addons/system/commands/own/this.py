@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from wexample_helpers.helpers.file import file_chown_recursive
 from wexample_helpers.helpers.user import user_get_real_username
+
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 from wexample_wex_core.decorator.as_sudo import as_sudo
 from wexample_wex_core.decorator.command import command
@@ -15,10 +16,20 @@ if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
-@option("path", type=str, short_name="p", required=False, default=None, description="Path to own (default: cwd)")
+@option(
+    "path",
+    type=str,
+    short_name="p",
+    required=False,
+    default=None,
+    description="Path to own (default: cwd)",
+)
 @as_sudo()
-@command(type=COMMAND_TYPE_ADDON, description="Make current user owner of a directory recursively")
-def system__own__this(context: "ExecutionContext", path: Optional[str] = None) -> None:
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="Make current user owner of a directory recursively",
+)
+def system__own__this(context: ExecutionContext, path: str | None = None) -> None:
     import pwd
 
     target = Path(path) if path else Path(os.getcwd())

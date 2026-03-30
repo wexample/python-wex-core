@@ -20,7 +20,6 @@ class CommandAddress:
     # ------------------------------------------------------------------
     # Factories
     # ------------------------------------------------------------------
-
     @classmethod
     def from_function(cls, function) -> CommandAddress:
         """Build from a command function or CommandMethodWrapper, e.g. ``default__ping__pong``."""
@@ -53,7 +52,6 @@ class CommandAddress:
     # ------------------------------------------------------------------
     # Conversions
     # ------------------------------------------------------------------
-
     def to_command_key(self) -> str:
         """Return the within-addon key, e.g. ``registry/build``."""
         from wexample_wex_core.const.globals import COMMAND_SEPARATOR_GROUP
@@ -64,7 +62,9 @@ class CommandAddress:
         """Return the Python function name, e.g. ``default__registry__build``."""
         from wexample_wex_core.const.globals import COMMAND_SEPARATOR_FUNCTION_PARTS
 
-        return COMMAND_SEPARATOR_FUNCTION_PARTS.join([self.addon, self.group, self.name])
+        return COMMAND_SEPARATOR_FUNCTION_PARTS.join(
+            [self.addon, self.group, self.name]
+        )
 
     def to_relative_path(self, extension: str = "py") -> Path:
         """Return the path relative to a ``commands/`` or ``tests/`` base dir."""

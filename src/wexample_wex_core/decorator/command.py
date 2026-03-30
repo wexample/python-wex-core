@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 def command(type: str, description: str | None = None):
     def decorator(function: AnyCallable) -> CommandMethodWrapper:
         from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+
         return CommandMethodWrapper(
             type=type, function=function, description=description
         )

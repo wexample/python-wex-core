@@ -11,9 +11,9 @@ from wexample_helpers.classes.abstract_method import abstract_method
 
 if TYPE_CHECKING:
     from wexample_app.common.command_request import CommandRequest
-    from wexample_wex_core.common.command_address import CommandAddress
     from wexample_helpers.const.types import Kwargs, StringsList, StructuredData
 
+    from wexample_wex_core.common.command_address import CommandAddress
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.const.registries import RegistryAddonData
     from wexample_wex_core.context.execution_context import ExecutionContext
@@ -21,74 +21,15 @@ if TYPE_CHECKING:
 
 
 class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
-    def supports(self, request: CommandRequest) -> object:
-        # Alias resolution takes priority — checked before direct pattern match.
-        registry = self.kernel.get_configuration_registry()
-        if registry.get_addon_commands():
-            canonical = self._resolve_alias(request.name)
-            if canonical:
-                request.name = canonical
-                return self.build_match(canonical)
+    @classmethod
+    def address_to_command(cls, address: CommandAddress) -> str:
+        """Convert a CommandAddress to its command string representation."""
+        from wexample_wex_core.const.globals import (
+            COMMAND_SEPARATOR_ADDON,
+            COMMAND_SEPARATOR_GROUP,
+        )
 
-        # Unqualified fallback (v5-style): "group/name" → search all addons.
-        # Runs regardless of whether the registry is loaded.
-        canonical = self._resolve_unqualified(request.name)
-        if canonical:
-            request.name = canonical
-            return self.build_match(canonical)
-
-        match = self.build_match(request.name)
-        # Reject a match where the addon prefix is absent — unqualified commands
-        # must be resolved via _resolve_unqualified, not left with a None addon.
-        if match and hasattr(match, "group") and not match.group(1):
-            return None
-        return match
-
-    def _resolve_alias(self, name: str) -> str | None:
-        for addon_data in self.kernel.get_configuration_registry().get_addon_commands().values():
-            for cmd_data in addon_data.values():
-                if name in cmd_data.get("alias", []):
-                    return cmd_data["command"]
-        return None
-
-    def _resolve_unqualified(self, name: str) -> str | None:
-        """If name has no addon prefix, search all loaded addons for a unique match.
-
-        ``app/started`` → ``app::app/started`` if unique across all addons.
-        Raises an error if multiple addons define the same group/name.
-        Scans addon workdirs directly so it works even before registry/build.
-        """
-        from wexample_wex_core.const.globals import COMMAND_SEPARATOR_ADDON
-
-        if COMMAND_SEPARATOR_ADDON in name or "/" not in name:
-            return None
-
-        parts = name.split("/")
-        if len(parts) != 2:
-            return None
-
-        group, cmd_name = parts
-        matches = []
-
-        for addon in self.kernel.get_addons().values():
-            commands_base = addon.workdir.get_path() / "commands"
-            for ext in ("py", "yml"):
-                if (commands_base / group / f"{cmd_name}.{ext}").exists():
-                    addon_name = addon.get_snake_short_class_name()
-                    matches.append(f"{addon_name}{COMMAND_SEPARATOR_ADDON}{name}")
-                    break
-
-        if len(matches) == 1:
-            return matches[0]
-
-        if len(matches) > 1:
-            from wexample_app.exception.app_runtime_exception import AppRuntimeException
-
-            raise AppRuntimeException(
-                f"Ambiguous command '{name}' found in multiple addons: {', '.join(matches)}. Use the full form addon::{name}."
-            )
-
-        return None
+        return f"{address.addon}{COMMAND_SEPARATOR_ADDON}{address.group}{COMMAND_SEPARATOR_GROUP}{address.name}"
 
     @classmethod
     def build_command_from_function(cls, command_wrapper: CommandMethodWrapper):
@@ -140,20 +81,6 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
             function_kwargs=function_kwargs,
         )
 
-    @classmethod
-    def address_to_command(cls, address: CommandAddress) -> str:
-        """Convert a CommandAddress to its command string representation."""
-        from wexample_wex_core.const.globals import (
-            COMMAND_SEPARATOR_ADDON,
-            COMMAND_SEPARATOR_GROUP,
-        )
-
-        return f"{address.addon}{COMMAND_SEPARATOR_ADDON}{address.group}{COMMAND_SEPARATOR_GROUP}{address.name}"
-
-    @abstract_method
-    def build_registry_data(self) -> StructuredData:
-        pass
-
     def build_new_command_target(
         self, command: str, extension: str
     ) -> tuple[Path, dict] | None:
@@ -163,6 +90,81 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         Return ``None`` if this resolver does not support command creation or the
         command string does not match this resolver's pattern.
         """
+        return None
+
+    @abstract_method
+    def build_registry_data(self) -> StructuredData:
+        pass
+
+    def supports(self, request: CommandRequest) -> object:
+        # Alias resolution takes priority — checked before direct pattern match.
+        registry = self.kernel.get_configuration_registry()
+        if registry.get_addon_commands():
+            canonical = self._resolve_alias(request.name)
+            if canonical:
+                request.name = canonical
+                return self.build_match(canonical)
+
+        # Unqualified fallback (v5-style): "group/name" → search all addons.
+        # Runs regardless of whether the registry is loaded.
+        canonical = self._resolve_unqualified(request.name)
+        if canonical:
+            request.name = canonical
+            return self.build_match(canonical)
+
+        match = self.build_match(request.name)
+        # Reject a match where the addon prefix is absent — unqualified commands
+        # must be resolved via _resolve_unqualified, not left with a None addon.
+        if match and hasattr(match, "group") and not match.group(1):
+            return None
+        return match
+
+    def _resolve_alias(self, name: str) -> str | None:
+        for addon_data in (
+            self.kernel.get_configuration_registry().get_addon_commands().values()
+        ):
+            for cmd_data in addon_data.values():
+                if name in cmd_data.get("alias", []):
+                    return cmd_data["command"]
+        return None
+
+    def _resolve_unqualified(self, name: str) -> str | None:
+        """If name has no addon prefix, search all loaded addons for a unique match.
+
+        ``app/started`` → ``app::app/started`` if unique across all addons.
+        Raises an error if multiple addons define the same group/name.
+        Scans addon workdirs directly so it works even before registry/build.
+        """
+        from wexample_wex_core.const.globals import COMMAND_SEPARATOR_ADDON
+
+        if COMMAND_SEPARATOR_ADDON in name or "/" not in name:
+            return None
+
+        parts = name.split("/")
+        if len(parts) != 2:
+            return None
+
+        group, cmd_name = parts
+        matches = []
+
+        for addon in self.kernel.get_addons().values():
+            commands_base = addon.workdir.get_path() / "commands"
+            for ext in ("py", "yml"):
+                if (commands_base / group / f"{cmd_name}.{ext}").exists():
+                    addon_name = addon.get_snake_short_class_name()
+                    matches.append(f"{addon_name}{COMMAND_SEPARATOR_ADDON}{name}")
+                    break
+
+        if len(matches) == 1:
+            return matches[0]
+
+        if len(matches) > 1:
+            from wexample_app.exception.app_runtime_exception import AppRuntimeException
+
+            raise AppRuntimeException(
+                f"Ambiguous command '{name}' found in multiple addons: {', '.join(matches)}. Use the full form addon::{name}."
+            )
+
         return None
 
     def _scan_commands_dir(

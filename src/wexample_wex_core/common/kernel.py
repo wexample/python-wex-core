@@ -63,9 +63,60 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=False,
         description="Maximum verbosity",
     )
-    _logger: logging.Logger = private_field(description="Python logger for operational/debug messages")
+    _logger: logging.Logger = private_field(
+        description="Python logger for operational/debug messages"
+    )
     _registry: KernelRegistry = private_field(description="The configuration registry")
-    _script_runner_registry: ScriptRunnerRegistry = private_field(description="Registry of YAML script runners")
+    _script_runner_registry: ScriptRunnerRegistry = private_field(
+        description="Registry of YAML script runners"
+    )
+
+    @property
+    def logger(self) -> logging.Logger:
+        return self._logger
+
+    @property
+    def script_runner_registry(self) -> ScriptRunnerRegistry:
+        return self._script_runner_registry
+
+    def create_output_handlers(
+        self, targets: list[str] | None = None
+    ) -> [AbstractAppOutputHandler]:
+        """Initialize output handlers based on targets, falling back to kernel default.
+
+        Args:
+            targets: Override targets for this call. Falls back to _config_arg_output_target.
+        """
+        available_handlers = self._get_available_output_handlers()
+        outputs = []
+
+        for target in targets or self._config_arg_output_target:
+            if target in available_handlers:
+                handler_class = available_handlers[target]
+                outputs.append(handler_class(kernel=self))
+
+        return outputs
+
+    def execute_kernel_command(self, request: CommandRequest) -> AbstractResponse:
+        pass
+
+        self._enforce_sudo_if_needed(request)
+        self._execute_attached(request, "before")
+        response = super().execute_kernel_command(request)
+        self._execute_attached(request, "after")
+        return response
+
+    def get_addons(self) -> dict[str, AbstractAddonManager]:
+        from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
+
+        return self.get_registry(REGISTRY_KERNEL_ADDON).get_all()
+
+    def get_configuration_registry(self) -> KernelRegistry:
+        return self._registry
+
+    def get_logo(self) -> str | None:
+        """Return the CLI logo string, or None if this kernel has no logo defined."""
+        return None
 
     def run_function(
         self,
@@ -74,7 +125,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         output_target: list[str] | None = None,
     ) -> AbstractResponse:
         from wexample_app.const.output import OUTPUT_TARGET_NONE
-        from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
+
+        from wexample_wex_core.resolver.abstract_command_resolver import (
+            AbstractCommandResolver,
+        )
 
         command_name = AbstractCommandResolver.build_command_from_function(wrapper)
         request = self._get_command_request_class()(
@@ -85,94 +139,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         )
         return self.execute_kernel_command(request)
 
-    def execute_kernel_command(self, request: CommandRequest) -> AbstractResponse:
-        import os
-
-        from wexample_app.response.abstract_response import AbstractResponse
-
-        self._enforce_sudo_if_needed(request)
-        self._execute_attached(request, "before")
-        response = super().execute_kernel_command(request)
-        self._execute_attached(request, "after")
-        return response
-
-    def _enforce_sudo_if_needed(self, request: CommandRequest) -> None:
-        import os
-        import sys
-
-        if os.geteuid() == 0:
-            return
-
-        registry = self.get_configuration_registry()
-        if not registry.get_addon_commands():
-            return
-
-        for addon_data in registry.get_addon_commands().values():
-            for cmd_data in addon_data.values():
-                if cmd_data.get("command") == request.name and cmd_data.get("sudo"):
-                    os.execvp("sudo", ["sudo", sys.executable] + sys.argv)
-                    return
-
-    def _execute_attached(self, request: CommandRequest, position: str) -> None:
-        from wexample_app.const.output import OUTPUT_TARGET_NONE
-
-        registry = self.get_configuration_registry()
-        if not registry.get_addon_commands():
-            return
-
-        target_command = request.name
-        for addon_data in registry.get_addon_commands().values():
-            for cmd_data in addon_data.values():
-                for attachment in cmd_data.get("attachments", {}).get(position, []):
-                    if attachment["command"] != target_command:
-                        continue
-
-                    attached_request = self._get_command_request_class()(
-                        kernel=self,
-                        name=cmd_data["command"],
-                        output_target=[OUTPUT_TARGET_NONE],
-                        arguments=request.arguments if attachment.get("pass_args") else {},
-                    )
-                    super().execute_kernel_command(attached_request)
-
     def set_output_target(self, targets: list[str]) -> None:
         self._config_arg_output_target = targets
-
-    def create_output_handlers(self, targets: list[str] | None = None) -> [AbstractAppOutputHandler]:
-        """Initialize output handlers based on targets, falling back to kernel default.
-
-        Args:
-            targets: Override targets for this call. Falls back to _config_arg_output_target.
-        """
-        available_handlers = self._get_available_output_handlers()
-        outputs = []
-
-        for target in (targets or self._config_arg_output_target):
-            if target in available_handlers:
-                handler_class = available_handlers[target]
-                outputs.append(handler_class(kernel=self))
-
-        return outputs
-
-    def get_logo(self) -> str | None:
-        """Return the CLI logo string, or None if this kernel has no logo defined."""
-        return None
-
-    def get_addons(self) -> dict[str, AbstractAddonManager]:
-        from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
-
-        return self.get_registry(REGISTRY_KERNEL_ADDON).get_all()
-
-    def get_configuration_registry(self) -> KernelRegistry:
-        return self._registry
-
-    @property
-    def script_runner_registry(self) -> ScriptRunnerRegistry:
-        return self._script_runner_registry
-
-    @property
-    def logger(self) -> logging.Logger:
-        return self._logger
 
     def setup(
         self, addons: list[type[AbstractAddonManager]] | None = None
@@ -214,6 +182,47 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             kernel=self, config=config or {}, io=io
         )
 
+    def _enforce_sudo_if_needed(self, request: CommandRequest) -> None:
+        import os
+        import sys
+
+        if os.geteuid() == 0:
+            return
+
+        registry = self.get_configuration_registry()
+        if not registry.get_addon_commands():
+            return
+
+        for addon_data in registry.get_addon_commands().values():
+            for cmd_data in addon_data.values():
+                if cmd_data.get("command") == request.name and cmd_data.get("sudo"):
+                    os.execvp("sudo", ["sudo", sys.executable] + sys.argv)
+                    return
+
+    def _execute_attached(self, request: CommandRequest, position: str) -> None:
+        from wexample_app.const.output import OUTPUT_TARGET_NONE
+
+        registry = self.get_configuration_registry()
+        if not registry.get_addon_commands():
+            return
+
+        target_command = request.name
+        for addon_data in registry.get_addon_commands().values():
+            for cmd_data in addon_data.values():
+                for attachment in cmd_data.get("attachments", {}).get(position, []):
+                    if attachment["command"] != target_command:
+                        continue
+
+                    attached_request = self._get_command_request_class()(
+                        kernel=self,
+                        name=cmd_data["command"],
+                        output_target=[OUTPUT_TARGET_NONE],
+                        arguments=(
+                            request.arguments if attachment.get("pass_args") else {}
+                        ),
+                    )
+                    super().execute_kernel_command(attached_request)
+
     def _get_available_output_handlers(self):
         """Get available output handlers for core kernel.
 
@@ -242,8 +251,12 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
     def _get_command_resolvers(self) -> list[type[AbstractCommandResolver]]:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
-        from wexample_wex_core.resolver.addon_command_resolver import AddonCommandResolver
-        from wexample_wex_core.resolver.service_command_resolver import ServiceCommandResolver
+        from wexample_wex_core.resolver.addon_command_resolver import (
+            AddonCommandResolver,
+        )
+        from wexample_wex_core.resolver.service_command_resolver import (
+            ServiceCommandResolver,
+        )
         from wexample_wex_core.resolver.user_command_resolver import UserCommandResolver
 
         resolvers: list[type[AbstractCommandResolver]] = [
@@ -254,7 +267,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
         for addon in self.get_addons().values():
-            resolvers.extend(cast(AbstractAddonManager, addon).get_command_resolver_classes())
+            resolvers.extend(
+                cast(AbstractAddonManager, addon).get_command_resolver_classes()
+            )
 
         return resolvers
 
@@ -341,23 +356,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         return KernelWorkdir
 
-    def _init_logging(self) -> None:
-        import sys
-
-        from wexample_wex_core.const.globals import CORE_COMMAND_NAME
-
-        level = logging.WARNING
-        logger = logging.getLogger(str(CORE_COMMAND_NAME))
-        logger.setLevel(level)
-
-        if not logger.handlers:
-            handler = logging.StreamHandler(sys.stderr)
-            handler.setLevel(level)
-            handler.setFormatter(logging.Formatter("%(name)s %(levelname)s: %(message)s"))
-            logger.addHandler(handler)
-
-        self._logger = logger
-
     def _init_addons(
         self, addons: list[type[AbstractAddonManager]] | None = None
     ) -> None:
@@ -387,8 +385,11 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         super()._init_command_line_kernel()
 
         # CLI defaults to stdout output (programmatic use defaults to none)
-        if not self._config_arg_output_target or self._config_arg_output_target == [OUTPUT_TARGET_NONE]:
+        if not self._config_arg_output_target or self._config_arg_output_target == [
+            OUTPUT_TARGET_NONE
+        ]:
             from wexample_app.const.output import OUTPUT_TARGET_STDOUT
+
             self._config_arg_output_target = [OUTPUT_TARGET_STDOUT]
 
         # We can then use config.
@@ -410,6 +411,25 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             int(self.io.terminal_width / 3),
         )
 
+    def _init_logging(self) -> None:
+        import sys
+
+        from wexample_wex_core.const.globals import CORE_COMMAND_NAME
+
+        level = logging.WARNING
+        logger = logging.getLogger(str(CORE_COMMAND_NAME))
+        logger.setLevel(level)
+
+        if not logger.handlers:
+            handler = logging.StreamHandler(sys.stderr)
+            handler.setLevel(level)
+            handler.setFormatter(
+                logging.Formatter("%(name)s %(levelname)s: %(message)s")
+            )
+            logger.addHandler(handler)
+
+        self._logger = logger
+
     def _init_middlewares(self) -> None:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
 
@@ -418,11 +438,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             classes.extend(cast(AbstractAddonManager, addon).get_middlewares_classes())
 
         self.register_items("middlewares", classes)
-
-    def _init_script_runner_registry(self) -> None:
-        from wexample_wex_core.yaml.script_runner_registry import ScriptRunnerRegistry
-
-        self._script_runner_registry = ScriptRunnerRegistry()
 
     def _init_registry(self) -> None:
         from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
@@ -442,3 +457,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             self._registry = kernel_registry_file.create_registry_from_content(
                 kernel=self
             )
+
+    def _init_script_runner_registry(self) -> None:
+        from wexample_wex_core.yaml.script_runner_registry import ScriptRunnerRegistry
+
+        self._script_runner_registry = ScriptRunnerRegistry()

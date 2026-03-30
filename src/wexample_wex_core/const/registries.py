@@ -11,13 +11,13 @@ class RegistryAttachment(TypedDict):
 
 
 class RegistryCommandData(TypedDict):
-    command: str
-    path: str
-    test: str | None
-    description: str | None
     alias: list[str]
     attachments: dict[str, list[RegistryAttachment]]
+    command: str
+    description: str | None
+    path: str
     sudo: bool
+    test: str | None
 
 
 RegistryAddonData = dict[str, RegistryCommandData]

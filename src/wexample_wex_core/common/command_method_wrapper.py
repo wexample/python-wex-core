@@ -19,10 +19,6 @@ class CommandMethodWrapper(BaseClass):
         factory=list,
         description="Alternative names to invoke this command",
     )
-    sudo: bool = public_field(
-        default=False,
-        description="If True, re-exec the entire process under sudo if not already root",
-    )
     attachments: dict[str, list[dict]] = public_field(
         factory=lambda: {"before": [], "after": []},
         description="Commands attached before/after this command executes",
@@ -45,6 +41,10 @@ class CommandMethodWrapper(BaseClass):
     options: list[Option] = public_field(
         factory=list,
         description="List of command options available for this method",
+    )
+    sudo: bool = public_field(
+        default=False,
+        description="If True, re-exec the entire process under sudo if not already root",
     )
     type: str | None = public_field(
         description="The command type",

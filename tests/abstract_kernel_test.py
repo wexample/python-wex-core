@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 from wexample_wex_core.addons.default.default_addon_manager import DefaultAddonManager
@@ -8,7 +10,7 @@ from wexample_wex_core.const.globals import CORE_COMMAND_NAME
 
 class AbstractKernelTest:
     @pytest.fixture
-    def kernel(self, tmp_path):
+    def kernel(self, tmp_path) -> Kernel:
         wex_dir = tmp_path / CORE_COMMAND_NAME
         wex_dir.mkdir()
         (tmp_path / ".env").write_text("APP_ENV=test\n")

@@ -11,8 +11,11 @@ if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
-@command(type=COMMAND_TYPE_ADDON, description="Return true if the current environment is a Docker container")
-def system__system__is_docker(context: "ExecutionContext") -> bool:
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="Return true if the current environment is a Docker container",
+)
+def system__system__is_docker(context: ExecutionContext) -> bool:
     # Standard Docker indicator
     if Path("/.dockerenv").exists():
         return True

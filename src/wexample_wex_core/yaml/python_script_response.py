@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
+from wexample_app.response.abstract_response import AbstractResponse
 from wexample_helpers.classes.field import public_field
 from wexample_helpers.decorator.base_class import base_class
 
-from wexample_app.response.abstract_response import AbstractResponse
-
 if TYPE_CHECKING:
     from wexample_app.const.types import ResponsePrintable
-    from wexample_wex_core.common.kernel import Kernel
 
 
 @base_class
@@ -31,14 +29,6 @@ class PythonScriptResponse(AbstractResponse):
         self._executed: bool = False
         self._error: Exception | None = None
 
-    def _run(self) -> None:
-        try:
-            exec(self.code, {}, dict(self.scope))  # noqa: S102
-        except Exception as exc:
-            self._error = exc
-        finally:
-            self._executed = True
-
     def get_formatted(self, output_format: str) -> str:
         if not self._executed:
             self._run()
@@ -48,3 +38,11 @@ class PythonScriptResponse(AbstractResponse):
 
     def get_printable(self) -> ResponsePrintable:
         return None
+
+    def _run(self) -> None:
+        try:
+            exec(self.code, {}, dict(self.scope))  # noqa: S102
+        except Exception as exc:
+            self._error = exc
+        finally:
+            self._executed = True

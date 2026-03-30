@@ -31,38 +31,9 @@ class YamlCommandDefinition:
             data = yaml.safe_load(f) or {}
         return cls(path=path, data=data)
 
-    # ------------------------------------------------------------------
-    # Parsing helpers
-    # ------------------------------------------------------------------
-
-    def _parse_options(self, options_data: list) -> list[Option]:
-        from wexample_app.command.option import Option
-
-        _type_map: dict[str, type] = {"str": str, "int": int, "float": float, "bool": bool}
-        options = []
-
-        for opt in options_data:
-            name = opt.get("name")
-            if not name:
-                continue
-
-            python_type = _type_map.get(opt.get("type", "str"), str)
-            options.append(
-                Option(
-                    name=name,
-                    type=python_type,
-                    required=opt.get("required", False),
-                    default=opt.get("default"),
-                    description=opt.get("help"),
-                    short_name=opt.get("short"),
-                    is_flag=opt.get("is_flag", False),
-                    multiple=opt.get("multiple", False),
-                )
-            )
-
-        return options
-
-    def _parse_decorators(self, decorators: list) -> tuple[list[str], bool, dict[str, list]]:
+    def _parse_decorators(
+        self, decorators: list
+    ) -> tuple[list[str], bool, dict[str, list]]:
         aliases: list[str] = []
         sudo = False
         attachments: dict[str, list] = {"before": [], "after": []}
@@ -85,3 +56,38 @@ class YamlCommandDefinition:
                 )
 
         return aliases, sudo, attachments
+
+    # ------------------------------------------------------------------
+    # Parsing helpers
+    # ------------------------------------------------------------------
+    def _parse_options(self, options_data: list) -> list[Option]:
+        from wexample_app.command.option import Option
+
+        _type_map: dict[str, type] = {
+            "str": str,
+            "int": int,
+            "float": float,
+            "bool": bool,
+        }
+        options = []
+
+        for opt in options_data:
+            name = opt.get("name")
+            if not name:
+                continue
+
+            python_type = _type_map.get(opt.get("type", "str"), str)
+            options.append(
+                Option(
+                    name=name,
+                    type=python_type,
+                    required=opt.get("required", False),
+                    default=opt.get("default"),
+                    description=opt.get("help"),
+                    short_name=opt.get("short"),
+                    is_flag=opt.get("is_flag", False),
+                    multiple=opt.get("multiple", False),
+                )
+            )
+
+        return options

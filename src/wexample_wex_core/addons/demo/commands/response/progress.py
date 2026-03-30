@@ -6,16 +6,24 @@ from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 from wexample_wex_core.decorator.command import command
 
 if TYPE_CHECKING:
+    from wexample_app.response.progress_collection_response import (
+        ProgressCollectionResponse,
+    )
+
     from wexample_wex_core.context.execution_context import ExecutionContext
-    from wexample_app.response.progress_collection_response import ProgressCollectionResponse
 
 
 @command(type=COMMAND_TYPE_ADDON)
 def demo__response__progress(context: ExecutionContext) -> ProgressCollectionResponse:
     import time
+
     from wexample_app.response.dict_response import DictResponse
-    from wexample_app.response.queued_collection_response import QueuedCollectionResponse
-    from wexample_app.response.progress_collection_response import ProgressCollectionResponse
+    from wexample_app.response.progress_collection_response import (
+        ProgressCollectionResponse,
+    )
+    from wexample_app.response.queued_collection_response import (
+        QueuedCollectionResponse,
+    )
 
     kernel = context.kernel
 
@@ -53,7 +61,13 @@ def demo__response__progress(context: ExecutionContext) -> ProgressCollectionRes
     return ProgressCollectionResponse(
         kernel=kernel,
         title="@color:cyan+bold{Running demo}",
-        step_labels=["Initializing", "Sub task", "Queued step", "Processing", "Cleanup"],
+        step_labels=[
+            "Initializing",
+            "Sub task",
+            "Queued step",
+            "Processing",
+            "Cleanup",
+        ],
         content=[
             step_init,
             sub_progress,

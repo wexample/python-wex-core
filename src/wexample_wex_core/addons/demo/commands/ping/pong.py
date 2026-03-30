@@ -9,6 +9,7 @@ from wexample_wex_core.decorator.option import option
 
 if TYPE_CHECKING:
     from wexample_app.response.abstract_response import AbstractResponse
+
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 PING_TYPE_BOOL = "bool"
@@ -25,12 +26,19 @@ PING_TYPE_TABLE = "table"
 
 
 @alias("ping")
-@option(name="type", type=str, required=True, description="Response type to return (bool, dict, function, int, list, null, queued, shell, str, table, collection)")
+@option(
+    name="type",
+    type=str,
+    required=True,
+    description="Response type to return (bool, dict, function, int, list, null, queued, shell, str, table, collection)",
+)
 @command(type=COMMAND_TYPE_ADDON)
 def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
     from wexample_app.response.dict_response import DictResponse
     from wexample_app.response.list_response import ListResponse
-    from wexample_app.response.response_collection_response import ResponseCollectionResponse
+    from wexample_app.response.response_collection_response import (
+        ResponseCollectionResponse,
+    )
     from wexample_app.response.table_response import TableResponse
 
     if type == PING_TYPE_LIST:
@@ -58,7 +66,9 @@ def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
 
         return FunctionResponse(
             kernel=context.kernel,
-            content=lambda: DictResponse(kernel=context.kernel, content={"status": "pong"}),
+            content=lambda: DictResponse(
+                kernel=context.kernel, content={"status": "pong"}
+            ),
         )
 
     if type == PING_TYPE_SHELL:
@@ -67,7 +77,9 @@ def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
         return ShellCommandResponse(kernel=context.kernel, content=["echo", "pong"])
 
     if type == PING_TYPE_QUEUED:
-        from wexample_app.response.queued_collection_response import QueuedCollectionResponse
+        from wexample_app.response.queued_collection_response import (
+            QueuedCollectionResponse,
+        )
 
         return QueuedCollectionResponse(
             kernel=context.kernel,

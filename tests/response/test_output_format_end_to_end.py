@@ -1,8 +1,8 @@
+from __future__ import annotations
+
 import json
 
-import pytest
 import yaml
-
 from wexample_app.const.output import (
     OUTPUT_FORMAT_JSON,
     OUTPUT_FORMAT_STR,
@@ -23,9 +23,26 @@ class TestOutputFormatEndToEnd(AbstractKernelTest):
     @attach hook logs mixing with structured output.
     """
 
+    def test_end_to_end_json_format(self, kernel, capsys) -> None:
+        out = self._run(kernel, capsys, OUTPUT_FORMAT_JSON)
+        parsed = json.loads(out)
+        assert parsed == {"status": "pong"}
+
+    def test_end_to_end_str_format(self, kernel, capsys) -> None:
+        out = self._run(kernel, capsys, OUTPUT_FORMAT_STR)
+        assert "status" in out
+        assert "pong" in out
+
+    def test_end_to_end_yaml_format(self, kernel, capsys) -> None:
+        out = self._run(kernel, capsys, OUTPUT_FORMAT_YAML)
+        parsed = yaml.safe_load(out)
+        assert parsed is not None
+        assert parsed.get("status") == "pong"
+
     def _run(self, kernel, capsys, output_format: str) -> str:
         from wexample_app.output.app_stdout_output_handler import AppStdoutOutputHandler
         from wexample_app.response.dict_response import DictResponse
+
         from wexample_wex_core.common.command_request import CommandRequest
 
         response = DictResponse(kernel=kernel, content={"status": "pong"})
@@ -39,19 +56,3 @@ class TestOutputFormatEndToEnd(AbstractKernelTest):
         handler = AppStdoutOutputHandler(kernel=kernel)
         handler.print(request=request, response=response)
         return capsys.readouterr().out
-
-    def test_end_to_end_str_format(self, kernel, capsys):
-        out = self._run(kernel, capsys, OUTPUT_FORMAT_STR)
-        assert "status" in out
-        assert "pong" in out
-
-    def test_end_to_end_json_format(self, kernel, capsys):
-        out = self._run(kernel, capsys, OUTPUT_FORMAT_JSON)
-        parsed = json.loads(out)
-        assert parsed == {"status": "pong"}
-
-    def test_end_to_end_yaml_format(self, kernel, capsys):
-        out = self._run(kernel, capsys, OUTPUT_FORMAT_YAML)
-        parsed = yaml.safe_load(out)
-        assert parsed is not None
-        assert parsed.get("status") == "pong"

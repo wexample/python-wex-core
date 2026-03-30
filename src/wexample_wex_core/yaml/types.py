@@ -6,25 +6,25 @@ from typing import TypedDict
 class BaseStepDict(TypedDict, total=False):
     """Keys valid on every script step regardless of runner."""
 
+    ignore_error: bool
     runner: str
     variable: str
-    ignore_error: bool
 
 
 class BashStepDict(BaseStepDict, total=False):
-    script: str
     file: str
+    script: str
     workdir: str
 
 
 class PythonStepDict(BaseStepDict, total=False):
-    script: str
     file: str
+    script: str
 
 
 class InternalCommandStepDict(TypedDict, total=False):
     """Step that calls another wex command internally."""
 
-    command: str
     args: dict
+    command: str
     variable: str

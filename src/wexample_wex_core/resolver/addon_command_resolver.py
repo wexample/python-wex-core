@@ -7,7 +7,6 @@ from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommand
 
 if TYPE_CHECKING:
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
-    from wexample_wex_core.common.command_address import CommandAddress
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.const.registries import RegistryResolverData
 
@@ -72,7 +71,12 @@ class AddonCommandResolver(AbstractCommandResolver):
             return None
 
         target = addon.workdir.get_path() / "commands" / group / f"{name}.{extension}"
-        return target, {"_type": "addon", "addon": addon_name, "group": group, "name": name}
+        return target, {
+            "_type": "addon",
+            "addon": addon_name,
+            "group": group,
+            "name": name,
+        }
 
     def build_registry_data(self) -> RegistryResolverData:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager

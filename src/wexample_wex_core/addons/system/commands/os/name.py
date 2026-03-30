@@ -16,7 +16,7 @@ OS_NAME_UNDEFINED: str = "undefined"
 
 
 @command(type=COMMAND_TYPE_ADDON, description="Return the local OS name")
-def system__os__name(context: "ExecutionContext") -> str:
+def system__os__name(context: ExecutionContext) -> str:
     os_name = platform.system()
 
     if os_name == "Darwin":
