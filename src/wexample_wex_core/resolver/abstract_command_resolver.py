@@ -30,13 +30,64 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                 request.name = canonical
                 return self.build_match(canonical)
 
-        return self.build_match(request.name)
+        # Unqualified fallback (v5-style): "group/name" → search all addons.
+        # Runs regardless of whether the registry is loaded.
+        canonical = self._resolve_unqualified(request.name)
+        if canonical:
+            request.name = canonical
+            return self.build_match(canonical)
+
+        match = self.build_match(request.name)
+        # Reject a match where the addon prefix is absent — unqualified commands
+        # must be resolved via _resolve_unqualified, not left with a None addon.
+        if match and hasattr(match, "group") and not match.group(1):
+            return None
+        return match
 
     def _resolve_alias(self, name: str) -> str | None:
         for addon_data in self.kernel.get_configuration_registry().get_addon_commands().values():
             for cmd_data in addon_data.values():
                 if name in cmd_data.get("alias", []):
                     return cmd_data["command"]
+        return None
+
+    def _resolve_unqualified(self, name: str) -> str | None:
+        """If name has no addon prefix, search all loaded addons for a unique match.
+
+        ``app/started`` → ``app::app/started`` if unique across all addons.
+        Raises an error if multiple addons define the same group/name.
+        Scans addon workdirs directly so it works even before registry/build.
+        """
+        from wexample_wex_core.const.globals import COMMAND_SEPARATOR_ADDON
+
+        if COMMAND_SEPARATOR_ADDON in name or "/" not in name:
+            return None
+
+        parts = name.split("/")
+        if len(parts) != 2:
+            return None
+
+        group, cmd_name = parts
+        matches = []
+
+        for addon in self.kernel.get_addons().values():
+            commands_base = addon.workdir.get_path() / "commands"
+            for ext in ("py", "yml"):
+                if (commands_base / group / f"{cmd_name}.{ext}").exists():
+                    addon_name = addon.get_snake_short_class_name()
+                    matches.append(f"{addon_name}{COMMAND_SEPARATOR_ADDON}{name}")
+                    break
+
+        if len(matches) == 1:
+            return matches[0]
+
+        if len(matches) > 1:
+            from wexample_app.exception.app_runtime_exception import AppRuntimeException
+
+            raise AppRuntimeException(
+                f"Ambiguous command '{name}' found in multiple addons: {', '.join(matches)}. Use the full form addon::{name}."
+            )
+
         return None
 
     @classmethod
