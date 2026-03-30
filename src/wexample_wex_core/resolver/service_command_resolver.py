@@ -6,12 +6,23 @@ from typing import TYPE_CHECKING
 from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 if TYPE_CHECKING:
-    from pathlib import Path
+    from wexample_wex_core.common.command_address import CommandAddress
+    from wexample_wex_core.common.command_request import CommandRequest
+    from wexample_wex_core.const.registries import RegistryResolverData
 
-    from wexample_app.common.command_request import CommandRequest
+_SERVICES_SUBDIR = "services"
+_COMMANDS_SUBDIR = "commands"
 
 
 class ServiceCommandResolver(AbstractCommandResolver):
+    """Resolves commands scoped to a named service: ``@service::group/command``."""
+
+    @classmethod
+    def address_to_command(cls, address: CommandAddress) -> str:
+        from wexample_wex_core.const.globals import COMMAND_CHAR_SERVICE
+
+        return f"{COMMAND_CHAR_SERVICE}{super().address_to_command(address)}"
+
     @classmethod
     def get_pattern(cls) -> str:
         from wexample_wex_core.const.globals import COMMAND_PATTERN_SERVICE
@@ -25,17 +36,74 @@ class ServiceCommandResolver(AbstractCommandResolver):
         return COMMAND_TYPE_SERVICE
 
     def build_command_function_name(self, request: CommandRequest) -> str | None:
-        import re
+        from wexample_helpers.helpers.string import string_to_snake_case
 
-        return re.sub(r"[^a-zA-Z0-9_]", "", request.name.replace("/", "__"))
+        from wexample_wex_core.common.command_address import CommandAddress
+
+        address = CommandAddress(
+            addon=string_to_snake_case(request.match.group(1)),
+            group=string_to_snake_case(request.match.group(2)),
+            name=string_to_snake_case(request.match.group(3)),
+        )
+        return address.to_function_name()
 
     def build_command_path(
         self, request: CommandRequest, extension: str
     ) -> Path | None:
-        base = self.kernel.workdir.get_path()
-        return base / "cli" / f"{request.name}.{extension}"
+        from wexample_helpers.helpers.string import string_to_snake_case
 
-    def build_registry_data(self, test: bool = False):
-        registry = {}
+        from wexample_wex_core.common.command_address import CommandAddress
+
+        service_name = string_to_snake_case(request.match.group(1))
+        service_dir = self._find_service_dir(service_name)
+        if not service_dir:
+            return None
+
+        address = CommandAddress(
+            addon=service_name,
+            group=string_to_snake_case(request.match.group(2)),
+            name=string_to_snake_case(request.match.group(3)),
+        )
+        return service_dir / _COMMANDS_SUBDIR / address.to_relative_path(extension)
+
+    def build_registry_data(self) -> RegistryResolverData:
+        from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+
+        registry: RegistryResolverData = {}
+
+        for addon in self.kernel.get_addons().values():
+            assert isinstance(addon, AbstractAddonManager)
+
+            services_base = addon.workdir.get_path() / _SERVICES_SUBDIR
+            if not services_base.is_dir():
+                continue
+
+            for service_dir in sorted(services_base.iterdir()):
+                if not service_dir.is_dir() or service_dir.name.startswith("_"):
+                    continue
+
+                service_name = service_dir.name
+                commands_base = service_dir / _COMMANDS_SUBDIR
+                addon_data = self._scan_commands_dir(commands_base, service_name)
+
+                if service_name not in registry:
+                    registry[service_name] = addon_data
+                else:
+                    registry[service_name].update(addon_data)
 
         return registry
+
+    def _find_service_dir(self, service_name: str) -> Path | None:
+        """Scan all addon directories for a matching service."""
+        from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+
+        for addon in self.kernel.get_addons().values():
+            assert isinstance(addon, AbstractAddonManager)
+            services_base = addon.workdir.get_path() / _SERVICES_SUBDIR
+            if not services_base.is_dir():
+                continue
+            service_dir = services_base / service_name
+            if service_dir.is_dir():
+                return service_dir
+
+        return None

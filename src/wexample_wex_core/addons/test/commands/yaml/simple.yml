@@ -1,3 +1,0 @@
-help: This is a simple yaml command
-scripts:
-  - echo "Inline bash script example"

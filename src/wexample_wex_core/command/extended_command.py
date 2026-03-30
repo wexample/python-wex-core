@@ -280,8 +280,15 @@ class ExtendedCommand(Command):
 
         return responses
 
-    def _parse_arguments(self, arguments: list[str]) -> ParsedArgs:
-        """Parse raw command line arguments into a dictionary of option name to value."""
+    def _parse_arguments(self, arguments: list[str] | dict) -> ParsedArgs:
+        """Parse raw command line arguments into a dictionary of option name to value.
+
+        Accepts either a CLI-style list (["--type", "dict"]) or a dict ({"type": "dict"})
+        which is used directly without conversion.
+        """
+        if isinstance(arguments, dict):
+            return arguments
+
         from wexample_app.helpers.argument import argument_parse_options
 
         return argument_parse_options(

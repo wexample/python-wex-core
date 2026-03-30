@@ -15,6 +15,14 @@ if TYPE_CHECKING:
 
 @base_class
 class CommandMethodWrapper(BaseClass):
+    aliases: list[str] = public_field(
+        factory=list,
+        description="Alternative names to invoke this command",
+    )
+    attachments: dict[str, list[dict]] = public_field(
+        factory=lambda: {"before": [], "after": []},
+        description="Commands attached before/after this command executes",
+    )
     description: str | None = public_field(
         default=None,
         description="Optional human-readable description of the command method",
@@ -33,6 +41,10 @@ class CommandMethodWrapper(BaseClass):
     options: list[Option] = public_field(
         factory=list,
         description="List of command options available for this method",
+    )
+    sudo: bool = public_field(
+        default=False,
+        description="If True, re-exec the entire process under sudo if not already root",
     )
     type: str | None = public_field(
         description="The command type",
@@ -60,11 +72,9 @@ class CommandMethodWrapper(BaseClass):
         return None
 
     def get_options_names(self) -> list[str]:
-        options = []
-        for option in self.options:
-            options.append(option.name)
+        from wexample_helpers.helpers.string import string_to_kebab_case
 
-        return options
+        return [string_to_kebab_case(option.name) for option in self.options]
 
     def register_middleware(
         self, name: str | type[AbstractMiddleware], middleware_kwargs: Kwargs
