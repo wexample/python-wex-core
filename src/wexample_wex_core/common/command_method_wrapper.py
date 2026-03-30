@@ -72,11 +72,9 @@ class CommandMethodWrapper(BaseClass):
         return None
 
     def get_options_names(self) -> list[str]:
-        options = []
-        for option in self.options:
-            options.append(option.name)
+        from wexample_helpers.helpers.string import string_to_kebab_case
 
-        return options
+        return [string_to_kebab_case(option.name) for option in self.options]
 
     def register_middleware(
         self, name: str | type[AbstractMiddleware], middleware_kwargs: Kwargs
