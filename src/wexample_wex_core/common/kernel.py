@@ -254,15 +254,11 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         from wexample_wex_core.resolver.addon_command_resolver import (
             AddonCommandResolver,
         )
-        from wexample_wex_core.resolver.service_command_resolver import (
-            ServiceCommandResolver,
-        )
         from wexample_wex_core.resolver.user_command_resolver import UserCommandResolver
 
         resolvers: list[type[AbstractCommandResolver]] = [
             # filestate: python-iterable-sort
             AddonCommandResolver,
-            ServiceCommandResolver,
             UserCommandResolver,
         ]
 
