@@ -103,7 +103,18 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._enforce_sudo_if_needed(request)
         self._execute_attached(request, "before")
         response = super().execute_kernel_command(request)
-        self._execute_attached(request, "after")
+
+        from wexample_app.response.queued_collection_response import (
+            QueuedCollectionResponse,
+        )
+
+        if isinstance(response, QueuedCollectionResponse):
+            # Append after-hooks as a final queue step so they run after all
+            # queued work completes, not after the response object is returned.
+            response.content.append(lambda: self._execute_attached(request, "after"))
+        else:
+            self._execute_attached(request, "after")
+
         return response
 
     def get_addons(self) -> dict[str, AbstractAddonManager]:
@@ -204,7 +215,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 attached_request = self._get_command_request_class()(
                     kernel=self,
                     name=cmd_data["command"],
-                    output_target=request.output_target,
+                    # Always use the kernel-level target so attached commands
+                    # are not silenced by an internal sub-request's OUTPUT_TARGET_NONE
+                    # (e.g. from run_function() or YAML internal command: steps).
+                    output_target=self._config_arg_output_target,
                     arguments=(
                         request.arguments if attachment.get("pass_args") else {}
                     ),
