@@ -109,11 +109,15 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         )
 
         if isinstance(response, QueuedCollectionResponse):
-            # Append after-hooks as a final queue step so they run after all
-            # queued work completes, not after the response object is returned.
+            # "after" runs as the last queue step — skipped if the queue stops early.
+            # "always_after" runs in finally_steps — guaranteed regardless of stops.
             response.content.append(lambda: self._execute_attached(request, "after"))
+            response.finally_steps.append(
+                lambda: self._execute_attached(request, "always_after")
+            )
         else:
             self._execute_attached(request, "after")
+            self._execute_attached(request, "always_after")
 
         return response
 
@@ -215,9 +219,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 attached_request = self._get_command_request_class()(
                     kernel=self,
                     name=cmd_data["command"],
-                    # Always use the kernel-level target so attached commands
-                    # are not silenced by an internal sub-request's OUTPUT_TARGET_NONE
-                    # (e.g. from run_function() or YAML internal command: steps).
+                    # Attached commands are independent user-facing events.
+                    # They always run at the kernel's configured output level (stdout
+                    # for CLI), never silenced by an intermediate sub-request that
+                    # uses OUTPUT_TARGET_NONE (e.g. run_function, YAML command: steps).
                     output_target=self._config_arg_output_target,
                     arguments=(
                         request.arguments if attachment.get("pass_args") else {}

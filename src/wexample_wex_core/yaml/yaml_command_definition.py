@@ -36,7 +36,7 @@ class YamlCommandDefinition:
     ) -> tuple[list[str], bool, dict[str, list]]:
         aliases: list[str] = []
         sudo = False
-        attachments: dict[str, list] = {"before": [], "after": []}
+        attachments: dict[str, list] = {"before": [], "after": [], "always_after": []}
 
         for dec in decorators:
             name = dec.get("name")
@@ -48,7 +48,7 @@ class YamlCommandDefinition:
                 aliases.append(args if isinstance(args, str) else str(args))
             elif name == "attach" and isinstance(args, dict):
                 position = args.get("position", "after")
-                attachments[position].append(
+                attachments.setdefault(position, []).append(
                     {
                         "command": args.get("command", ""),
                         "pass_args": args.get("pass_args", False),
