@@ -189,39 +189,34 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         if os.geteuid() == 0:
             return
 
-        registry = self.get_configuration_registry()
-        if not registry.get_addon_commands():
-            return
-
-        for addon_data in registry.get_addon_commands().values():
-            for cmd_data in addon_data.values():
-                if cmd_data.get("command") == request.name and cmd_data.get("sudo"):
-                    os.execvp("sudo", ["sudo", sys.executable] + sys.argv)
-                    return
+        for cmd_data in self._get_live_command_registry_entries():
+            if cmd_data.get("command") == request.name and cmd_data.get("sudo"):
+                os.execvp("sudo", ["sudo", sys.executable] + sys.argv)
+                return
 
     def _execute_attached(self, request: CommandRequest, position: str) -> None:
-        from wexample_app.const.output import OUTPUT_TARGET_NONE
-
-        registry = self.get_configuration_registry()
-        if not registry.get_addon_commands():
-            return
-
         target_command = request.name
-        for addon_data in registry.get_addon_commands().values():
-            for cmd_data in addon_data.values():
-                for attachment in cmd_data.get("attachments", {}).get(position, []):
-                    if attachment["command"] != target_command:
-                        continue
+        for cmd_data in self._get_live_command_registry_entries():
+            for attachment in cmd_data.get("attachments", {}).get(position, []):
+                if attachment["command"] != target_command:
+                    continue
 
-                    attached_request = self._get_command_request_class()(
-                        kernel=self,
-                        name=cmd_data["command"],
-                        output_target=[OUTPUT_TARGET_NONE],
-                        arguments=(
-                            request.arguments if attachment.get("pass_args") else {}
-                        ),
-                    )
-                    super().execute_kernel_command(attached_request)
+                attached_request = self._get_command_request_class()(
+                    kernel=self,
+                    name=cmd_data["command"],
+                    output_target=request.output_target,
+                    arguments=(
+                        request.arguments if attachment.get("pass_args") else {}
+                    ),
+                )
+                self.execute_kernel_command_and_print(attached_request)
+
+    def _get_live_command_registry_entries(self) -> list[dict]:
+        commands = []
+        for resolver in self.get_resolvers().values():
+            for resolver_data in resolver.build_registry_data().values():
+                commands.extend(resolver_data.values())
+        return commands
 
     def _get_available_output_handlers(self):
         """Get available output handlers for core kernel.
