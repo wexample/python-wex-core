@@ -16,7 +16,5 @@ if TYPE_CHECKING:
     description="Returns core version",
 )
 def default__version__get(context: ExecutionContext) -> str:
-    from pathlib import Path
-
-    version_file = Path(context.kernel.entrypoint_path).parent / "version.txt"
+    version_file = context.kernel.entrypoint_path.parent / "version.txt"
     return version_file.read_text().strip()
