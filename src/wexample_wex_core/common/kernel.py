@@ -103,7 +103,22 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._enforce_sudo_if_needed(request)
         self._execute_attached(request, "before")
         response = super().execute_kernel_command(request)
-        self._execute_attached(request, "after")
+
+        from wexample_app.response.queued_collection_response import (
+            QueuedCollectionResponse,
+        )
+
+        if isinstance(response, QueuedCollectionResponse):
+            # "after" runs as the last queue step — skipped if the queue stops early.
+            # "always_after" runs in finally_steps — guaranteed regardless of stops.
+            response.content.append(lambda: self._execute_attached(request, "after"))
+            response.finally_steps.append(
+                lambda: self._execute_attached(request, "always_after")
+            )
+        else:
+            self._execute_attached(request, "after")
+            self._execute_attached(request, "always_after")
+
         return response
 
     def get_addons(self) -> dict[str, AbstractAddonManager]:
@@ -189,39 +204,31 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         if os.geteuid() == 0:
             return
 
-        registry = self.get_configuration_registry()
-        if not registry.get_addon_commands():
-            return
-
-        for addon_data in registry.get_addon_commands().values():
-            for cmd_data in addon_data.values():
-                if cmd_data.get("command") == request.name and cmd_data.get("sudo"):
-                    os.execvp("sudo", ["sudo", sys.executable] + sys.argv)
-                    return
+        for cmd_data in self._get_live_command_registry_entries():
+            if cmd_data.get("command") == request.name and cmd_data.get("sudo"):
+                os.execvp("sudo", ["sudo", sys.executable] + sys.argv)
+                return
 
     def _execute_attached(self, request: CommandRequest, position: str) -> None:
-        from wexample_app.const.output import OUTPUT_TARGET_NONE
-
-        registry = self.get_configuration_registry()
-        if not registry.get_addon_commands():
-            return
-
         target_command = request.name
-        for addon_data in registry.get_addon_commands().values():
-            for cmd_data in addon_data.values():
-                for attachment in cmd_data.get("attachments", {}).get(position, []):
-                    if attachment["command"] != target_command:
-                        continue
+        for cmd_data in self._get_live_command_registry_entries():
+            for attachment in cmd_data.get("attachments", {}).get(position, []):
+                if attachment["command"] != target_command:
+                    continue
 
-                    attached_request = self._get_command_request_class()(
-                        kernel=self,
-                        name=cmd_data["command"],
-                        output_target=[OUTPUT_TARGET_NONE],
-                        arguments=(
-                            request.arguments if attachment.get("pass_args") else {}
-                        ),
-                    )
-                    super().execute_kernel_command(attached_request)
+                attached_request = self._get_command_request_class()(
+                    kernel=self,
+                    name=cmd_data["command"],
+                    # Attached commands are independent user-facing events.
+                    # They always run at the kernel's configured output level (stdout
+                    # for CLI), never silenced by an intermediate sub-request that
+                    # uses OUTPUT_TARGET_NONE (e.g. run_function, YAML command: steps).
+                    output_target=self._config_arg_output_target,
+                    arguments=(
+                        request.arguments if attachment.get("pass_args") else {}
+                    ),
+                )
+                self.execute_kernel_command_and_print(attached_request)
 
     def _get_available_output_handlers(self):
         """Get available output handlers for core kernel.
@@ -254,15 +261,11 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         from wexample_wex_core.resolver.addon_command_resolver import (
             AddonCommandResolver,
         )
-        from wexample_wex_core.resolver.service_command_resolver import (
-            ServiceCommandResolver,
-        )
         from wexample_wex_core.resolver.user_command_resolver import UserCommandResolver
 
         resolvers: list[type[AbstractCommandResolver]] = [
             # filestate: python-iterable-sort
             AddonCommandResolver,
-            ServiceCommandResolver,
             UserCommandResolver,
         ]
 
@@ -350,6 +353,13 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 description="Force a specific request ID (used by external processes)",
             ),
         ]
+
+    def _get_live_command_registry_entries(self) -> list[dict]:
+        commands = []
+        for resolver in self.get_resolvers().values():
+            for resolver_data in resolver.build_registry_data().values():
+                commands.extend(resolver_data.values())
+        return commands
 
     def _get_workdir_state_manager_class(self) -> type[KernelWorkdir]:
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir

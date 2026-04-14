@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 
 ATTACH_POSITION_BEFORE = "before"
 ATTACH_POSITION_AFTER = "after"
+ATTACH_POSITION_ALWAYS_AFTER = "always_after"
 
 
 def attach(
@@ -17,7 +18,12 @@ def attach(
     """Attach this command to run before or after another command.
 
     Args:
-        position: "before" or "after"
+        position: "before", "after", or "always_after".
+                  - "before": runs before the target command.
+                  - "after": runs after the target command completes normally.
+                    Skipped if the command queue stops early.
+                  - "always_after": runs after the target command regardless of
+                    whether the queue stopped early (like a finally block).
         command: Target command — either a string ("demo::ping/pong") or the
                  CommandMethodWrapper itself (the decorated function object).
         pass_args: If True, forward the target command's arguments to this one
@@ -36,7 +42,7 @@ def attach(
         else:
             command_name = command
 
-        wrapper.attachments[position].append(
+        wrapper.attachments.setdefault(position, []).append(
             {
                 "command": command_name,
                 "pass_args": pass_args,

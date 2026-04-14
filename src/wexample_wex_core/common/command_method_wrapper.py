@@ -20,7 +20,7 @@ class CommandMethodWrapper(BaseClass):
         description="Alternative names to invoke this command",
     )
     attachments: dict[str, list[dict]] = public_field(
-        factory=lambda: {"before": [], "after": []},
+        factory=lambda: {"before": [], "after": [], "always_after": []},
         description="Commands attached before/after this command executes",
     )
     description: str | None = public_field(
