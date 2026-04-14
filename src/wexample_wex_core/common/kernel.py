@@ -230,13 +230,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 )
                 self.execute_kernel_command_and_print(attached_request)
 
-    def _get_live_command_registry_entries(self) -> list[dict]:
-        commands = []
-        for resolver in self.get_resolvers().values():
-            for resolver_data in resolver.build_registry_data().values():
-                commands.extend(resolver_data.values())
-        return commands
-
     def _get_available_output_handlers(self):
         """Get available output handlers for core kernel.
 
@@ -360,6 +353,13 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 description="Force a specific request ID (used by external processes)",
             ),
         ]
+
+    def _get_live_command_registry_entries(self) -> list[dict]:
+        commands = []
+        for resolver in self.get_resolvers().values():
+            for resolver_data in resolver.build_registry_data().values():
+                commands.extend(resolver_data.values())
+        return commands
 
     def _get_workdir_state_manager_class(self) -> type[KernelWorkdir]:
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir

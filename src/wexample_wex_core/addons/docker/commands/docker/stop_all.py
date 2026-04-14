@@ -10,19 +10,8 @@ from wexample_wex_core.decorator.command import command
 
 if TYPE_CHECKING:
     from wexample_app.response.dict_response import DictResponse
+
     from wexample_wex_core.context.execution_context import ExecutionContext
-
-
-def _list_ids(command: list[str]) -> list[str]:
-    result = shell_run(command, check=False)
-    return [line.strip() for line in (result.stdout or "").splitlines() if line.strip()]
-
-
-def _run_many(base_command: list[str], items: list[str]) -> None:
-    if not items:
-        return
-
-    shell_run([*base_command, *items], check=False)
 
 
 @command(
@@ -81,3 +70,15 @@ def docker__docker__stop_all(context: ExecutionContext) -> DictResponse:
             "volumes_removed": len(volume_ids),
         },
     )
+
+
+def _list_ids(command: list[str]) -> list[str]:
+    result = shell_run(command, check=False)
+    return [line.strip() for line in (result.stdout or "").splitlines() if line.strip()]
+
+
+def _run_many(base_command: list[str], items: list[str]) -> None:
+    if not items:
+        return
+
+    shell_run([*base_command, *items], check=False)
