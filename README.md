@@ -1,6 +1,6 @@
 # wex_core
 
-Version: 7.1.0
+Version: 7.2.0
 
 Wex core
 
