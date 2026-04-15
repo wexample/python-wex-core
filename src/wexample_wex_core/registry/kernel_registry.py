@@ -20,6 +20,10 @@ if TYPE_CHECKING:
 
 @base_class
 class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
+    _all_commands_cache: dict | None = private_field(
+        default=None,
+        description="Cached flat dict of all commands, invalidated when _resolvers changes",
+    )
     _env: str = private_field(description="The environment name")
     _resolvers: RegistryResolverData = private_field(
         factory=dict,
@@ -54,12 +58,14 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
 
     def get_all_commands(self) -> dict[str, RegistryCommandData]:
         """Flat dict of all commands across all resolvers, keyed by command name."""
-        return {
-            cmd["command"]: cmd
-            for resolver in self._resolvers.values()
-            for addon in resolver.values()
-            for cmd in addon.values()
-        }
+        if self._all_commands_cache is None:
+            self._all_commands_cache = {
+                cmd["command"]: cmd
+                for resolver in self._resolvers.values()
+                for addon in resolver.values()
+                for cmd in addon.values()
+            }
+        return self._all_commands_cache
 
     def get_sudo_commands(self) -> dict[str, RegistryCommandData]:
         """All commands that require sudo."""
@@ -72,6 +78,7 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
     def hydrate(self, data: StructuredData) -> None:
         self._env = data.get("env", self._env)
         self._resolvers = data.get("resolvers", {})
+        self._all_commands_cache = None
 
     def serialize(self) -> StructuredData:
         from wexample_app.resolver.abstract_command_resolver import (
@@ -87,6 +94,7 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
             )
 
         self._resolvers = resolvers
+        self._all_commands_cache = None
 
         return {"env": self._env, "resolvers": resolvers}
 
