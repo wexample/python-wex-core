@@ -16,10 +16,7 @@ def default__webhook__token_show(
     context: ExecutionContext,
     command_name: str,
 ) -> None:
-    from wexample_wex_core.webhook.token_store import token_store_ensure
-
-    workdir_path = str(context.kernel.workdir.get_path())
-    token = token_store_ensure(workdir_path, command_name)
+    token = context.kernel.workdir.ensure_local_token("webhook_tokens", command_name)
 
     context.io.log(f"Webhook token for  {command_name}")
     context.io.log(token)

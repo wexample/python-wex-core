@@ -16,10 +16,7 @@ def default__webhook__token_rotate(
     context: ExecutionContext,
     command_name: str,
 ) -> None:
-    from wexample_wex_core.webhook.token_store import token_store_generate
-
-    workdir_path = str(context.kernel.workdir.get_path())
-    token = token_store_generate(workdir_path, command_name)
+    token = context.kernel.workdir.rotate_local_token("webhook_tokens", command_name)
 
     context.io.log(f"New webhook token for  {command_name}")
     context.io.log(token)

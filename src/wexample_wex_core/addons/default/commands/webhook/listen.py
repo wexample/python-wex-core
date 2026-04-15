@@ -86,7 +86,7 @@ def default__webhook__listen(
         start_time = time.monotonic()
 
     _Handler.log_path = log_path
-    _Handler.token_store_path = str(Path(context.kernel.workdir.get_path()))
+    _Handler.token_verifier = lambda command: context.kernel.workdir.get_local_data_value("webhook_tokens", command)
 
     context.io.log(f"Starting webhook daemon on port {port}  |  log: {log_path}")
 
