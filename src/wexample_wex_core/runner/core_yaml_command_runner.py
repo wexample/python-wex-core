@@ -147,6 +147,10 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         if name:
             kernel.io.log(name)
 
+        if step.get("app_should_run") and not self._check_app_started(kernel):
+            kernel.io.log("Step skipped: app is not running.")
+            return None, None
+
         if "command" in step:
             return self._execute_internal_command(step, variables, kernel), capture_var
 
@@ -162,6 +166,23 @@ class CoreYamlCommandRunner(YamlCommandRunner):
             return runner.run(step, variables, kernel), capture_var
 
         return None, None
+
+    @staticmethod
+    def _check_app_started(kernel: Kernel) -> bool:
+        try:
+            from wexample_app.const.output import OUTPUT_TARGET_NONE
+            from wexample_wex_core.common.command_request import CommandRequest
+
+            sub_request = CommandRequest(
+                kernel=kernel,
+                name="app::app/started",
+                arguments={},
+                output_target=[OUTPUT_TARGET_NONE],
+            )
+            result = kernel.execute_kernel_command(sub_request)
+            return bool(result.content) if result is not None else False
+        except Exception:
+            return False
 
     def _make_executor(self, definition: YamlCommandDefinition):
         """Return a callable that executes the YAML scripts."""
