@@ -355,11 +355,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         ]
 
     def _get_live_command_registry_entries(self) -> list[dict]:
-        commands = []
-        for resolver in self.get_resolvers().values():
-            for resolver_data in resolver.build_registry_data().values():
-                commands.extend(resolver_data.values())
-        return commands
+        return list(self._registry.get_all_commands().values())
 
     def _get_workdir_state_manager_class(self) -> type[KernelWorkdir]:
         from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
