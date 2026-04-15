@@ -30,15 +30,15 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
     """HTTP request handler for incoming webhook calls.
 
     Subclasses must set class-level attributes before instantiation:
-        wex_executable   : list[str]  — [python_path, main_py_path]
-        log_path         : str        — absolute path to the rotating log file
-        token_store_path : str        — workdir path used to find webhook_tokens.yml
-        start_time       : float      — time.monotonic() at server startup
+        wex_executable  : list[str]              — [python_path, main_py_path]
+        log_path        : str                    — absolute path to the rotating log file
+        token_verifier  : Callable[[str], str|None] — given a command, returns its expected token
+        start_time      : float                  — time.monotonic() at server startup
     """
 
     wex_executable: list[str] = []
     log_path: str = ""
-    token_store_path: str = ""
+    token_verifier: object = None  # Callable[[str], str | None]
     start_time: float = 0.0
 
     # ------------------------------------------------------------------ logging
@@ -114,9 +114,7 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
         """
         import hmac
 
-        from wexample_wex_core.webhook.token_store import token_store_get
-
-        expected = token_store_get(self.token_store_path, command)
+        expected = self.token_verifier(command) if callable(self.token_verifier) else None
         if not expected:
             return False  # command has no registered token → deny
 

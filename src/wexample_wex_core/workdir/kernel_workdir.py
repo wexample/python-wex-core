@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
+from wexample_app.workdir.mixin.with_local_data_mixin import WithLocalDataMixin
 from wexample_helpers.decorator.base_class import base_class
 
 from wexample_wex_core.workdir.workdir import Workdir
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 
 
 @base_class
-class KernelWorkdir(AbstractKernelChild, Workdir):
+class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
     # Class-scoped constant for the tmp shortcut
     SHORTCUT_REGISTRY: ClassVar[str] = "registry"
 
