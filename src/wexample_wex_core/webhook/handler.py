@@ -30,13 +30,15 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
     """HTTP request handler for incoming webhook calls.
 
     Subclasses must set class-level attributes before instantiation:
-        wex_executable : list[str]  — [python_path, main_py_path]
-        log_path       : str        — absolute path to the rotating log file
-        start_time     : float      — time.monotonic() at server startup
+        wex_executable   : list[str]  — [python_path, main_py_path]
+        log_path         : str        — absolute path to the rotating log file
+        token_store_path : str        — workdir path used to find webhook_tokens.yml
+        start_time       : float      — time.monotonic() at server startup
     """
 
     wex_executable: list[str] = []
     log_path: str = ""
+    token_store_path: str = ""
     start_time: float = 0.0
 
     # ------------------------------------------------------------------ logging
@@ -76,11 +78,62 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
             entry["error"] = error
         self._get_logger().info(json.dumps(entry))
 
+    def _log_auth_failure(self, command_type: str, command_path: str) -> None:
+        entry: dict = {
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "ip": self.client_address[0],
+            "path": self.path,
+            "command_type": command_type,
+            "command_path": command_path,
+            "status": "unauthorized",
+        }
+        self._get_logger().warning(json.dumps(entry))
+
+    # ------------------------------------------------------------------ auth
+
+    def _extract_token(self) -> str | None:
+        """Extract bearer token from Authorization header or ?_token query param."""
+        from urllib.parse import parse_qs
+
+        auth = self.headers.get("Authorization", "")
+        if auth.startswith("Bearer "):
+            return auth[7:].strip() or None
+
+        query = parse_qs(urlparse(self.path).query)
+        tokens = query.get("_token", [])
+        return tokens[0] if tokens else None
+
+    def _validate_token(self, command: str) -> bool:
+        """Return True if the request carries a valid token for *command*.
+
+        Security posture:
+        - No token registered for the command → deny (401)
+        - Token registered but not provided   → deny (401)
+        - Token provided but wrong            → deny (401)
+        - Token provided and correct          → allow
+        """
+        import hmac
+
+        from wexample_wex_core.webhook.token_store import token_store_get
+
+        expected = token_store_get(self.token_store_path, command)
+        if not expected:
+            return False  # command has no registered token → deny
+
+        provided = self._extract_token()
+        if not provided:
+            return False
+
+        return hmac.compare_digest(expected, provided)
+
     # ------------------------------------------------------------------ GET
 
     def do_GET(self) -> None:
+        import re
+
         from wexample_wex_core.webhook.const import WEBHOOK_ROUTES
         from wexample_wex_core.webhook.routing import (
+            routing_build_command,
             routing_get_route_name,
             routing_is_allowed_route,
         )
@@ -97,7 +150,7 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
             route_name = routing_get_route_name(self.path)
             assert route_name is not None
 
-            # ---- /health ------------------------------------------------
+            # ---- /health (no auth required) ---------------------------------
             if route_name == "health":
                 self.send_response(200)
                 self._send_json({
@@ -106,17 +159,25 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 })
                 return
 
-            # ---- /webhook/{type}/{path} ----------------------------------
+            # ---- /webhook/{type}/{path} ------------------------------------
             route = WEBHOOK_ROUTES[route_name]
-            import re
-
             parsed = urlparse(self.path)
             match = re.match(route["pattern"], parsed.path)
             assert match is not None
 
             command_type = match.group(1)
             command_path = match.group(2)
+            command_str = routing_build_command(command_type, command_path)
 
+            # ---- token validation ------------------------------------------
+            if not self._validate_token(command_str or ""):
+                duration_ms = int((time.monotonic() - t0) * 1000)
+                self._log_auth_failure(command_type, command_path)
+                self.send_response(401)
+                self._send_json({"status": WEBHOOK_STATUS_ERROR, "error": "UNAUTHORIZED"})
+                return
+
+            # ---- dispatch --------------------------------------------------
             cmd = self.wex_executable + [
                 "default::webhook/exec",
                 "--webhook-path",

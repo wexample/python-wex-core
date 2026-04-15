@@ -3,6 +3,7 @@ from __future__ import annotations
 import subprocess
 import sys
 import time
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
@@ -85,6 +86,7 @@ def default__webhook__listen(
         start_time = time.monotonic()
 
     _Handler.log_path = log_path
+    _Handler.token_store_path = str(Path(context.kernel.workdir.get_path()))
 
     context.io.log(f"Starting webhook daemon on port {port}  |  log: {log_path}")
 
