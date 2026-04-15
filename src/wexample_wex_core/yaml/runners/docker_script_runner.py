@@ -9,37 +9,85 @@ if TYPE_CHECKING:
 
 
 class DockerScriptRunner(AbstractScriptRunner):
+    """Execute a script step inside a Docker container.
+
+    Two ways to target a container:
+
+    ``service: main``
+        Short service name — expanded to the full container name using the
+        current app workdir (e.g. ``wex_apt_repo_local_main``).
+        Falls back to the literal value if no app context is found.
+
+    ``container: wex_apt_repo_local_main``
+        Explicit full container name — used verbatim, no expansion.
+    """
+
     @classmethod
     def get_runner_name(cls) -> str:
         return "docker"
 
     @classmethod
     def get_step_options(cls) -> list[str]:
-        return super().get_step_options() + ["container", "script", "file", "workdir"]
+        return super().get_step_options() + ["service", "container", "script", "file", "workdir"]
 
     def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
         from wexample_app.response.interactive_shell_command_response import (
             InteractiveShellCommandResponse,
         )
 
-        container: str = step["container"]
+        service: str | None = step.get("service")
+        container: str | None = step.get("container")
+
+        if not service and not container:
+            raise ValueError(
+                "Docker runner requires either 'service' (short name) or 'container' (full name)."
+            )
+
+        if service:
+            container = self._resolve_service_name(service, kernel)
+        # container is guaranteed non-None past this point
+
         ignore_error: bool = step.get("ignore_error", False)
         workdir: str | None = step.get("workdir")
         script = step.get("script")
         file = step.get("file")
 
         if script:
-            cmd = ["docker", "exec", container, "bash", "-c", script]
+            inner = ["bash", "-c", script]
         elif file:
-            cmd = ["docker", "exec", container, "bash", file]
+            inner = ["bash", file]
         else:
             return None
 
+        exec_cmd = ["docker", "exec"]
         if workdir:
-            cmd = ["docker", "exec", "--workdir", workdir, container] + cmd[3:]
+            exec_cmd += ["--workdir", workdir]
+        exec_cmd.append(container)
+        cmd = exec_cmd + inner
 
         return InteractiveShellCommandResponse(
             kernel=kernel,
             content=cmd,
             ignore_error=ignore_error,
         )
+
+    @staticmethod
+    def _resolve_service_name(service: str, kernel: Kernel) -> str:
+        """Expand a short service name to the full Docker container name.
+
+        Uses AppAddonManager.create_app_workdir() if available (soft dependency
+        on wex-addon-app). Falls back to the literal value when no app context
+        can be found.
+        """
+        try:
+            from wexample_wex_addon_app.app_addon_manager import AppAddonManager
+
+            for addon in kernel.get_addons().values():
+                if isinstance(addon, AppAddonManager):
+                    workdir = addon.create_app_workdir()
+                    if workdir:
+                        return workdir.docker_build_long_container_name(service)
+        except ImportError:
+            pass
+
+        return service
