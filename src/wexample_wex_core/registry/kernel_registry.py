@@ -20,14 +20,14 @@ if TYPE_CHECKING:
 
 @base_class
 class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
+    _all_commands_cache: dict | None = private_field(
+        default=None,
+        description="Cached flat dict of all commands, invalidated when _resolvers changes",
+    )
     _env: str = private_field(description="The environment name")
     _resolvers: RegistryResolverData = private_field(
         factory=dict,
         description="Resolver data loaded from file or built from filesystem scan",
-    )
-    _all_commands_cache: dict | None = private_field(
-        default=None,
-        description="Cached flat dict of all commands, invalidated when _resolvers changes",
     )
 
     def __attrs_post_init__(self) -> None:
