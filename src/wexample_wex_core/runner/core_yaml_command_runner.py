@@ -85,11 +85,15 @@ class CoreYamlCommandRunner(YamlCommandRunner):
     # Validation
     # ------------------------------------------------------------------
     @staticmethod
-    def _validate_step_keys(step: dict, runner) -> None:
+    def _validate_step_keys(step: dict, runner, kernel: Kernel) -> None:
         """Raise if the step contains keys not declared by the runner."""
         # Structural keys always valid — not runner-specific
         structural = {"runner", "variable"}
-        valid = structural | set(runner.get_step_options())
+        valid = (
+            structural
+            | set(runner.get_step_options())
+            | set(kernel.step_guard_registry.get_all_step_options())
+        )
         unknown = set(step.keys()) - valid
 
         if unknown:
@@ -147,8 +151,8 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         if name:
             kernel.io.log(name)
 
-        if step.get("app_should_run") and not self._check_app_started(kernel):
-            kernel.io.log("Step skipped: app is not running.")
+        if kernel.step_guard_registry.should_skip_step(step, kernel):
+            kernel.io.log("Step skipped by guard.")
             return None, None
 
         if "command" in step:
@@ -162,27 +166,10 @@ class CoreYamlCommandRunner(YamlCommandRunner):
                     f"Unknown YAML script runner: '{runner_name}'. "
                     f"Available: {list(kernel.script_runner_registry.all().keys())}"
                 )
-            self._validate_step_keys(step, runner)
+            self._validate_step_keys(step, runner, kernel)
             return runner.run(step, variables, kernel), capture_var
 
         return None, None
-
-    @staticmethod
-    def _check_app_started(kernel: Kernel) -> bool:
-        try:
-            from wexample_app.const.output import OUTPUT_TARGET_NONE
-            from wexample_wex_core.common.command_request import CommandRequest
-
-            sub_request = CommandRequest(
-                kernel=kernel,
-                name="app::app/started",
-                arguments={},
-                output_target=[OUTPUT_TARGET_NONE],
-            )
-            result = kernel.execute_kernel_command(sub_request)
-            return bool(result.content) if result is not None else False
-        except Exception:
-            return False
 
     def _make_executor(self, definition: YamlCommandDefinition):
         """Return a callable that executes the YAML scripts."""
