@@ -139,6 +139,10 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         """Return (response, capture_variable_name)."""
         capture_var: str | None = step.get("variable")
 
+        name: str | None = step.get("name")
+        if name:
+            kernel.io.log(name)
+
         if "command" in step:
             return self._execute_internal_command(step, variables, kernel), capture_var
 
