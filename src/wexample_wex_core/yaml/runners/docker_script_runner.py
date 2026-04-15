@@ -28,7 +28,13 @@ class DockerScriptRunner(AbstractScriptRunner):
 
     @classmethod
     def get_step_options(cls) -> list[str]:
-        return super().get_step_options() + ["service", "container", "script", "file", "workdir"]
+        return super().get_step_options() + [
+            "service",
+            "container",
+            "script",
+            "file",
+            "workdir",
+        ]
 
     def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
         from wexample_app.response.interactive_shell_command_response import (
@@ -75,19 +81,13 @@ class DockerScriptRunner(AbstractScriptRunner):
     def _resolve_service_name(service: str, kernel: Kernel) -> str:
         """Expand a short service name to the full Docker container name.
 
-        Uses AppAddonManager.create_app_workdir() if available (soft dependency
-        on wex-addon-app). Falls back to the literal value when no app context
-        can be found.
+        Queries all registered addons via get_docker_service_name().
+        The first addon that returns a non-None value "wins".
+        Falls back to the literal service name if no addon can resolve it.
         """
-        try:
-            from wexample_wex_addon_app.app_addon_manager import AppAddonManager
-
-            for addon in kernel.get_addons().values():
-                if isinstance(addon, AppAddonManager):
-                    workdir = addon.create_app_workdir()
-                    if workdir:
-                        return workdir.docker_build_long_container_name(service)
-        except ImportError:
-            pass
+        for addon in kernel.get_addons().values():
+            result = addon.get_service_docker_container_name(service)
+            if result is not None:
+                return result
 
         return service
