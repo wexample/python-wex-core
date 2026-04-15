@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
     from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
     from wexample_wex_core.yaml.script_runner_registry import ScriptRunnerRegistry
+    from wexample_wex_core.yaml.step_guard_registry import StepGuardRegistry
 
 
 @base_class
@@ -70,6 +71,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _script_runner_registry: ScriptRunnerRegistry = private_field(
         description="Registry of YAML script runners"
     )
+    _step_guard_registry: StepGuardRegistry = private_field(
+        description="Registry of YAML step guards contributed by addons"
+    )
 
     @property
     def logger(self) -> logging.Logger:
@@ -78,6 +82,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     @property
     def script_runner_registry(self) -> ScriptRunnerRegistry:
         return self._script_runner_registry
+
+    @property
+    def step_guard_registry(self) -> StepGuardRegistry:
+        return self._step_guard_registry
 
     def create_output_handlers(
         self, targets: list[str] | None = None
@@ -170,6 +178,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_middlewares()
         self._init_registry()
         self._init_script_runner_registry()
+        self._init_step_guard_registry()
 
         return response
 
@@ -468,3 +477,13 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         from wexample_wex_core.yaml.script_runner_registry import ScriptRunnerRegistry
 
         self._script_runner_registry = ScriptRunnerRegistry()
+
+    def _init_step_guard_registry(self) -> None:
+        from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+        from wexample_wex_core.yaml.step_guard_registry import StepGuardRegistry
+
+        registry = StepGuardRegistry()
+        for addon in self.get_addons().values():
+            for guard_class in cast(AbstractAddonManager, addon).get_step_guard_classes():
+                registry.register(guard_class())
+        self._step_guard_registry = registry

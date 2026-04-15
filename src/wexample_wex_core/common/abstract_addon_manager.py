@@ -57,3 +57,6 @@ class AbstractAddonManager(
 
     def get_middlewares_classes(self) -> list[type[AbstractMiddleware]]:
         return []
+
+    def get_step_guard_classes(self) -> list[type]:
+        return []

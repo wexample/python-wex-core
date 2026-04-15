@@ -24,7 +24,7 @@ class AbstractScriptRunner(ABC):
         not be listed here.
         Subclasses should call ``super().get_step_options() + [...]``.
         """
-        return ["ignore_error", "name", "app_should_run"]
+        return ["ignore_error", "name"]
 
     @abstractmethod
     def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
