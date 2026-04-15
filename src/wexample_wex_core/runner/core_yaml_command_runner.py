@@ -137,6 +137,10 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         self, step: dict, variables: dict[str, str], kernel: Kernel
     ) -> tuple[Any, str | None]:
         """Return (response, capture_variable_name)."""
+        # Bare string step → implicit bash
+        if isinstance(step, str):
+            step = {"runner": "bash", "script": step}
+
         capture_var: str | None = step.get("variable")
 
         name: str | None = step.get("name")
@@ -146,7 +150,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         if "command" in step:
             return self._execute_internal_command(step, variables, kernel), capture_var
 
-        runner_name = step.get("runner")
+        runner_name = step.get("runner", "bash") if ("script" in step or "file" in step) else step.get("runner")
         if runner_name:
             runner = kernel.script_runner_registry.get(runner_name)
             if runner is None:
