@@ -130,6 +130,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
             options=list(definition.options),
             aliases=list(definition.aliases),
             sudo=definition.sudo,
+            webhook=definition.webhook,
             attachments={k: list(v) for k, v in definition.attachments.items()},
             type=COMMAND_TYPE_ADDON,
         )

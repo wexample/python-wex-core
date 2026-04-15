@@ -46,6 +46,10 @@ class CommandMethodWrapper(BaseClass):
         default=False,
         description="If True, re-exec the entire process under sudo if not already root",
     )
+    webhook: bool = public_field(
+        default=False,
+        description="If True, this command is accessible via the webhook daemon",
+    )
     type: str | None = public_field(
         description="The command type",
     )

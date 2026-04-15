@@ -21,7 +21,7 @@ def webhook() -> "type[CommandMethodWrapper]":
     """
 
     def decorator(wrapper: CommandMethodWrapper) -> CommandMethodWrapper:
-        wrapper.function._wex_webhook = True  # type: ignore[attr-defined]
+        wrapper.webhook = True
         return wrapper
 
     return decorator  # type: ignore[return-value]
