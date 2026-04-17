@@ -373,6 +373,13 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             ),
         ]
 
+    def _get_crash_report_dir(self):
+        from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
+
+        if isinstance(self.workdir, KernelWorkdir):
+            return self.workdir.get_logs_errors_path()
+        return super()._get_crash_report_dir()
+
     def _get_live_command_registry_entries(self) -> list[dict]:
         return list(self._registry.get_all_commands().values())
 

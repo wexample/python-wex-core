@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
     # Class-scoped constant for the tmp shortcut
     SHORTCUT_REGISTRY: ClassVar[str] = "registry"
+    SHORTCUT_LOGS_ERRORS: ClassVar[str] = "logs_errors"
 
     @classmethod
     def create_from_kernel(
@@ -28,6 +29,17 @@ class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
         return super().create_from_path(
             path=kernel.entrypoint_path, kernel=kernel, io=io, **kwargs
         )
+
+    def get_logs_errors_path(self):
+        from pathlib import Path
+
+        from wexample_wex_core.const.globals import (
+            CORE_DIR_NAME_LOGS,
+            CORE_DIR_NAME_LOGS_ERRORS,
+            CORE_DIR_NAME_TMP,
+        )
+
+        return Path(self.get_path()) / CORE_DIR_NAME_TMP / CORE_DIR_NAME_LOGS / CORE_DIR_NAME_LOGS_ERRORS
 
     def get_tmp(self) -> ItemTargetDirectory | None:
         from wexample_wex_core.const.globals import (
@@ -40,6 +52,8 @@ class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
         from wexample_filestate.const.disk import DiskItemType
 
         from wexample_wex_core.const.globals import (
+            CORE_DIR_NAME_LOGS,
+            CORE_DIR_NAME_LOGS_ERRORS,
             CORE_DIR_NAME_TMP,
             CORE_FILE_NAME_REGISTRY,
         )
@@ -59,6 +73,19 @@ class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
                         "name": "output",
                         "type": DiskItemType.DIRECTORY,
                         "should_exist": True,
+                    },
+                    {
+                        "name": CORE_DIR_NAME_LOGS,
+                        "type": DiskItemType.DIRECTORY,
+                        "should_exist": True,
+                        "children": [
+                            {
+                                "name": CORE_DIR_NAME_LOGS_ERRORS,
+                                "shortcut": KernelWorkdir.SHORTCUT_LOGS_ERRORS,
+                                "type": DiskItemType.DIRECTORY,
+                                "should_exist": True,
+                            },
+                        ],
                     },
                     {
                         "class": KernelRegistryFile,
