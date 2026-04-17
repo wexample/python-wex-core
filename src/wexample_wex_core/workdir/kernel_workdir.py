@@ -31,15 +31,13 @@ class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
         )
 
     def get_logs_errors_path(self):
-        from pathlib import Path
-
         from wexample_wex_core.const.globals import (
             CORE_DIR_NAME_LOGS,
             CORE_DIR_NAME_LOGS_ERRORS,
             CORE_DIR_NAME_TMP,
         )
 
-        return Path(self.get_path()) / CORE_DIR_NAME_TMP / CORE_DIR_NAME_LOGS / CORE_DIR_NAME_LOGS_ERRORS
+        return self.get_path() / CORE_DIR_NAME_TMP / CORE_DIR_NAME_LOGS / CORE_DIR_NAME_LOGS_ERRORS
 
     def get_tmp(self) -> ItemTargetDirectory | None:
         from wexample_wex_core.const.globals import (
@@ -62,7 +60,7 @@ class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
         config = super().prepare_value(raw_value=raw_value)
 
         raw_value["children"] = raw_value.get("children", [])
-        raw_value["children"].append(
+        raw_value["children"].extend([
             {
                 "shortcut": CORE_DIR_NAME_TMP,
                 "name": CORE_DIR_NAME_TMP,
@@ -95,7 +93,7 @@ class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
                         "should_exist": True,
                     },
                 ],
-            }
-        )
+            },
+        ])
 
         return config
