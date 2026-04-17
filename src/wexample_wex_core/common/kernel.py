@@ -52,6 +52,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=False,
         description="Disable verbosity, every log or message, useful to capture structured output",
     )
+    _config_arg_subprocess: bool = private_field(
+        default=False,
+        description="Indicates this process was launched as a subprocess by another wex process",
+    )
     _config_arg_v: bool = private_field(
         default=False,
         description="Default verbosity",
@@ -360,6 +364,12 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 name="force-request-id",
                 type=str,
                 description="Force a specific request ID (used by external processes)",
+            ),
+            Option(
+                name="subprocess",
+                is_flag=True,
+                type=bool,
+                description="Indicate this process was launched as a subprocess by another wex process",
             ),
         ]
 
