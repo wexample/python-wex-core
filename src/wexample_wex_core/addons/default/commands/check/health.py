@@ -36,23 +36,22 @@ def default__check__health(context: ExecutionContext) -> None:
 
     # --- SSH agent ---
     import os
+    import stat
 
-    from wexample_helpers_git.service.ssh_agent_resolver import SshAgentResolver
-
-    socket_path = SshAgentResolver().resolve()
-    if socket_path:
-        io.success(message=f"SSH agent: socket found at {socket_path}")
+    sock = os.environ.get("SSH_AUTH_SOCK", "")
+    if not sock:
+        io.warning(
+            message=(
+                "SSH agent: SSH_AUTH_SOCK not set. "
+                "Git push/pull via SSH may fail. "
+                "Set it in .wex/local/env.yml or run: eval $(ssh-agent) && ssh-add"
+            )
+        )
     else:
-        sock_env = os.environ.get("SSH_AUTH_SOCK", "")
-        if sock_env:
-            io.warning(
-                message=f"SSH agent: SSH_AUTH_SOCK set ({sock_env}) but socket not reachable"
-            )
-        else:
-            io.warning(
-                message=(
-                    "SSH agent: no agent socket found. "
-                    "Git push/pull via SSH may fail. "
-                    "Fix: eval $(ssh-agent) && ssh-add"
-                )
-            )
+        try:
+            if stat.S_ISSOCK(os.stat(sock).st_mode):
+                io.success(message=f"SSH agent: socket reachable at {sock}")
+            else:
+                io.warning(message=f"SSH agent: SSH_AUTH_SOCK set but {sock} is not a socket")
+        except OSError:
+            io.warning(message=f"SSH agent: SSH_AUTH_SOCK set but socket not found at {sock}")
