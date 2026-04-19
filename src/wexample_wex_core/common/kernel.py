@@ -343,12 +343,14 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             ),
             Option(
                 name="output_format",
+                short_name=False,
                 type=str,
                 value="str",
                 description="The way to render the output",
             ),
             Option(
                 name="output_target",
+                short_name=False,
                 type=str,
                 value="str",
                 description="The emplacement where placing the output (stdout, file, ...)",
@@ -357,17 +359,20 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             ),
             Option(
                 name="indentation_level",
+                short_name=False,
                 is_flag=False,
                 type=int,
                 description="Number of indentation levels to use",
             ),
             Option(
-                name="force-request-id",
+                name="force_request_id",
+                short_name=False,
                 type=str,
                 description="Force a specific request ID (used by external processes)",
             ),
             Option(
                 name="subprocess",
+                short_name=False,
                 is_flag=True,
                 type=bool,
                 description="Indicate this process was launched as a subprocess by another wex process",
