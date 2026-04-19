@@ -24,11 +24,20 @@ class CoreYamlCommandRunner(YamlCommandRunner):
     # Variable management
     # ------------------------------------------------------------------
     @staticmethod
-    def _build_variables(kwargs: dict, yaml_path: Path) -> dict[str, str]:
+    def _build_variables(kwargs: dict, yaml_path: Path, kernel: Kernel) -> dict[str, str]:
         import os
 
-        # Lower priority: environment variables
-        variables: dict[str, str] = {k: v for k, v in os.environ.items()}
+        from wexample_app.workdir.mixin.with_env_parameters_mixin import (
+            WithEnvParametersMixin,
+        )
+
+        # Lowest priority: .wex/.env from the call workdir (where wex was invoked)
+        variables: dict[str, str] = WithEnvParametersMixin.get_env_parameters_from_path(
+            kernel.call_workdir.get_path()
+        ).to_dict()
+
+        # Override with process environment variables
+        variables.update(os.environ)
         # Built-ins override env
         variables["PATH_CURRENT"] = str(yaml_path.parent)
         # Option values have highest priority
@@ -181,7 +190,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         def _execute(**kwargs: Any) -> Any:
             from wexample_wex_core.yaml.yaml_variable import yaml_substitute_step
 
-            variables = self._build_variables(kwargs, yaml_path)
+            variables = self._build_variables(kwargs, yaml_path, kernel)
             responses = []
 
             for step in [yaml_substitute_step(s, variables) for s in scripts]:
