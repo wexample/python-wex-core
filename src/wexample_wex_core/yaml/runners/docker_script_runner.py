@@ -65,7 +65,9 @@ class DockerScriptRunner(AbstractScriptRunner):
         else:
             return None
 
-        exec_cmd = ["docker", "exec"]
+        # CI=true disables interactive spinners and prompts in most modern CLI tools
+        # (drizzle-kit, bun, vite, jest, etc.) that detect isatty()=false in docker exec.
+        exec_cmd = ["docker", "exec", "--env", "CI=true"]
         if workdir:
             exec_cmd += ["--workdir", workdir]
         exec_cmd.append(container)
