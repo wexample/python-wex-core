@@ -104,11 +104,23 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 self.path,
             ]
 
+            cwd = None
+            if command_type == "app":
+                from pathlib import Path
+
+                from wexample_wex_core.webhook.routing import routing_parse_app_url
+
+                app_info = routing_parse_app_url(command_path)
+                if app_info:
+                    env_name, app_name, _ = app_info
+                    cwd = str(Path(type(self).apps_base_path) / env_name / app_name)
+
             process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
+                cwd=cwd,
             )
 
             duration_ms = int((time.monotonic() - t0) * 1000)
@@ -125,8 +137,12 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 except json.JSONDecodeError:
                     response_data = {"output": stdout}
 
-                error = stderr[:500] if stderr else None
-                status = WEBHOOK_STATUS_COMPLETE if not error else WEBHOOK_STATUS_ERROR
+                error = stderr[:500] if (stderr and process.returncode != 0) else None
+                status = (
+                    WEBHOOK_STATUS_COMPLETE
+                    if process.returncode == 0
+                    else WEBHOOK_STATUS_ERROR
+                )
                 output = {
                     "status": status,
                     "path": self.path,
