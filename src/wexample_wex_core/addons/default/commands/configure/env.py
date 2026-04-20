@@ -50,7 +50,7 @@ def default__configure__env(context: ExecutionContext) -> None:
         value = io.input(
             question=f"Value for {key}:",
             default_value=auto_detected,
-        )
+        ).get_value()
         if value:
             updated[key] = value
             os.environ[key] = value
