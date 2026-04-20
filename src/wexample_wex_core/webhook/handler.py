@@ -113,7 +113,12 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
 
             duration_ms = int((time.monotonic() - t0) * 1000)
 
-            if not route["is_async"]:
+            from urllib.parse import parse_qs
+
+            query_params = parse_qs(urlparse(self.path).query)
+            is_async = route["is_async"] and query_params.get("_async", ["1"])[0] != "0"
+
+            if not is_async:
                 stdout, stderr = process.communicate()
                 try:
                     response_data = json.loads(stdout) if stdout.strip() else {}
@@ -138,7 +143,7 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 }
 
             http_status = 200
-            if not route["is_async"] and output.get("status") == WEBHOOK_STATUS_ERROR:
+            if not is_async and output.get("status") == WEBHOOK_STATUS_ERROR:
                 http_status = 500
             self.send_response(http_status)
             self._log_request(

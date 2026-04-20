@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "wexample-wex-core"
-version = "15.1.0"
+version = "15.2.0"
 description = "Wex core"
 authors = [{name = "weeger", email = "contact@wexample.com"}]
 requires-python = ">=3.10"
