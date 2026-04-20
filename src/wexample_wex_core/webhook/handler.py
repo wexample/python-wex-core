@@ -242,9 +242,8 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
         """
         import hmac
 
-        expected = (
-            self.token_verifier(command) if callable(self.token_verifier) else None
-        )
+        verifier = type(self).token_verifier
+        expected = verifier(command) if callable(verifier) else None
         if not expected:
             return False  # command has no registered token → deny
 
