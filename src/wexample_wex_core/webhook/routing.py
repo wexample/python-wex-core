@@ -4,13 +4,24 @@ import re
 from urllib.parse import parse_qs, urlparse
 
 
+def routing_parse_app_url(command_path: str) -> tuple[str, str, str] | None:
+    """Split '{env}/{app_name}/{command}' → (env, app_name, local_command).
+
+    Returns None if the path does not have the expected three-segment structure.
+    """
+    parts = command_path.split("/", 2)
+    if len(parts) < 3:
+        return None
+    return parts[0], parts[1], parts[2]
+
+
 def routing_build_command(command_type: str, command_path: str) -> str | None:
     """Convert URL components to a wex command string.
 
     Examples:
-        addon / app/info/show   →  app::info/show
-        app   / remote/push     →  .remote/push
-        service / nginx/status  →  @nginx::status
+        addon / app/info/show              →  app::info/show
+        app   / prod/wex-apt-repo/apt/pub  →  .apt/pub
+        service / nginx/status             →  @nginx::status
     """
     if command_type == "addon":
         parts = command_path.split("/")
@@ -21,7 +32,11 @@ def routing_build_command(command_type: str, command_path: str) -> str | None:
         return f"{addon}::{rest}"
 
     if command_type == "app":
-        return f".{command_path}"
+        parsed = routing_parse_app_url(command_path)
+        if parsed is None:
+            return None
+        _, _, local_command = parsed
+        return f".{local_command}"
 
     if command_type == "service":
         parts = command_path.split("/")

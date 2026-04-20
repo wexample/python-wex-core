@@ -36,9 +36,9 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
         start_time      : float                  — time.monotonic() at server startup
     """
 
+    apps_base_path: str = "/var/www"
     log_path: str = ""
     start_time: float = 0.0
-    token_verifier: object = None  # Callable[[str], str | None]
     wex_executable: list[str] = []
 
     # ------------------------------------------------------------------ GET
@@ -88,7 +88,7 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
             command_str = routing_build_command(command_type, command_path)
 
             # ---- token validation ------------------------------------------
-            if not self._validate_token(command_str or ""):
+            if not self._validate_token(self.path):
                 duration_ms = int((time.monotonic() - t0) * 1000)
                 self._log_auth_failure(command_type, command_path)
                 self.send_response(401)
@@ -231,24 +231,63 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
         except BrokenPipeError:
             pass
 
-    def _validate_token(self, command: str) -> bool:
-        """Return True if the request carries a valid token for *command*.
+    def _validate_token(self, path: str) -> bool:
+        """Return True if the request carries a valid token.
 
         Security posture:
-        - No token registered for the command → deny (401)
+        - No token file / key for the command → deny (401)
         - Token registered but not provided   → deny (401)
         - Token provided but wrong            → deny (401)
         - Token provided and correct          → allow
         """
         import hmac
+        import re
+        from pathlib import Path
+        from urllib.parse import urlparse
 
-        verifier = type(self).token_verifier
-        expected = verifier(command) if callable(verifier) else None
-        if not expected:
-            return False  # command has no registered token → deny
+        from wexample_wex_core.webhook.const import WEBHOOK_ROUTES
+        from wexample_wex_core.webhook.routing import (
+            routing_build_command,
+            routing_parse_app_url,
+        )
 
         provided = self._extract_token()
         if not provided:
             return False
 
+        parsed_url = urlparse(path)
+        match = re.match(WEBHOOK_ROUTES["exec"]["pattern"], parsed_url.path)
+        if not match:
+            return False
+
+        command_type = match.group(1)
+        command_path = match.group(2)
+        command_str = routing_build_command(command_type, command_path)
+        if not command_str:
+            return False
+
+        if command_type == "app":
+            app_info = routing_parse_app_url(command_path)
+            if not app_info:
+                return False
+            env, app_name, _ = app_info
+            app_path = Path(type(self).apps_base_path) / env / app_name
+            expected = self._read_app_token(app_path, command_str)
+        else:
+            return False  # addon/service webhooks not yet supported
+
+        if not expected:
+            return False
+
         return hmac.compare_digest(expected, provided)
+
+    def _read_app_token(self, app_path: Path, command: str) -> str | None:
+        """Read the stored token for *command* from the app's local data file."""
+        import yaml
+
+        token_file = app_path / ".wex" / "local" / "webhook_tokens.yml"
+        if not token_file.exists():
+            return None
+        with open(token_file) as f:
+            data = yaml.safe_load(f) or {}
+        return data.get(command)
