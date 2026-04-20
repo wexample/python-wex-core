@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
     from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
     from wexample_wex_core.yaml.script_runner_registry import ScriptRunnerRegistry
+    from wexample_wex_core.yaml.step_guard_registry import StepGuardRegistry
 
 
 @base_class
@@ -51,6 +52,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=False,
         description="Disable verbosity, every log or message, useful to capture structured output",
     )
+    _config_arg_subprocess: bool = private_field(
+        default=False,
+        description="Indicates this process was launched as a subprocess by another wex process",
+    )
     _config_arg_v: bool = private_field(
         default=False,
         description="Default verbosity",
@@ -70,6 +75,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _script_runner_registry: ScriptRunnerRegistry = private_field(
         description="Registry of YAML script runners"
     )
+    _step_guard_registry: StepGuardRegistry = private_field(
+        description="Registry of YAML step guards contributed by addons"
+    )
 
     @property
     def logger(self) -> logging.Logger:
@@ -78,6 +86,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     @property
     def script_runner_registry(self) -> ScriptRunnerRegistry:
         return self._script_runner_registry
+
+    @property
+    def step_guard_registry(self) -> StepGuardRegistry:
+        return self._step_guard_registry
 
     def create_output_handlers(
         self, targets: list[str] | None = None
@@ -162,6 +174,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     ) -> AbstractKernel:
         response = super().setup()
 
+        self._init_local_env()
         self._init_command_line_kernel()
         self._init_logging()
         self._init_addons(addons=addons)
@@ -170,6 +183,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_middlewares()
         self._init_registry()
         self._init_script_runner_registry()
+        self._init_step_guard_registry()
 
         return response
 
@@ -329,12 +343,14 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             ),
             Option(
                 name="output_format",
+                short_name=False,
                 type=str,
                 value="str",
                 description="The way to render the output",
             ),
             Option(
                 name="output_target",
+                short_name=False,
                 type=str,
                 value="str",
                 description="The emplacement where placing the output (stdout, file, ...)",
@@ -343,14 +359,23 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             ),
             Option(
                 name="indentation_level",
+                short_name=False,
                 is_flag=False,
                 type=int,
                 description="Number of indentation levels to use",
             ),
             Option(
-                name="force-request-id",
+                name="force_request_id",
+                short_name=False,
                 type=str,
                 description="Force a specific request ID (used by external processes)",
+            ),
+            Option(
+                name="subprocess",
+                short_name=False,
+                is_flag=True,
+                type=bool,
+                description="Indicate this process was launched as a subprocess by another wex process",
             ),
         ]
 
@@ -417,6 +442,22 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             int(self.io.terminal_width / 3),
         )
 
+    def _init_local_env(self) -> None:
+        """Load .wex/local/env.yml into os.environ and env_config.
+
+        This file is per-machine, gitignored. Use it to declare env vars that
+        subprocesses (e.g. git over SSH) need but that cannot be committed.
+        Example: SSH_AUTH_SOCK: /run/user/1000/keyring/ssh
+        """
+        import os
+
+        local_env = self.workdir.get_local_data("env")
+        if not local_env:
+            return
+
+        self.env_config.update(local_env)
+        os.environ.update({k: v for k, v in local_env.items() if v is not None})
+
     def _init_logging(self) -> None:
         import sys
 
@@ -468,3 +509,15 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         from wexample_wex_core.yaml.script_runner_registry import ScriptRunnerRegistry
 
         self._script_runner_registry = ScriptRunnerRegistry()
+
+    def _init_step_guard_registry(self) -> None:
+        from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
+        from wexample_wex_core.yaml.step_guard_registry import StepGuardRegistry
+
+        registry = StepGuardRegistry()
+        for addon in self.get_addons().values():
+            for guard_class in cast(
+                AbstractAddonManager, addon
+            ).get_step_guard_classes():
+                registry.register(guard_class())
+        self._step_guard_registry = registry

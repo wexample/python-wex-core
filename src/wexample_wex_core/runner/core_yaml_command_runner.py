@@ -24,11 +24,22 @@ class CoreYamlCommandRunner(YamlCommandRunner):
     # Variable management
     # ------------------------------------------------------------------
     @staticmethod
-    def _build_variables(kwargs: dict, yaml_path: Path) -> dict[str, str]:
+    def _build_variables(
+        kwargs: dict, yaml_path: Path, kernel: Kernel
+    ) -> dict[str, str]:
         import os
 
-        # Lower priority: environment variables
-        variables: dict[str, str] = {k: v for k, v in os.environ.items()}
+        from wexample_app.workdir.mixin.with_env_parameters_mixin import (
+            WithEnvParametersMixin,
+        )
+
+        # Lowest priority: .wex/.env from the call workdir (where wex was invoked)
+        variables: dict[str, str] = WithEnvParametersMixin.get_env_parameters_from_path(
+            kernel.call_workdir.get_path()
+        ).to_dict()
+
+        # Override with process environment variables
+        variables.update(os.environ)
         # Built-ins override env
         variables["PATH_CURRENT"] = str(yaml_path.parent)
         # Option values have highest priority
@@ -85,11 +96,15 @@ class CoreYamlCommandRunner(YamlCommandRunner):
     # Validation
     # ------------------------------------------------------------------
     @staticmethod
-    def _validate_step_keys(step: dict, runner) -> None:
+    def _validate_step_keys(step: dict, runner, kernel: Kernel) -> None:
         """Raise if the step contains keys not declared by the runner."""
         # Structural keys always valid — not runner-specific
         structural = {"runner", "variable"}
-        valid = structural | set(runner.get_step_options())
+        valid = (
+            structural
+            | set(runner.get_step_options())
+            | set(kernel.step_guard_registry.get_all_step_options())
+        )
         unknown = set(step.keys()) - valid
 
         if unknown:
@@ -126,6 +141,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
             options=list(definition.options),
             aliases=list(definition.aliases),
             sudo=definition.sudo,
+            webhook=definition.webhook,
             attachments={k: list(v) for k, v in definition.attachments.items()},
             type=COMMAND_TYPE_ADDON,
         )
@@ -137,12 +153,28 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         self, step: dict, variables: dict[str, str], kernel: Kernel
     ) -> tuple[Any, str | None]:
         """Return (response, capture_variable_name)."""
+        # Bare string step → implicit bash
+        if isinstance(step, str):
+            step = {"runner": "bash", "script": step}
+
         capture_var: str | None = step.get("variable")
+
+        name: str | None = step.get("name")
+        if name:
+            kernel.io.log(name)
+
+        if kernel.step_guard_registry.should_skip_step(step, kernel):
+            kernel.io.log("Step skipped by guard.")
+            return None, None
 
         if "command" in step:
             return self._execute_internal_command(step, variables, kernel), capture_var
 
-        runner_name = step.get("runner")
+        runner_name = (
+            step.get("runner", "bash")
+            if ("script" in step or "file" in step)
+            else step.get("runner")
+        )
         if runner_name:
             runner = kernel.script_runner_registry.get(runner_name)
             if runner is None:
@@ -150,7 +182,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
                     f"Unknown YAML script runner: '{runner_name}'. "
                     f"Available: {list(kernel.script_runner_registry.all().keys())}"
                 )
-            self._validate_step_keys(step, runner)
+            self._validate_step_keys(step, runner, kernel)
             return runner.run(step, variables, kernel), capture_var
 
         return None, None
@@ -164,7 +196,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         def _execute(**kwargs: Any) -> Any:
             from wexample_wex_core.yaml.yaml_variable import yaml_substitute_step
 
-            variables = self._build_variables(kwargs, yaml_path)
+            variables = self._build_variables(kwargs, yaml_path, kernel)
             responses = []
 
             for step in [yaml_substitute_step(s, variables) for s in scripts]:

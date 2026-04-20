@@ -18,9 +18,12 @@ class YamlCommandDefinition:
         self.description: str | None = data.get("description")
         self.scripts: list[dict] = data.get("scripts", [])
         self.options: list[Option] = self._parse_options(data.get("options", []))
-        aliases, sudo, attachments = self._parse_decorators(data.get("decorators", []))
+        aliases, sudo, webhook, attachments = self._parse_decorators(
+            data.get("decorators", [])
+        )
         self.aliases: list[str] = aliases
         self.sudo: bool = sudo
+        self.webhook: bool = webhook
         self.attachments: dict[str, list] = attachments
 
     @classmethod
@@ -33,9 +36,10 @@ class YamlCommandDefinition:
 
     def _parse_decorators(
         self, decorators: list
-    ) -> tuple[list[str], bool, dict[str, list]]:
+    ) -> tuple[list[str], bool, bool, dict[str, list]]:
         aliases: list[str] = []
         sudo = False
+        webhook = False
         attachments: dict[str, list] = {"before": [], "after": [], "always_after": []}
 
         for dec in decorators:
@@ -44,6 +48,8 @@ class YamlCommandDefinition:
 
             if name == "sudo":
                 sudo = True
+            elif name == "webhook":
+                webhook = True
             elif name == "alias":
                 aliases.append(args if isinstance(args, str) else str(args))
             elif name == "attach" and isinstance(args, dict):
@@ -55,7 +61,7 @@ class YamlCommandDefinition:
                     }
                 )
 
-        return aliases, sudo, attachments
+        return aliases, sudo, webhook, attachments
 
     # ------------------------------------------------------------------
     # Parsing helpers

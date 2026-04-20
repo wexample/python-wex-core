@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 def option(
     name: str,
     type: type,
-    short_name: str | None = None,
+    short_name: str | bool | None = None,
     description: str | None = None,
     required: bool = False,
     default: Any = None,

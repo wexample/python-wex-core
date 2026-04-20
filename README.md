@@ -1,6 +1,6 @@
 # wex_core
 
-Version: 7.3.0
+Version: 14.0.0
 
 Wex core
 
@@ -13,6 +13,7 @@ Wex core
 - [License](#license)
 - [Suite Integration](#suite-integration)
 - [Suite Signature](#suite-signature)
+- [Introduction](#introduction)
 - [Roadmap](#roadmap)
 - [Status Compatibility](#status-compatibility)
 - [Useful Links](#useful-links)
@@ -83,10 +84,10 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 - cattrs: >=23.1.0
 - click: 
 - psutil: >=5.9
-- wexample-app: >=1.0.0
+- wexample-app: >=7.0.0
 - wexample-filestate-git: >=0.3.0
-- wexample-filestate: >=1.1.0
-- wexample-helpers-git: >=0.1.0
+- wexample-filestate: >=6.1.0
+- wexample-helpers-git: >=6.1.0
 
 ## Versioning & Compatibility Policy
 
@@ -121,6 +122,8 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 This packages suite embodies this spirit. Trusted by professionals and enthusiasts alike, it delivers a consistent, high-quality foundation for modern development — open, elegant, and battle-tested. Its reputation is built on years of collaboration, refinement, and rigorous attention to detail, making it a natural choice for those who demand both robustness and beauty in their tools.
 
 Wexample cultivates a culture of mastery. Each package, each contribution carries the mark of a community that values precision, ethics, and innovation — a community proud to shape the future of digital craftsmanship.
+
+A Python toolkit providing the core wex framework and foundational utilities.
 
 ## Known Limitations & Roadmap
 

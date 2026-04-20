@@ -49,6 +49,10 @@ class CommandMethodWrapper(BaseClass):
     type: str | None = public_field(
         description="The command type",
     )
+    webhook: bool = public_field(
+        default=False,
+        description="If True, this command is accessible via the webhook daemon",
+    )
 
     def find_option_by_kebab_name(self, kabab_name: str) -> Option | None:
         """Find an option by its name."""

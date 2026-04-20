@@ -7,6 +7,8 @@ from wexample_app.const.path import APP_DIR_NAME_TMP
 # filestate: python-constant-sort
 CORE_COMMAND_NAME: str = "wex"
 CORE_DIR_NAME_KNOWLEDGE: Path = Path("knowledge")
+CORE_DIR_NAME_LOGS: Path = Path("logs")
+CORE_DIR_NAME_LOGS_ERRORS: Path = Path("errors")
 CORE_DIR_NAME_TMP: Path = APP_DIR_NAME_TMP
 CORE_FILE_NAME_APPS_REGISTRY: Path = Path("apps_registry.yml")
 CORE_FILE_NAME_REGISTRY: Path = Path("registry.yml")
