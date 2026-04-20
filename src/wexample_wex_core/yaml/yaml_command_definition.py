@@ -78,11 +78,12 @@ class YamlCommandDefinition:
         options = []
 
         for opt in options_data:
-            name = opt.get("name")
+            name = opt.get("name", "")
             if not name:
                 continue
 
             python_type = _type_map.get(opt.get("type", "str"), str)
+            short_name = opt.get("short") or None
             options.append(
                 Option(
                     name=name,
@@ -90,7 +91,7 @@ class YamlCommandDefinition:
                     required=opt.get("required", False),
                     default=opt.get("default"),
                     description=opt.get("help"),
-                    short_name=opt.get("short"),
+                    short_name=short_name,
                     is_flag=opt.get("is_flag", False),
                     multiple=opt.get("multiple", False),
                 )
