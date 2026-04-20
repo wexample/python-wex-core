@@ -85,7 +85,7 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
 
             command_type = match.group(1)
             command_path = match.group(2)
-            command_str = routing_build_command(command_type, command_path)
+            routing_build_command(command_type, command_path)
 
             # ---- token validation ------------------------------------------
             if not self._validate_token(self.path):
@@ -222,6 +222,17 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
             entry["error"] = error
         self._get_logger().info(json.dumps(entry))
 
+    def _read_app_token(self, app_path: Path, command: str) -> str | None:
+        """Read the stored token for *command* from the app's local data file."""
+        import yaml
+
+        token_file = app_path / ".wex" / "local" / "webhook_tokens.yml"
+        if not token_file.exists():
+            return None
+        with open(token_file) as f:
+            data = yaml.safe_load(f) or {}
+        return data.get(command)
+
     # ------------------------------------------------------------------ helpers
     def _send_json(self, data: dict) -> None:
         self.send_header("Content-type", "application/json")
@@ -280,14 +291,3 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
             return False
 
         return hmac.compare_digest(expected, provided)
-
-    def _read_app_token(self, app_path: Path, command: str) -> str | None:
-        """Read the stored token for *command* from the app's local data file."""
-        import yaml
-
-        token_file = app_path / ".wex" / "local" / "webhook_tokens.yml"
-        if not token_file.exists():
-            return None
-        with open(token_file) as f:
-            data = yaml.safe_load(f) or {}
-        return data.get(command)

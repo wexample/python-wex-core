@@ -4,17 +4,6 @@ import re
 from urllib.parse import parse_qs, urlparse
 
 
-def routing_parse_app_url(command_path: str) -> tuple[str, str, str] | None:
-    """Split '{env}/{app_name}/{command}' → (env, app_name, local_command).
-
-    Returns None if the path does not have the expected three-segment structure.
-    """
-    parts = command_path.split("/", 2)
-    if len(parts) < 3:
-        return None
-    return parts[0], parts[1], parts[2]
-
-
 def routing_build_command(command_type: str, command_path: str) -> str | None:
     """Convert URL components to a wex command string.
 
@@ -77,3 +66,14 @@ def routing_is_allowed_route(path: str) -> bool:
                 return False
 
     return True
+
+
+def routing_parse_app_url(command_path: str) -> tuple[str, str, str] | None:
+    """Split '{env}/{app_name}/{command}' → (env, app_name, local_command).
+
+    Returns None if the path does not have the expected three-segment structure.
+    """
+    parts = command_path.split("/", 2)
+    if len(parts) < 3:
+        return None
+    return parts[0], parts[1], parts[2]
