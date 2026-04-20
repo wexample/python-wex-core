@@ -137,7 +137,10 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                     "pid": process.pid,
                 }
 
-            self.send_response(200)
+            http_status = 200
+            if not route["is_async"] and output.get("status") == WEBHOOK_STATUS_ERROR:
+                http_status = 500
+            self.send_response(http_status)
             self._log_request(
                 command_type,
                 command_path,
