@@ -26,9 +26,7 @@ def default__check__health(context: ExecutionContext) -> None:
     else:
         missing = kernel._get_missing_env_keys(expected_keys)
         if missing:
-            io.error(
-                message=f"Env vars: {len(missing)} missing: {', '.join(missing)}"
-            )
+            io.error(message=f"Env vars: {len(missing)} missing: {', '.join(missing)}")
         else:
             io.success(
                 message=f"Env vars: all {len(expected_keys)} required var(s) present"
@@ -52,6 +50,10 @@ def default__check__health(context: ExecutionContext) -> None:
             if stat.S_ISSOCK(os.stat(sock).st_mode):
                 io.success(message=f"SSH agent: socket reachable at {sock}")
             else:
-                io.warning(message=f"SSH agent: SSH_AUTH_SOCK set but {sock} is not a socket")
+                io.warning(
+                    message=f"SSH agent: SSH_AUTH_SOCK set but {sock} is not a socket"
+                )
         except OSError:
-            io.warning(message=f"SSH agent: SSH_AUTH_SOCK set but socket not found at {sock}")
+            io.warning(
+                message=f"SSH agent: SSH_AUTH_SOCK set but socket not found at {sock}"
+            )

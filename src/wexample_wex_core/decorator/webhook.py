@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
 
-def webhook() -> "type[CommandMethodWrapper]":
+def webhook() -> type[CommandMethodWrapper]:
     """Mark a command as webhook-accessible.
 
     Sets the ``_wex_webhook`` attribute on the underlying function so the

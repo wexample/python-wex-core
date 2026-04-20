@@ -46,12 +46,12 @@ class CommandMethodWrapper(BaseClass):
         default=False,
         description="If True, re-exec the entire process under sudo if not already root",
     )
+    type: str | None = public_field(
+        description="The command type",
+    )
     webhook: bool = public_field(
         default=False,
         description="If True, this command is accessible via the webhook daemon",
-    )
-    type: str | None = public_field(
-        description="The command type",
     )
 
     def find_option_by_kebab_name(self, kabab_name: str) -> Option | None:

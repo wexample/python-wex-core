@@ -37,7 +37,12 @@ class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
             CORE_DIR_NAME_TMP,
         )
 
-        return self.get_path() / CORE_DIR_NAME_TMP / CORE_DIR_NAME_LOGS / CORE_DIR_NAME_LOGS_ERRORS
+        return (
+            self.get_path()
+            / CORE_DIR_NAME_TMP
+            / CORE_DIR_NAME_LOGS
+            / CORE_DIR_NAME_LOGS_ERRORS
+        )
 
     def get_tmp(self) -> ItemTargetDirectory | None:
         from wexample_wex_core.const.globals import (
@@ -60,40 +65,42 @@ class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
         config = super().prepare_value(raw_value=raw_value)
 
         raw_value["children"] = raw_value.get("children", [])
-        raw_value["children"].extend([
-            {
-                "shortcut": CORE_DIR_NAME_TMP,
-                "name": CORE_DIR_NAME_TMP,
-                "type": DiskItemType.DIRECTORY,
-                "should_exist": True,
-                "children": [
-                    {
-                        "name": "output",
-                        "type": DiskItemType.DIRECTORY,
-                        "should_exist": True,
-                    },
-                    {
-                        "name": CORE_DIR_NAME_LOGS,
-                        "type": DiskItemType.DIRECTORY,
-                        "should_exist": True,
-                        "children": [
-                            {
-                                "name": CORE_DIR_NAME_LOGS_ERRORS,
-                                "shortcut": KernelWorkdir.SHORTCUT_LOGS_ERRORS,
-                                "type": DiskItemType.DIRECTORY,
-                                "should_exist": True,
-                            },
-                        ],
-                    },
-                    {
-                        "class": KernelRegistryFile,
-                        "name": CORE_FILE_NAME_REGISTRY,
-                        "shortcut": KernelWorkdir.SHORTCUT_REGISTRY,
-                        "type": DiskItemType.FILE,
-                        "should_exist": True,
-                    },
-                ],
-            },
-        ])
+        raw_value["children"].extend(
+            [
+                {
+                    "shortcut": CORE_DIR_NAME_TMP,
+                    "name": CORE_DIR_NAME_TMP,
+                    "type": DiskItemType.DIRECTORY,
+                    "should_exist": True,
+                    "children": [
+                        {
+                            "name": "output",
+                            "type": DiskItemType.DIRECTORY,
+                            "should_exist": True,
+                        },
+                        {
+                            "name": CORE_DIR_NAME_LOGS,
+                            "type": DiskItemType.DIRECTORY,
+                            "should_exist": True,
+                            "children": [
+                                {
+                                    "name": CORE_DIR_NAME_LOGS_ERRORS,
+                                    "shortcut": KernelWorkdir.SHORTCUT_LOGS_ERRORS,
+                                    "type": DiskItemType.DIRECTORY,
+                                    "should_exist": True,
+                                },
+                            ],
+                        },
+                        {
+                            "class": KernelRegistryFile,
+                            "name": CORE_FILE_NAME_REGISTRY,
+                            "shortcut": KernelWorkdir.SHORTCUT_REGISTRY,
+                            "type": DiskItemType.FILE,
+                            "should_exist": True,
+                        },
+                    ],
+                },
+            ]
+        )
 
         return config

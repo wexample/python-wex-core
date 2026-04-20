@@ -36,6 +36,21 @@ class DockerScriptRunner(AbstractScriptRunner):
             "workdir",
         ]
 
+    @staticmethod
+    def _resolve_service_name(service: str, kernel: Kernel) -> str:
+        """Expand a short service name to the full Docker container name.
+
+        Queries all registered addons via get_docker_service_name().
+        The first addon that returns a non-None value "wins".
+        Falls back to the literal service name if no addon can resolve it.
+        """
+        for addon in kernel.get_addons().values():
+            result = addon.get_service_docker_container_name(service)
+            if result is not None:
+                return result
+
+        return service
+
     def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
         from wexample_app.response.interactive_shell_command_response import (
             InteractiveShellCommandResponse,
@@ -78,18 +93,3 @@ class DockerScriptRunner(AbstractScriptRunner):
             content=cmd,
             ignore_error=ignore_error,
         )
-
-    @staticmethod
-    def _resolve_service_name(service: str, kernel: Kernel) -> str:
-        """Expand a short service name to the full Docker container name.
-
-        Queries all registered addons via get_docker_service_name().
-        The first addon that returns a non-None value "wins".
-        Falls back to the literal service name if no addon can resolve it.
-        """
-        for addon in kernel.get_addons().values():
-            result = addon.get_service_docker_container_name(service)
-            if result is not None:
-                return result
-
-        return service

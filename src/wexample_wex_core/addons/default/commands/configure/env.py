@@ -43,7 +43,11 @@ def default__configure__env(context: ExecutionContext) -> None:
             continue
 
         auto_detected = next(
-            (c for c in entry.get("default_candidates", []) if pathlib.Path(c).is_socket()),
+            (
+                c
+                for c in entry.get("default_candidates", [])
+                if pathlib.Path(c).is_socket()
+            ),
             None,
         )
         io.log(message=entry["description"])

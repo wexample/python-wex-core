@@ -442,6 +442,22 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             int(self.io.terminal_width / 3),
         )
 
+    def _init_local_env(self) -> None:
+        """Load .wex/local/env.yml into os.environ and env_config.
+
+        This file is per-machine, gitignored. Use it to declare env vars that
+        subprocesses (e.g. git over SSH) need but that cannot be committed.
+        Example: SSH_AUTH_SOCK: /run/user/1000/keyring/ssh
+        """
+        import os
+
+        local_env = self.workdir.get_local_data("env")
+        if not local_env:
+            return
+
+        self.env_config.update(local_env)
+        os.environ.update({k: v for k, v in local_env.items() if v is not None})
+
     def _init_logging(self) -> None:
         import sys
 
@@ -494,28 +510,14 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
         self._script_runner_registry = ScriptRunnerRegistry()
 
-    def _init_local_env(self) -> None:
-        """Load .wex/local/env.yml into os.environ and env_config.
-
-        This file is per-machine, gitignored. Use it to declare env vars that
-        subprocesses (e.g. git over SSH) need but that cannot be committed.
-        Example: SSH_AUTH_SOCK: /run/user/1000/keyring/ssh
-        """
-        import os
-
-        local_env = self.workdir.get_local_data("env")
-        if not local_env:
-            return
-
-        self.env_config.update(local_env)
-        os.environ.update({k: v for k, v in local_env.items() if v is not None})
-
     def _init_step_guard_registry(self) -> None:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
         from wexample_wex_core.yaml.step_guard_registry import StepGuardRegistry
 
         registry = StepGuardRegistry()
         for addon in self.get_addons().values():
-            for guard_class in cast(AbstractAddonManager, addon).get_step_guard_classes():
+            for guard_class in cast(
+                AbstractAddonManager, addon
+            ).get_step_guard_classes():
                 registry.register(guard_class())
         self._step_guard_registry = registry

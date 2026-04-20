@@ -12,16 +12,25 @@ from wexample_wex_core.webhook.routing import routing_build_command
 
 if TYPE_CHECKING:
     from wexample_app.response.abstract_response import AbstractResponse
+
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
-@option("webhook_path", type=str, required=True, description="Full URL path received by the daemon (including query string)")
-@command(type=COMMAND_TYPE_ADDON, description="Internal dispatcher: execute the command targeted by a webhook URL")
+@option(
+    "webhook_path",
+    type=str,
+    required=True,
+    description="Full URL path received by the daemon (including query string)",
+)
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="Internal dispatcher: execute the command targeted by a webhook URL",
+)
 def default__webhook__exec(
     context: ExecutionContext,
     webhook_path: str,
 ) -> AbstractResponse | None:
-    from wexample_app.response.abstract_response import AbstractResponse
+    pass
 
     parsed = urlparse(webhook_path)
     exec_pattern = WEBHOOK_ROUTES["exec"]["pattern"]
@@ -31,13 +40,15 @@ def default__webhook__exec(
         context.io.error(f"Webhook path does not match exec pattern: {webhook_path}")
         return None
 
-    command_type = match.group(1)   # addon | app | service
-    command_path = match.group(2)   # e.g. "app/info/show" or "remote/push_receive"
+    command_type = match.group(1)  # addon | app | service
+    command_path = match.group(2)  # e.g. "app/info/show" or "remote/push_receive"
 
     # Build wex command string
     command_str = routing_build_command(command_type, command_path)
     if not command_str:
-        context.io.error(f"Cannot build command from type={command_type} path={command_path}")
+        context.io.error(
+            f"Cannot build command from type={command_type} path={command_path}"
+        )
         return None
 
     # Parse query args (first value wins for duplicates, skip reserved _token)
@@ -51,11 +62,13 @@ def default__webhook__exec(
     # For app-type commands, chdir to app_path so AppCommandResolver can walk up
     if command_type == "app" and "app_path" in arguments:
         import os
+
         app_path = arguments.pop("app_path")
         os.chdir(app_path)
 
     # Execute the resolved command through the kernel
     from wexample_app.const.output import OUTPUT_TARGET_NONE
+
     from wexample_wex_core.common.command_request import CommandRequest
 
     request = CommandRequest(

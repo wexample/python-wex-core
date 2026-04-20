@@ -24,7 +24,9 @@ class CoreYamlCommandRunner(YamlCommandRunner):
     # Variable management
     # ------------------------------------------------------------------
     @staticmethod
-    def _build_variables(kwargs: dict, yaml_path: Path, kernel: Kernel) -> dict[str, str]:
+    def _build_variables(
+        kwargs: dict, yaml_path: Path, kernel: Kernel
+    ) -> dict[str, str]:
         import os
 
         from wexample_app.workdir.mixin.with_env_parameters_mixin import (
@@ -168,7 +170,11 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         if "command" in step:
             return self._execute_internal_command(step, variables, kernel), capture_var
 
-        runner_name = step.get("runner", "bash") if ("script" in step or "file" in step) else step.get("runner")
+        runner_name = (
+            step.get("runner", "bash")
+            if ("script" in step or "file" in step)
+            else step.get("runner")
+        )
         if runner_name:
             runner = kernel.script_runner_registry.get(runner_name)
             if runner is None:

@@ -22,8 +22,8 @@ class ThreadingHTTPServer(ThreadingMixIn, TCPServer):
     allow_reuse_address avoids "Address already in use" on quick restarts.
     """
 
-    daemon_threads = True
     allow_reuse_address = True
+    daemon_threads = True
 
 
 class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
@@ -36,96 +36,12 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
         start_time      : float                  — time.monotonic() at server startup
     """
 
-    wex_executable: list[str] = []
     log_path: str = ""
-    token_verifier: object = None  # Callable[[str], str | None]
     start_time: float = 0.0
-
-    # ------------------------------------------------------------------ logging
-
-    def _get_logger(self) -> logging.Logger:
-        logger = logging.getLogger("wex-webhook")
-        if not logger.handlers and self.log_path:
-            handler = RotatingFileHandler(
-                self.log_path, maxBytes=1_000_000, backupCount=5
-            )
-            handler.setFormatter(logging.Formatter("%(message)s"))
-            logger.addHandler(handler)
-            logger.setLevel(logging.INFO)
-        return logger
-
-    def _log_request(
-        self,
-        command_type: str,
-        command_path: str,
-        status: str,
-        duration_ms: int,
-        pid: int | None = None,
-        error: str | None = None,
-    ) -> None:
-        entry: dict = {
-            "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "ip": self.client_address[0],
-            "path": self.path,
-            "command_type": command_type,
-            "command_path": command_path,
-            "status": status,
-            "duration_ms": duration_ms,
-        }
-        if pid is not None:
-            entry["pid"] = pid
-        if error:
-            entry["error"] = error
-        self._get_logger().info(json.dumps(entry))
-
-    def _log_auth_failure(self, command_type: str, command_path: str) -> None:
-        entry: dict = {
-            "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "ip": self.client_address[0],
-            "path": self.path,
-            "command_type": command_type,
-            "command_path": command_path,
-            "status": "unauthorized",
-        }
-        self._get_logger().warning(json.dumps(entry))
-
-    # ------------------------------------------------------------------ auth
-
-    def _extract_token(self) -> str | None:
-        """Extract bearer token from Authorization header or ?_token query param."""
-        from urllib.parse import parse_qs
-
-        auth = self.headers.get("Authorization", "")
-        if auth.startswith("Bearer "):
-            return auth[7:].strip() or None
-
-        query = parse_qs(urlparse(self.path).query)
-        tokens = query.get("_token", [])
-        return tokens[0] if tokens else None
-
-    def _validate_token(self, command: str) -> bool:
-        """Return True if the request carries a valid token for *command*.
-
-        Security posture:
-        - No token registered for the command → deny (401)
-        - Token registered but not provided   → deny (401)
-        - Token provided but wrong            → deny (401)
-        - Token provided and correct          → allow
-        """
-        import hmac
-
-        expected = self.token_verifier(command) if callable(self.token_verifier) else None
-        if not expected:
-            return False  # command has no registered token → deny
-
-        provided = self._extract_token()
-        if not provided:
-            return False
-
-        return hmac.compare_digest(expected, provided)
+    token_verifier: object = None  # Callable[[str], str | None]
+    wex_executable: list[str] = []
 
     # ------------------------------------------------------------------ GET
-
     def do_GET(self) -> None:
         import re
 
@@ -142,7 +58,9 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
         try:
             if not routing_is_allowed_route(self.path):
                 self.send_response(404)
-                self._send_json({"status": WEBHOOK_STATUS_ERROR, "error": "WEBHOOK_NOT_FOUND"})
+                self._send_json(
+                    {"status": WEBHOOK_STATUS_ERROR, "error": "WEBHOOK_NOT_FOUND"}
+                )
                 return
 
             route_name = routing_get_route_name(self.path)
@@ -151,10 +69,12 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
             # ---- /health (no auth required) ---------------------------------
             if route_name == "health":
                 self.send_response(200)
-                self._send_json({
-                    "status": "ok",
-                    "uptime_seconds": int(time.monotonic() - self.start_time),
-                })
+                self._send_json(
+                    {
+                        "status": "ok",
+                        "uptime_seconds": int(time.monotonic() - self.start_time),
+                    }
+                )
                 return
 
             # ---- /webhook/{type}/{path} ------------------------------------
@@ -172,7 +92,9 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 duration_ms = int((time.monotonic() - t0) * 1000)
                 self._log_auth_failure(command_type, command_path)
                 self.send_response(401)
-                self._send_json({"status": WEBHOOK_STATUS_ERROR, "error": "UNAUTHORIZED"})
+                self._send_json(
+                    {"status": WEBHOOK_STATUS_ERROR, "error": "UNAUTHORIZED"}
+                )
                 return
 
             # ---- dispatch --------------------------------------------------
@@ -231,12 +153,76 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 "error": str(e),
                 "traceback": traceback.format_exc(),
             }
-            self._get_logger().error(json.dumps({"error": str(e), "tb": traceback.format_exc()}))
+            self._get_logger().error(
+                json.dumps({"error": str(e), "tb": traceback.format_exc()})
+            )
 
         self._send_json(output)
 
-    # ------------------------------------------------------------------ helpers
+    def log_message(self, format: str, *args: object) -> None:
+        """Suppress the default stderr request logging."""
 
+    # ------------------------------------------------------------------ auth
+    def _extract_token(self) -> str | None:
+        """Extract bearer token from Authorization header or ?_token query param."""
+        from urllib.parse import parse_qs
+
+        auth = self.headers.get("Authorization", "")
+        if auth.startswith("Bearer "):
+            return auth[7:].strip() or None
+
+        query = parse_qs(urlparse(self.path).query)
+        tokens = query.get("_token", [])
+        return tokens[0] if tokens else None
+
+    # ------------------------------------------------------------------ logging
+    def _get_logger(self) -> logging.Logger:
+        logger = logging.getLogger("wex-webhook")
+        if not logger.handlers and self.log_path:
+            handler = RotatingFileHandler(
+                self.log_path, maxBytes=1_000_000, backupCount=5
+            )
+            handler.setFormatter(logging.Formatter("%(message)s"))
+            logger.addHandler(handler)
+            logger.setLevel(logging.INFO)
+        return logger
+
+    def _log_auth_failure(self, command_type: str, command_path: str) -> None:
+        entry: dict = {
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "ip": self.client_address[0],
+            "path": self.path,
+            "command_type": command_type,
+            "command_path": command_path,
+            "status": "unauthorized",
+        }
+        self._get_logger().warning(json.dumps(entry))
+
+    def _log_request(
+        self,
+        command_type: str,
+        command_path: str,
+        status: str,
+        duration_ms: int,
+        pid: int | None = None,
+        error: str | None = None,
+    ) -> None:
+        entry: dict = {
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "ip": self.client_address[0],
+            "path": self.path,
+            "command_type": command_type,
+            "command_path": command_path,
+            "status": status,
+            "duration_ms": duration_ms,
+        }
+        if pid is not None:
+            entry["pid"] = pid
+        if error:
+            entry["error"] = error
+        self._get_logger().info(json.dumps(entry))
+
+    # ------------------------------------------------------------------ helpers
     def _send_json(self, data: dict) -> None:
         self.send_header("Content-type", "application/json")
         self.end_headers()
@@ -245,6 +231,25 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
         except BrokenPipeError:
             pass
 
-    def log_message(self, format: str, *args: object) -> None:
-        """Suppress the default stderr request logging."""
-        pass
+    def _validate_token(self, command: str) -> bool:
+        """Return True if the request carries a valid token for *command*.
+
+        Security posture:
+        - No token registered for the command → deny (401)
+        - Token registered but not provided   → deny (401)
+        - Token provided but wrong            → deny (401)
+        - Token provided and correct          → allow
+        """
+        import hmac
+
+        expected = (
+            self.token_verifier(command) if callable(self.token_verifier) else None
+        )
+        if not expected:
+            return False  # command has no registered token → deny
+
+        provided = self._extract_token()
+        if not provided:
+            return False
+
+        return hmac.compare_digest(expected, provided)

@@ -28,7 +28,9 @@ class ScriptRunnerRegistry:
 
     def _register_defaults(self) -> None:
         from wexample_wex_core.yaml.runners.bash_script_runner import BashScriptRunner
-        from wexample_wex_core.yaml.runners.docker_script_runner import DockerScriptRunner
+        from wexample_wex_core.yaml.runners.docker_script_runner import (
+            DockerScriptRunner,
+        )
         from wexample_wex_core.yaml.runners.exec_script_runner import ExecScriptRunner
         from wexample_wex_core.yaml.runners.python_script_runner import (
             PythonScriptRunner,

@@ -10,8 +10,16 @@ if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
-@option("command_name", type=str, required=True, description="Wex command to show/generate a token for (e.g. 'app::info/show')")
-@command(type=COMMAND_TYPE_ADDON, description="Show (or generate) the webhook token for a command")
+@option(
+    "command_name",
+    type=str,
+    required=True,
+    description="Wex command to show/generate a token for (e.g. 'app::info/show')",
+)
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="Show (or generate) the webhook token for a command",
+)
 def default__webhook__token_show(
     context: ExecutionContext,
     command_name: str,

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import time
 from typing import TYPE_CHECKING
 
 import psutil
@@ -14,7 +13,14 @@ if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
-@option("port", type=int, short_name="p", required=False, default=WEBHOOK_LISTEN_PORT_DEFAULT, description="Port the daemon is listening on")
+@option(
+    "port",
+    type=int,
+    short_name="p",
+    required=False,
+    default=WEBHOOK_LISTEN_PORT_DEFAULT,
+    description="Port the daemon is listening on",
+)
 @command(type=COMMAND_TYPE_ADDON, description="Stop the webhook daemon")
 def default__webhook__stop(
     context: ExecutionContext,

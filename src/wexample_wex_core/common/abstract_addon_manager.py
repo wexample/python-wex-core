@@ -58,9 +58,6 @@ class AbstractAddonManager(
     def get_middlewares_classes(self) -> list[type[AbstractMiddleware]]:
         return []
 
-    def get_step_guard_classes(self) -> list[type]:
-        return []
-
     def get_service_docker_container_name(self, service: str) -> str | None:
         """Return the full Docker container name for a short service name.
 
@@ -68,3 +65,6 @@ class AbstractAddonManager(
         Return None if this addon cannot resolve the given service.
         """
         return None
+
+    def get_step_guard_classes(self) -> list[type]:
+        return []

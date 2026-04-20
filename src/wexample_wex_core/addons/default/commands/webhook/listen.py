@@ -3,7 +3,6 @@ from __future__ import annotations
 import subprocess
 import sys
 import time
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
@@ -13,13 +12,45 @@ from wexample_wex_core.webhook.const import WEBHOOK_LISTEN_PORT_DEFAULT
 
 if TYPE_CHECKING:
     from wexample_app.response.abstract_response import AbstractResponse
+
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
-@option("port", type=int, short_name="p", required=False, default=WEBHOOK_LISTEN_PORT_DEFAULT, description="Port to listen on")
-@option("asynchronous", type=bool, short_name="a", is_flag=True, required=False, default=False, description="Run as a background subprocess")
-@option("force", type=bool, short_name="f", is_flag=True, required=False, default=False, description="Kill any existing process on the port before starting")
-@option("dry_run", type=bool, short_name="d", is_flag=True, required=False, default=False, description="Bind the socket without serving (useful for tests)")
+@option(
+    "port",
+    type=int,
+    short_name="p",
+    required=False,
+    default=WEBHOOK_LISTEN_PORT_DEFAULT,
+    description="Port to listen on",
+)
+@option(
+    "asynchronous",
+    type=bool,
+    short_name="a",
+    is_flag=True,
+    required=False,
+    default=False,
+    description="Run as a background subprocess",
+)
+@option(
+    "force",
+    type=bool,
+    short_name="f",
+    is_flag=True,
+    required=False,
+    default=False,
+    description="Kill any existing process on the port before starting",
+)
+@option(
+    "dry_run",
+    type=bool,
+    short_name="d",
+    is_flag=True,
+    required=False,
+    default=False,
+    description="Bind the socket without serving (useful for tests)",
+)
 @command(type=COMMAND_TYPE_ADDON, description="Start the webhook HTTP daemon")
 def default__webhook__listen(
     context: ExecutionContext,
@@ -63,13 +94,17 @@ def default__webhook__listen(
         )
         time.sleep(1)  # brief wait so the port is bound before we return
 
-        from wexample_wex_core.addons.system.helpers import system_find_process_by_port as _chk
+        from wexample_wex_core.addons.system.helpers import (
+            system_find_process_by_port as _chk,
+        )
 
         running = _chk(port)
         if running:
             context.io.log(f"Webhook daemon started on port {port} (pid {process.pid})")
         else:
-            context.io.error(f"Daemon spawned (pid {process.pid}) but port {port} is not bound yet")
+            context.io.error(
+                f"Daemon spawned (pid {process.pid}) but port {port} is not bound yet"
+            )
 
         return None
 
@@ -86,7 +121,11 @@ def default__webhook__listen(
         start_time = time.monotonic()
 
     _Handler.log_path = log_path
-    _Handler.token_verifier = lambda command: context.kernel.workdir.get_local_data_value("webhook_tokens", command)
+    _Handler.token_verifier = (
+        lambda command: context.kernel.workdir.get_local_data_value(
+            "webhook_tokens", command
+        )
+    )
 
     context.io.log(f"Starting webhook daemon on port {port}  |  log: {log_path}")
 

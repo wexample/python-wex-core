@@ -11,21 +11,40 @@ from wexample_wex_core.webhook.const import WEBHOOK_LISTEN_PORT_DEFAULT
 
 if TYPE_CHECKING:
     from wexample_app.response.abstract_response import AbstractResponse
+
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 _DATE_FMT = "%Y-%m-%d %H:%M:%S"
 _LOG_TAIL = 20  # last N entries shown by default
 
 
-@option("port", type=int, short_name="p", required=False, default=WEBHOOK_LISTEN_PORT_DEFAULT, description="Port the daemon should be listening on")
-@option("lines", type=int, short_name="n", required=False, default=_LOG_TAIL, description="Number of recent log entries to display")
-@command(type=COMMAND_TYPE_ADDON, description="Show webhook daemon status and recent log entries")
+@option(
+    "port",
+    type=int,
+    short_name="p",
+    required=False,
+    default=WEBHOOK_LISTEN_PORT_DEFAULT,
+    description="Port the daemon should be listening on",
+)
+@option(
+    "lines",
+    type=int,
+    short_name="n",
+    required=False,
+    default=_LOG_TAIL,
+    description="Number of recent log entries to display",
+)
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="Show webhook daemon status and recent log entries",
+)
 def default__webhook__status(
     context: ExecutionContext,
     port: int = WEBHOOK_LISTEN_PORT_DEFAULT,
     lines: int = _LOG_TAIL,
 ) -> AbstractResponse | None:
     from wexample_app.response.dict_response import DictResponse
+
     from wexample_wex_core.addons.system.helpers import system_find_process_by_port
 
     proc = system_find_process_by_port(port)

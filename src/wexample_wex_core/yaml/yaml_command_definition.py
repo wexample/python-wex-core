@@ -18,7 +18,9 @@ class YamlCommandDefinition:
         self.description: str | None = data.get("description")
         self.scripts: list[dict] = data.get("scripts", [])
         self.options: list[Option] = self._parse_options(data.get("options", []))
-        aliases, sudo, webhook, attachments = self._parse_decorators(data.get("decorators", []))
+        aliases, sudo, webhook, attachments = self._parse_decorators(
+            data.get("decorators", [])
+        )
         self.aliases: list[str] = aliases
         self.sudo: bool = sudo
         self.webhook: bool = webhook
