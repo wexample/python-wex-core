@@ -59,12 +59,20 @@ def default__webhook__exec(
             continue  # reserved for meta params (future token, etc.)
         arguments[key] = values[0]
 
-    # For app-type commands, chdir to app_path so AppCommandResolver can walk up
-    if command_type == "app" and "app_path" in arguments:
+    # For app-type commands, resolve path from convention /var/www/{env}/{app}
+    if command_type == "app":
         import os
+        from pathlib import Path
 
-        app_path = arguments.pop("app_path")
-        os.chdir(app_path)
+        from wexample_wex_core.webhook.const import WEBHOOK_APPS_BASE_PATH
+        from wexample_wex_core.webhook.routing import routing_parse_app_url
+
+        app_info = routing_parse_app_url(command_path)
+        if app_info is None:
+            context.io.error(f"Cannot parse env/app from webhook path: {command_path}")
+            return None
+        env, app_name, _ = app_info
+        os.chdir(Path(WEBHOOK_APPS_BASE_PATH) / env / app_name)
 
     # Execute the resolved command through the kernel
     from wexample_app.const.output import OUTPUT_TARGET_NONE

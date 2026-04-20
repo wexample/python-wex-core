@@ -1,6 +1,6 @@
 # wex_core
 
-Version: 14.1.0
+Version: 15.0.0
 
 Wex core
 
