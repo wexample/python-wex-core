@@ -92,13 +92,18 @@ def default__webhook__listen(
         process = subprocess.Popen(
             cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
-        time.sleep(1)  # brief wait so the port is bound before we return
 
         from wexample_wex_core.addons.system.helpers import (
             system_find_process_by_port as _chk,
         )
 
-        running = _chk(port)
+        running = None
+        for _ in range(10):
+            time.sleep(0.5)
+            running = _chk(port)
+            if running:
+                break
+
         if running:
             context.io.log(f"Webhook daemon started on port {port} (pid {process.pid})")
         else:
