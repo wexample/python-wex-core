@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     type=COMMAND_TYPE_ADDON,
     description="Check environment health: required env vars, and more checks over time",
 )
-def default__check__health(context: ExecutionContext) -> None:
+def default__health__check(context: ExecutionContext) -> None:
     kernel = context.kernel
     io = context.io
 
