@@ -35,38 +35,52 @@ class ServiceCommandResolver(AbstractCommandResolver):
 
         first = search_split[0] if search_split else ""
 
-        # Suggest "@" when search is empty
         if cursor == 0 and first == "":
             return COMMAND_CHAR_SERVICE
 
-        # All further suggestions require search to start with "@"
         if not first.startswith(COMMAND_CHAR_SERVICE):
             return None
 
-        if cursor <= 1:
-            # Suggest full @service:: names (or filtered by what follows "@")
+        # Find where "::" sits in search_split — handles both bash behaviours:
+        # "@postgres" as one token  → ["@postgres", "::", "db/"]
+        # "@" split from name       → ["@", "postgres", "::", "db/"]
+        sep_idx = next(
+            (i for i, s in enumerate(search_split) if s == COMMAND_SEPARATOR_ADDON),
+            None,
+        )
+
+        if sep_idx is None:
+            # No "::" yet — user is still typing the service name
             typed = "".join(search_split[: cursor + 1])
-            matches = [c for c in service_cmds if c.startswith(typed)]
-            # Return up to the "::" separator, de-duplicated
             suggestions = sorted(set(
                 c[: c.index(COMMAND_SEPARATOR_ADDON) + len(COMMAND_SEPARATOR_ADDON)]
-                for c in matches
-                if COMMAND_SEPARATOR_ADDON in c
+                for c in service_cmds
+                if c.startswith(typed) and COMMAND_SEPARATOR_ADDON in c
             ))
             return " ".join(suggestions) or None
 
-        elif cursor == 2 or cursor == 3:
-            if len(search_split) > 2 and search_split[2] == COMMAND_SEPARATOR_ADDON:
-                search_service = "".join(search_split[:3])  # "@service::"
-                typed = "".join(search_split)
-                matches = [
-                    c[len(search_service):]
-                    for c in service_cmds
-                    if c.startswith(typed)
-                ]
-                return " ".join(sorted(matches)) or None
-            elif cursor == 2 and search_split[2] == ":":
-                return COMMAND_SEPARATOR_ADDON
+        # Reconstruct "@service::" regardless of bash word splitting
+        service_prefix = "".join(search_split[: sep_idx + 1])
+
+        if cursor == sep_idx:
+            # Cursor is on "::" — bash clears CURRENT to ""; suggest all group/commands
+            matches = sorted(set(
+                c[len(service_prefix):]
+                for c in service_cmds
+                if c.startswith(service_prefix)
+            ))
+            return " ".join(matches) or None
+
+        if cursor > sep_idx:
+            # After "::" — filter group/command by partial
+            partial = search_split[cursor] if cursor < len(search_split) else ""
+            matches = sorted(
+                c[len(service_prefix):]
+                for c in service_cmds
+                if c.startswith(service_prefix)
+                and c[len(service_prefix):].startswith(partial)
+            )
+            return " ".join(matches) or None
 
         return None
 
