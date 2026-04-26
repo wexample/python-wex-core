@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 
 
 class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
+    def autocomplete_suggest(self, cursor: int, search_split: list[str]) -> str | None:
+        return None
     @classmethod
     def address_to_command(cls, address: CommandAddress) -> str:
         """Convert a CommandAddress to its command string representation."""
