@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     type=COMMAND_TYPE_ADDON,
     description="Stop and remove all Docker containers, custom networks, and volumes",
 )
-def docker__docker__stop_all(context: ExecutionContext) -> DictResponse:
+def docker__container__stop_all(context: ExecutionContext) -> DictResponse:
     from wexample_app.response.dict_response import DictResponse
 
     if shutil.which("docker") is None:

@@ -18,7 +18,7 @@ _DEFAULT_LOCAL_IP = "127.0.1.1"
 
 
 @command(type=COMMAND_TYPE_ADDON, description="Return the current Docker local IP")
-def docker__docker__ip(context: ExecutionContext) -> str:
+def docker__network__ip(context: ExecutionContext) -> str:
     if platform.system() == "Darwin":
         return "127.0.0.1"
 

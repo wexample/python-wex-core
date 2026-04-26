@@ -13,6 +13,6 @@ if TYPE_CHECKING:
 @command(
     type=COMMAND_TYPE_ADDON, description="Return the current system local IP address"
 )
-def system__system__ip(context: ExecutionContext) -> str:
+def system__network__ip(context: ExecutionContext) -> str:
     host_name = socket.gethostname()
     return socket.gethostbyname(host_name)
