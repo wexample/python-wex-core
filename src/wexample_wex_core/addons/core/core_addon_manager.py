@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
 
 
-class DefaultAddonManager(AbstractAddonManager):
+class CoreAddonManager(AbstractAddonManager):
     def get_middlewares_classes(self) -> list[type[AbstractMiddleware]]:
         from wexample_wex_core.middleware.each_directory_middleware import (
             EachDirectoryMiddleware,

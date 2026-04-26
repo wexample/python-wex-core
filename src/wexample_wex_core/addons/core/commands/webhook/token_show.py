@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     type=COMMAND_TYPE_ADDON,
     description="Show (or generate) the webhook token for a command",
 )
-def default__webhook__token_show(
+def core__webhook__token_show(
     context: ExecutionContext,
     command_name: str,
 ) -> None:

@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     type=COMMAND_TYPE_ADDON,
     description="Suggest autocomplete options for a partial wex command",
 )
-def default__autocomplete__suggest(
+def core__autocomplete__suggest(
     context: ExecutionContext,
     search: str = "",
     cursor: int = 0,

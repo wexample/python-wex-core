@@ -7,17 +7,14 @@ from wexample_wex_core.decorator.alias import alias
 from wexample_wex_core.decorator.command import command
 
 if TYPE_CHECKING:
-    from wexample_app.response.abstract_response import AbstractResponse
-
     from wexample_wex_core.context.execution_context import ExecutionContext
 
 
-@alias("hi")
+@alias("version")
 @command(
     type=COMMAND_TYPE_ADDON,
-    description="Return hi! Used to check if core vitals are working",
+    description="Returns core version",
 )
-def default__check__hi(context: ExecutionContext) -> AbstractResponse:
-    from wexample_app.response.default_response import DefaultResponse
-
-    return DefaultResponse(kernel=context.kernel, content="hi!")
+def core__version__get(context: ExecutionContext) -> str:
+    version_file = context.kernel.entrypoint_path.parent / "version.txt"
+    return version_file.read_text().strip()

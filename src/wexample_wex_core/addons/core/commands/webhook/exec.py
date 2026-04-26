@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     type=COMMAND_TYPE_ADDON,
     description="Internal dispatcher: execute the command targeted by a webhook URL",
 )
-def default__webhook__exec(
+def core__webhook__exec(
     context: ExecutionContext,
     webhook_path: str,
 ) -> AbstractResponse | None:

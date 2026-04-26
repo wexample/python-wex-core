@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 @option(name="increment", type=int)
 @option(name="build", type=bool)
 @command(type=COMMAND_TYPE_ADDON)
-def default__version__increment(
+def core__version__increment(
     context: ExecutionContext,
     version: str,
     type: str = UPGRADE_TYPE_MINOR,

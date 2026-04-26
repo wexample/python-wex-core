@@ -38,7 +38,7 @@ _TEMPLATES_DIR = Path(__file__).parent / "templates"
     description="Command: ~group/name (user) or addon::group/name (addon)",
 )
 @command(type=COMMAND_TYPE_ADDON, description="Create a new command file")
-def default__command__create(
+def core__command__create(
     context: ExecutionContext,
     command: str,
     extension: str = "yml",
@@ -80,11 +80,11 @@ def default__command__create(
     context.io.success(f"Created: {target}")
 
     # Rebuild registry so the new command is immediately available
-    from wexample_wex_core.addons.default.commands.registry.build import (
-        default__registry__build,
+    from wexample_wex_core.addons.core.commands.registry.build import (
+        core__registry__build,
     )
 
-    context.kernel.run_function(default__registry__build)
+    context.kernel.run_function(core__registry__build)
 
     return StrResponse(kernel=context.kernel, content=str(target))
 

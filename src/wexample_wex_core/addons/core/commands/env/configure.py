@@ -24,7 +24,7 @@ _CONFIGURABLE_KEYS = [
     type=COMMAND_TYPE_ADDON,
     description="Interactively configure required env vars and persist them to .wex/local/env.yml",
 )
-def default__env__configure(context: ExecutionContext) -> None:
+def core__env__configure(context: ExecutionContext) -> None:
     import os
     import pathlib
 

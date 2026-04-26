@@ -38,7 +38,7 @@ _LOG_TAIL = 20  # last N entries shown by default
     type=COMMAND_TYPE_ADDON,
     description="Show webhook daemon status and recent log entries",
 )
-def default__webhook__status(
+def core__webhook__status(
     context: ExecutionContext,
     port: int = WEBHOOK_LISTEN_PORT_DEFAULT,
     lines: int = _LOG_TAIL,

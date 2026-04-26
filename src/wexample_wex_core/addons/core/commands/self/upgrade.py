@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     type=COMMAND_TYPE_ADDON,
     description="Upgrade wex to the latest version via apt",
 )
-def default__self__upgrade(context: ExecutionContext) -> AbstractResponse:
+def core__self__upgrade(context: ExecutionContext) -> AbstractResponse:
     from wexample_app.response.interactive_shell_command_response import (
         InteractiveShellCommandResponse,
     )

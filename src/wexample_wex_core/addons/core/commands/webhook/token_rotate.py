@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     type=COMMAND_TYPE_ADDON,
     description="Rotate (regenerate) the webhook token for a command",
 )
-def default__webhook__token_rotate(
+def core__webhook__token_rotate(
     context: ExecutionContext,
     command_name: str,
 ) -> None:

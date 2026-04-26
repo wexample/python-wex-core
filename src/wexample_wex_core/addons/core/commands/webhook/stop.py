@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     description="Port the daemon is listening on",
 )
 @command(type=COMMAND_TYPE_ADDON, description="Stop the webhook daemon")
-def default__webhook__stop(
+def core__webhook__stop(
     context: ExecutionContext,
     port: int = WEBHOOK_LISTEN_PORT_DEFAULT,
 ) -> None:

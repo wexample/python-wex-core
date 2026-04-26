@@ -52,7 +52,7 @@ if TYPE_CHECKING:
     description="Bind the socket without serving (useful for tests)",
 )
 @command(type=COMMAND_TYPE_ADDON, description="Start the webhook HTTP daemon")
-def default__webhook__listen(
+def core__webhook__listen(
     context: ExecutionContext,
     port: int = WEBHOOK_LISTEN_PORT_DEFAULT,
     asynchronous: bool = False,
@@ -85,7 +85,7 @@ def default__webhook__listen(
         cmd = [
             sys.executable,
             sys.argv[0],
-            "default::webhook/listen",
+            "core::webhook/listen",
             "--port",
             str(port),
         ]

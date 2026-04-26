@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 @alias("rebuild")
 @command(type=COMMAND_TYPE_ADDON)
-def default__registry__build(context: ExecutionContext) -> None:
+def core__registry__build(context: ExecutionContext) -> None:
     from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
     from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
 
