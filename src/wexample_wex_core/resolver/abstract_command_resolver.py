@@ -24,12 +24,20 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
     @classmethod
     def address_to_command(cls, address: CommandAddress) -> str:
         """Convert a CommandAddress to its command string representation."""
+        from wexample_helpers.helpers.string import string_to_kebab_case
+
         from wexample_wex_core.const.globals import (
             COMMAND_SEPARATOR_ADDON,
             COMMAND_SEPARATOR_GROUP,
         )
 
-        return f"{address.addon}{COMMAND_SEPARATOR_ADDON}{address.group}{COMMAND_SEPARATOR_GROUP}{address.name}"
+        return (
+            f"{string_to_kebab_case(address.addon)}"
+            f"{COMMAND_SEPARATOR_ADDON}"
+            f"{string_to_kebab_case(address.group)}"
+            f"{COMMAND_SEPARATOR_GROUP}"
+            f"{string_to_kebab_case(address.name)}"
+        )
 
     @classmethod
     def build_command_from_function(cls, command_wrapper: CommandMethodWrapper):
@@ -150,8 +158,19 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         for addon in self.kernel.get_addons().values():
             commands_base = addon.workdir.get_path() / "commands"
             for ext in ("py", "yml"):
-                if (commands_base / group / f"{cmd_name}.{ext}").exists():
-                    addon_name = addon.get_snake_short_class_name()
+                from wexample_helpers.helpers.string import (
+                    string_to_kebab_case,
+                    string_to_snake_case,
+                )
+
+                if (
+                    commands_base
+                    / string_to_snake_case(group)
+                    / f"{string_to_snake_case(cmd_name)}.{ext}"
+                ).exists():
+                    addon_name = string_to_kebab_case(
+                        addon.get_snake_short_class_name()
+                    )
                     matches.append(f"{addon_name}{COMMAND_SEPARATOR_ADDON}{name}")
                     break
 

@@ -33,10 +33,10 @@ COMMAND_TYPE_USER: str = "user"
 
 # Command patterns
 # filestate: python-constant-sort
-COMMAND_PATTERN_ADDON: str = r"^(?:([\w_-]+)::)?([\w_-]+)/([\w_-]+)$"
-COMMAND_PATTERN_APP: str = r"^\.([\w_-]+)/([\w_-]+)$"
-COMMAND_PATTERN_SERVICE: str = r"^@([\w_-]+)::([\w_-]+)/([\w_-]+)$"
-COMMAND_PATTERN_USER: str = r"^~([\w_-]+)/([\w_-]+)$"
+COMMAND_PATTERN_ADDON: str = r"^(?:([a-zA-Z0-9-]+)::)?([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)$"
+COMMAND_PATTERN_APP: str = r"^\.([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)$"
+COMMAND_PATTERN_SERVICE: str = r"^@([a-zA-Z0-9-]+)::([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)$"
+COMMAND_PATTERN_USER: str = r"^~([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)$"
 
 COMMAND_PATTERNS: list[str] = [
     # filestate: python-iterable-sort

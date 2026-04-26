@@ -26,14 +26,14 @@ class UserCommandResolver(AbstractCommandResolver):
     # ------------------------------------------------------------------
     @classmethod
     def address_to_command(cls, address: CommandAddress) -> str:
+        from wexample_helpers.helpers.string import string_to_kebab_case
+
         from wexample_wex_core.const.globals import (
             COMMAND_CHAR_USER,
             COMMAND_SEPARATOR_GROUP,
         )
 
-        return (
-            f"{COMMAND_CHAR_USER}{address.group}{COMMAND_SEPARATOR_GROUP}{address.name}"
-        )
+        return f"{COMMAND_CHAR_USER}{string_to_kebab_case(address.group)}{COMMAND_SEPARATOR_GROUP}{string_to_kebab_case(address.name)}"
 
     @classmethod
     def get_pattern(cls) -> str:
