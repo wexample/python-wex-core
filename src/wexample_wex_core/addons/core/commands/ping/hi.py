@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     type=COMMAND_TYPE_ADDON,
     description="Return hi! Used to check if core vitals are working",
 )
-def core__check__hi(context: ExecutionContext) -> AbstractResponse:
+def core__ping__hi(context: ExecutionContext) -> AbstractResponse:
     from wexample_app.response.default_response import DefaultResponse
 
     return DefaultResponse(kernel=context.kernel, content="hi!")
