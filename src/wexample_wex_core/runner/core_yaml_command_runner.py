@@ -123,11 +123,12 @@ class CoreYamlCommandRunner(YamlCommandRunner):
             return True
         # Catch the common mistake of naming the YAML file with underscores
         snake_path = path.parent / f"{path.stem.replace('-', '_')}{path.suffix}"
-        if snake_path.exists():
+        kebab_path = path.parent / f"{path.stem.replace('_', '-')}{path.suffix}"
+        if kebab_path.exists():
             from wexample_app.exception.app_runtime_exception import AppRuntimeException
 
             raise AppRuntimeException(
-                f"YAML command file uses underscores: '{snake_path.name}'. "
+                f"Command file uses hyphens in its name: '{kebab_path.name}'. "
                 f"Rename to: '{path.name}'"
             )
         return False
