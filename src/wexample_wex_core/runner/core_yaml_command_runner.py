@@ -128,6 +128,26 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         wrapper = self._build_wrapper(definition)
         return ExtendedCommand(kernel=self.kernel, command_wrapper=wrapper)
 
+    def will_run(self, request: CommandRequest) -> bool:
+        import os.path
+
+        path = self.build_command_path(request=request)
+        if path is None:
+            return False
+        if os.path.exists(path):
+            return True
+        # Catch the common mistake of naming the YAML file with underscores
+        path.parent / f"{path.stem.replace('-', '_')}{path.suffix}"
+        kebab_path = path.parent / f"{path.stem.replace('_', '-')}{path.suffix}"
+        if kebab_path.exists():
+            from wexample_app.exception.app_runtime_exception import AppRuntimeException
+
+            raise AppRuntimeException(
+                f"Command file uses hyphens in its name: '{kebab_path.name}'. "
+                f"Rename to: '{path.name}'"
+            )
+        return False
+
     # ------------------------------------------------------------------
     # Wrapper construction
     # ------------------------------------------------------------------

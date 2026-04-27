@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wexample_filestate.item.file.yaml_file import YamlFile
+from wexample_filestate.item.file.json_file import JsonFile
 
 if TYPE_CHECKING:
     from wexample_wex_core.common.kernel import Kernel
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
 
 
-class KernelRegistryFile(YamlFile):
+class KernelRegistryFile(JsonFile):
     def create_registry(self, kernel: Kernel) -> KernelRegistry:
         from wexample_wex_core.registry.kernel_registry import KernelRegistry
 

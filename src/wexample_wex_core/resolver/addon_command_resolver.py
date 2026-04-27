@@ -24,6 +24,65 @@ class AddonCommandResolver(AbstractCommandResolver):
 
         return COMMAND_TYPE_ADDON
 
+    def autocomplete_suggest(self, cursor: int, search_split: list[str]) -> str | None:
+        from wexample_wex_core.const.globals import COMMAND_SEPARATOR_ADDON
+
+        registry = self.kernel.get_configuration_registry()
+        addon_data = registry.get_addon_commands()
+        # addon_data: {addon_name: {cmd_key: {command: "addon::group/cmd", ...}}}
+
+        all_addon_cmds = [
+            cmd["command"] for addon in addon_data.values() for cmd in addon.values()
+        ]
+
+        first = search_split[0] if search_split else ""
+        second = search_split[1] if len(search_split) > 1 else ""
+        third = search_split[2] if len(search_split) > 2 else ""
+
+        if cursor == 0:
+            addon_names = sorted(
+                {c.split("::")[0] for c in all_addon_cmds if "::" in c}
+            )
+            suggestions = [
+                f"{a}{COMMAND_SEPARATOR_ADDON}"
+                for a in addon_names
+                if a.startswith(first)
+            ]
+            # Aliases (short forms without addon prefix)
+            for cmd in addon_data.values():
+                for cmd_data in cmd.values():
+                    for alias in cmd_data.get("alias", []):
+                        if alias.startswith(first) and "::" not in alias:
+                            suggestions.append(alias)
+            return " ".join(suggestions) if suggestions else None
+
+        elif cursor == 1:
+            if second == COMMAND_SEPARATOR_ADDON:
+                groups = sorted(
+                    {
+                        c.split("::")[1].split("/")[0]
+                        for c in all_addon_cmds
+                        if "::" in c and c.split("::")[0] == first
+                    }
+                )
+                return " ".join(f"{g}/" for g in groups) or None
+            elif second == ":":
+                return COMMAND_SEPARATOR_ADDON
+
+        elif cursor == 2:
+            matches = sorted(
+                [
+                    c.split("::")[1]
+                    for c in all_addon_cmds
+                    if "::" in c
+                    and c.split("::")[0] == first
+                    and c.split("::")[1].startswith(third)
+                ]
+            )
+            return " ".join(matches) or None
+
+        return None
+
     def build_command_function_name(self, request: CommandRequest) -> str | None:
         from wexample_helpers.helpers.string import string_to_snake_case
 

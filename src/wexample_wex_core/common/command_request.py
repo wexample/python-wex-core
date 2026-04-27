@@ -17,5 +17,21 @@ class CommandRequest(BaseCommandRequest):
         description="Unique identifier for this request (auto-generated if not provided)",
     )
 
+    def __attrs_post_init__(self) -> None:
+        from wexample_app.exception.app_runtime_exception import AppRuntimeException
+        from wexample_app.exception.command_type_not_found_exception import (
+            CommandTypeNotFoundException,
+        )
+
+        try:
+            super().__attrs_post_init__()
+        except CommandTypeNotFoundException:
+            if "_" in self.name:
+                suggested = self.name.replace("_", "-")
+                raise AppRuntimeException(
+                    f"Command names use hyphens not underscores. Did you mean: '{suggested}'?"
+                )
+            raise
+
     def get_addon_manager(self):
         return self.resolver.get_request_addon_manager(self)

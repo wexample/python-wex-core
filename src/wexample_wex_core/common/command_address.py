@@ -22,7 +22,7 @@ class CommandAddress:
     # ------------------------------------------------------------------
     @classmethod
     def from_function(cls, function) -> CommandAddress:
-        """Build from a command function or CommandMethodWrapper, e.g. ``default__ping__pong``."""
+        """Build from a command function or CommandMethodWrapper, e.g. ``core__ping__pong``."""
         from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
 
         if isinstance(function, CommandMethodWrapper):
@@ -31,7 +31,7 @@ class CommandAddress:
 
     @classmethod
     def from_function_name(cls, function_name: str) -> CommandAddress:
-        """Build from a Python function name, e.g. ``default__registry__build``."""
+        """Build from a Python function name, e.g. ``core__registry__build``."""
         from wexample_wex_core.const.globals import COMMAND_SEPARATOR_FUNCTION_PARTS
 
         parts = function_name.split(COMMAND_SEPARATOR_FUNCTION_PARTS, 2)
@@ -59,7 +59,7 @@ class CommandAddress:
         return f"{self.group}{COMMAND_SEPARATOR_GROUP}{self.name}"
 
     def to_function_name(self) -> str:
-        """Return the Python function name, e.g. ``default__registry__build``."""
+        """Return the Python function name, e.g. ``core__registry__build``."""
         from wexample_wex_core.const.globals import COMMAND_SEPARATOR_FUNCTION_PARTS
 
         return COMMAND_SEPARATOR_FUNCTION_PARTS.join(

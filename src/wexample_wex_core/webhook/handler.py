@@ -99,7 +99,7 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
 
             # ---- dispatch --------------------------------------------------
             cmd = self.wex_executable + [
-                "default::webhook/exec",
+                "core::webhook/exec",
                 "--webhook-path",
                 self.path,
             ]

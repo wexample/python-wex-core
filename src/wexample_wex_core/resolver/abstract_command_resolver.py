@@ -24,12 +24,20 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
     @classmethod
     def address_to_command(cls, address: CommandAddress) -> str:
         """Convert a CommandAddress to its command string representation."""
+        from wexample_helpers.helpers.string import string_to_kebab_case
+
         from wexample_wex_core.const.globals import (
             COMMAND_SEPARATOR_ADDON,
             COMMAND_SEPARATOR_GROUP,
         )
 
-        return f"{address.addon}{COMMAND_SEPARATOR_ADDON}{address.group}{COMMAND_SEPARATOR_GROUP}{address.name}"
+        return (
+            f"{string_to_kebab_case(address.addon)}"
+            f"{COMMAND_SEPARATOR_ADDON}"
+            f"{string_to_kebab_case(address.group)}"
+            f"{COMMAND_SEPARATOR_GROUP}"
+            f"{string_to_kebab_case(address.name)}"
+        )
 
     @classmethod
     def build_command_from_function(cls, command_wrapper: CommandMethodWrapper):
@@ -64,6 +72,19 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         from wexample_wex_core.const.globals import COMMAND_SEPARATOR_FUNCTION_PARTS
 
         return function_name.split(COMMAND_SEPARATOR_FUNCTION_PARTS)[:3]
+
+    @classmethod
+    def is_live(cls) -> bool:
+        """Return True if this resolver's data depends on runtime context (CWD, user).
+
+        Live resolvers are re-scanned on every kernel init instead of relying on the
+        cached registry file.  Addon and service resolvers are static (False); app and
+        user resolvers are dynamic (True).
+        """
+        return False
+
+    def autocomplete_suggest(self, cursor: int, search_split: list[str]) -> str | None:
+        return None
 
     def build_execution_context(
         self,
@@ -140,6 +161,11 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         if COMMAND_SEPARATOR_ADDON in name or "/" not in name:
             return None
 
+        # Unqualified addon commands always start with a letter.
+        # Anything else (., @, ~, …) is a typed prefix handled by another resolver.
+        if not name[0].isalpha():
+            return None
+
         parts = name.split("/")
         if len(parts) != 2:
             return None
@@ -150,8 +176,19 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         for addon in self.kernel.get_addons().values():
             commands_base = addon.workdir.get_path() / "commands"
             for ext in ("py", "yml"):
-                if (commands_base / group / f"{cmd_name}.{ext}").exists():
-                    addon_name = addon.get_snake_short_class_name()
+                from wexample_helpers.helpers.string import (
+                    string_to_kebab_case,
+                    string_to_snake_case,
+                )
+
+                if (
+                    commands_base
+                    / string_to_snake_case(group)
+                    / f"{string_to_snake_case(cmd_name)}.{ext}"
+                ).exists():
+                    addon_name = string_to_kebab_case(
+                        addon.get_snake_short_class_name()
+                    )
                     matches.append(f"{addon_name}{COMMAND_SEPARATOR_ADDON}{name}")
                     break
 
@@ -198,6 +235,15 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                     continue
                 if cmd_file.suffix not in (".py", ".yml"):
                     continue
+                if "-" in cmd_file.stem:
+                    from wexample_app.exception.app_runtime_exception import (
+                        AppRuntimeException,
+                    )
+
+                    raise AppRuntimeException(
+                        f"Command file uses hyphens in its name: '{cmd_file}'. "
+                        f"Rename to: '{cmd_file.stem.replace('-', '_')}{cmd_file.suffix}'"
+                    )
 
                 address = CommandAddress.from_path(
                     path=cmd_file,

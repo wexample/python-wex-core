@@ -26,14 +26,14 @@ class UserCommandResolver(AbstractCommandResolver):
     # ------------------------------------------------------------------
     @classmethod
     def address_to_command(cls, address: CommandAddress) -> str:
+        from wexample_helpers.helpers.string import string_to_kebab_case
+
         from wexample_wex_core.const.globals import (
             COMMAND_CHAR_USER,
             COMMAND_SEPARATOR_GROUP,
         )
 
-        return (
-            f"{COMMAND_CHAR_USER}{address.group}{COMMAND_SEPARATOR_GROUP}{address.name}"
-        )
+        return f"{COMMAND_CHAR_USER}{string_to_kebab_case(address.group)}{COMMAND_SEPARATOR_GROUP}{string_to_kebab_case(address.name)}"
 
     @classmethod
     def get_pattern(cls) -> str:
@@ -46,6 +46,39 @@ class UserCommandResolver(AbstractCommandResolver):
         from wexample_wex_core.const.globals import COMMAND_TYPE_USER
 
         return COMMAND_TYPE_USER
+
+    # ------------------------------------------------------------------
+    # Registry
+    # ------------------------------------------------------------------
+    @classmethod
+    def is_live(cls) -> bool:
+        return True
+
+    def autocomplete_suggest(self, cursor: int, search_split: list[str]) -> str | None:
+        from wexample_wex_core.const.globals import COMMAND_CHAR_USER
+
+        base = self.get_base_path()
+        if not base:
+            return None
+
+        first = search_split[0] if search_split else ""
+
+        if cursor == 0:
+            # User commands are local — scan filesystem directly, not the registry
+            commands_base = base / _COMMANDS_SUBDIR
+            user_data = self._scan_commands_dir(commands_base, "user")
+            user_cmds = sorted(cmd["command"] for cmd in user_data.values())
+
+            if not user_cmds:
+                return None
+
+            if first == "":
+                return f"\\{COMMAND_CHAR_USER}"
+            if first.startswith(COMMAND_CHAR_USER):
+                matches = [c for c in user_cmds if c.startswith(first)]
+                return " ".join(matches) or None
+
+        return None
 
     def build_command_function_name(self, request: CommandRequest) -> str | None:
         from wexample_helpers.helpers.string import string_to_snake_case
@@ -98,9 +131,6 @@ class UserCommandResolver(AbstractCommandResolver):
         )
         return target, {"_type": "user", "group": group, "name": name}
 
-    # ------------------------------------------------------------------
-    # Registry
-    # ------------------------------------------------------------------
     def build_registry_data(self) -> RegistryResolverData:
         base = self.get_base_path()
         if not base:
