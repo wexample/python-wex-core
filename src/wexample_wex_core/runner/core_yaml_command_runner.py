@@ -113,26 +113,6 @@ class CoreYamlCommandRunner(YamlCommandRunner):
                 f"Valid options: {sorted(valid - structural)}"
             )
 
-    def will_run(self, request: CommandRequest) -> bool:
-        import os.path
-
-        path = self.build_command_path(request=request)
-        if path is None:
-            return False
-        if os.path.exists(path):
-            return True
-        # Catch the common mistake of naming the YAML file with underscores
-        snake_path = path.parent / f"{path.stem.replace('-', '_')}{path.suffix}"
-        kebab_path = path.parent / f"{path.stem.replace('_', '-')}{path.suffix}"
-        if kebab_path.exists():
-            from wexample_app.exception.app_runtime_exception import AppRuntimeException
-
-            raise AppRuntimeException(
-                f"Command file uses hyphens in its name: '{kebab_path.name}'. "
-                f"Rename to: '{path.name}'"
-            )
-        return False
-
     def build_runnable_command(self, request: CommandRequest) -> Command | None:
         from wexample_wex_core.command.extended_command import ExtendedCommand
         from wexample_wex_core.yaml.yaml_command_definition import YamlCommandDefinition
@@ -147,6 +127,26 @@ class CoreYamlCommandRunner(YamlCommandRunner):
         definition = self._definition_cache[path]
         wrapper = self._build_wrapper(definition)
         return ExtendedCommand(kernel=self.kernel, command_wrapper=wrapper)
+
+    def will_run(self, request: CommandRequest) -> bool:
+        import os.path
+
+        path = self.build_command_path(request=request)
+        if path is None:
+            return False
+        if os.path.exists(path):
+            return True
+        # Catch the common mistake of naming the YAML file with underscores
+        path.parent / f"{path.stem.replace('-', '_')}{path.suffix}"
+        kebab_path = path.parent / f"{path.stem.replace('_', '-')}{path.suffix}"
+        if kebab_path.exists():
+            from wexample_app.exception.app_runtime_exception import AppRuntimeException
+
+            raise AppRuntimeException(
+                f"Command file uses hyphens in its name: '{kebab_path.name}'. "
+                f"Rename to: '{path.name}'"
+            )
+        return False
 
     # ------------------------------------------------------------------
     # Wrapper construction

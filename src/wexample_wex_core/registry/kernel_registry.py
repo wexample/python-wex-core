@@ -80,11 +80,6 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
         self._resolvers = data.get("resolvers", {})
         self._all_commands_cache = None
 
-    def update_resolver(self, key: str, data: RegistryResolverData) -> None:
-        """Merge resolver data into the in-memory registry without touching the file."""
-        self._resolvers[key] = data
-        self._all_commands_cache = None
-
     def serialize(self) -> StructuredData:
         """Build and return registry data for non-live resolvers only.
 
@@ -114,3 +109,8 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
         return [
             name for name in self.get_all_command_names() if name.startswith(prefix)
         ]
+
+    def update_resolver(self, key: str, data: RegistryResolverData) -> None:
+        """Merge resolver data into the in-memory registry without touching the file."""
+        self._resolvers[key] = data
+        self._all_commands_cache = None

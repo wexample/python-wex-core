@@ -21,8 +21,6 @@ if TYPE_CHECKING:
 
 
 class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
-    def autocomplete_suggest(self, cursor: int, search_split: list[str]) -> str | None:
-        return None
     @classmethod
     def address_to_command(cls, address: CommandAddress) -> str:
         """Convert a CommandAddress to its command string representation."""
@@ -75,6 +73,19 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
 
         return function_name.split(COMMAND_SEPARATOR_FUNCTION_PARTS)[:3]
 
+    @classmethod
+    def is_live(cls) -> bool:
+        """Return True if this resolver's data depends on runtime context (CWD, user).
+
+        Live resolvers are re-scanned on every kernel init instead of relying on the
+        cached registry file.  Addon and service resolvers are static (False); app and
+        user resolvers are dynamic (True).
+        """
+        return False
+
+    def autocomplete_suggest(self, cursor: int, search_split: list[str]) -> str | None:
+        return None
+
     def build_execution_context(
         self,
         middleware: AbstractMiddleware | None,
@@ -101,16 +112,6 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         command string does not match this resolver's pattern.
         """
         return None
-
-    @classmethod
-    def is_live(cls) -> bool:
-        """Return True if this resolver's data depends on runtime context (CWD, user).
-
-        Live resolvers are re-scanned on every kernel init instead of relying on the
-        cached registry file.  Addon and service resolvers are static (False); app and
-        user resolvers are dynamic (True).
-        """
-        return False
 
     @abstract_method
     def build_registry_data(self) -> StructuredData:
@@ -235,7 +236,9 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                 if cmd_file.suffix not in (".py", ".yml"):
                     continue
                 if "-" in cmd_file.stem:
-                    from wexample_app.exception.app_runtime_exception import AppRuntimeException
+                    from wexample_app.exception.app_runtime_exception import (
+                        AppRuntimeException,
+                    )
 
                     raise AppRuntimeException(
                         f"Command file uses hyphens in its name: '{cmd_file}'. "
