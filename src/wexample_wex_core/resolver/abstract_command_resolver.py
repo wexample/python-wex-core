@@ -150,6 +150,11 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         if COMMAND_SEPARATOR_ADDON in name or "/" not in name:
             return None
 
+        # Unqualified addon commands always start with a letter.
+        # Anything else (., @, ~, …) is a typed prefix handled by another resolver.
+        if not name[0].isalpha():
+            return None
+
         parts = name.split("/")
         if len(parts) != 2:
             return None
@@ -219,6 +224,13 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                     continue
                 if cmd_file.suffix not in (".py", ".yml"):
                     continue
+                if cmd_file.suffix == ".yml" and "_" in cmd_file.stem:
+                    from wexample_app.exception.app_runtime_exception import AppRuntimeException
+
+                    raise AppRuntimeException(
+                        f"YAML command file uses underscores: '{cmd_file}'. "
+                        f"Rename to: '{cmd_file.stem.replace('_', '-')}.yml'"
+                    )
 
                 address = CommandAddress.from_path(
                     path=cmd_file,
