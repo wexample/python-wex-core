@@ -127,6 +127,10 @@ class UserCommandResolver(AbstractCommandResolver):
     # ------------------------------------------------------------------
     # Registry
     # ------------------------------------------------------------------
+    @classmethod
+    def is_live(cls) -> bool:
+        return True
+
     def build_registry_data(self) -> RegistryResolverData:
         base = self.get_base_path()
         if not base:

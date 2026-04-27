@@ -505,6 +505,14 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 kernel=self
             )
 
+        # Live resolvers (app, user) are never persisted — always scan fresh.
+        for resolver in self.get_resolvers().values():
+            if resolver.is_live():
+                self._registry.update_resolver(
+                    resolver.get_snake_short_class_name(),
+                    resolver.build_registry_data(),
+                )
+
     def _init_script_runner_registry(self) -> None:
         from wexample_wex_core.yaml.script_runner_registry import ScriptRunnerRegistry
 

@@ -102,6 +102,16 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         """
         return None
 
+    @classmethod
+    def is_live(cls) -> bool:
+        """Return True if this resolver's data depends on runtime context (CWD, user).
+
+        Live resolvers are re-scanned on every kernel init instead of relying on the
+        cached registry file.  Addon and service resolvers are static (False); app and
+        user resolvers are dynamic (True).
+        """
+        return False
+
     @abstract_method
     def build_registry_data(self) -> StructuredData:
         pass
@@ -224,12 +234,12 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                     continue
                 if cmd_file.suffix not in (".py", ".yml"):
                     continue
-                if cmd_file.suffix == ".yml" and "_" in cmd_file.stem:
+                if "-" in cmd_file.stem:
                     from wexample_app.exception.app_runtime_exception import AppRuntimeException
 
                     raise AppRuntimeException(
-                        f"YAML command file uses underscores: '{cmd_file}'. "
-                        f"Rename to: '{cmd_file.stem.replace('_', '-')}.yml'"
+                        f"Command file uses hyphens in its name: '{cmd_file}'. "
+                        f"Rename to: '{cmd_file.stem.replace('-', '_')}{cmd_file.suffix}'"
                     )
 
                 address = CommandAddress.from_path(

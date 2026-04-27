@@ -80,7 +80,17 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
         self._resolvers = data.get("resolvers", {})
         self._all_commands_cache = None
 
+    def update_resolver(self, key: str, data: RegistryResolverData) -> None:
+        """Merge resolver data into the in-memory registry without touching the file."""
+        self._resolvers[key] = data
+        self._all_commands_cache = None
+
     def serialize(self) -> StructuredData:
+        """Build and return registry data for non-live resolvers only.
+
+        Live resolvers (app, user) depend on runtime context and are never persisted
+        to the registry file — they are always scanned fresh at kernel startup.
+        """
         from wexample_app.resolver.abstract_command_resolver import (
             AbstractCommandResolver,
         )
@@ -89,9 +99,10 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
 
         for command_resolver in self.kernel.get_resolvers().values():
             assert isinstance(command_resolver, AbstractCommandResolver)
-            resolvers[command_resolver.get_snake_short_class_name()] = (
-                command_resolver.build_registry_data()
-            )
+            if not command_resolver.is_live():
+                resolvers[command_resolver.get_snake_short_class_name()] = (
+                    command_resolver.build_registry_data()
+                )
 
         self._resolvers = resolvers
         self._all_commands_cache = None
