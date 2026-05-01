@@ -14,6 +14,10 @@ WEBHOOK_ROUTES: dict = {
         "is_async": False,
         "pattern": r"^/health$",
     },
+    "metrics": {
+        "is_async": False,
+        "pattern": r"^/metrics$",
+    },
 }
 
 # Allowed characters in query parameter names and values.
