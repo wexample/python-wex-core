@@ -121,14 +121,12 @@ def core__webhook__listen(
 
     log_path = _resolve_log_path(context)
 
-    from wexample_wex_core.webhook.const import WEBHOOK_APPS_BASE_PATH
-
     class _Handler(WebhookHttpRequestHandler):
         wex_executable = [sys.executable, sys.argv[0]]
         start_time = time.monotonic()
 
     _Handler.log_path = log_path
-    _Handler.apps_base_path = WEBHOOK_APPS_BASE_PATH
+    _Handler.type_resolvers = _load_type_resolvers()
 
     context.io.log(f"Starting webhook daemon on port {port}  |  log: {log_path}")
 
@@ -145,3 +143,14 @@ def _resolve_log_path(context: ExecutionContext) -> str:
     log_dir = Path(context.kernel.workdir.get_path()) / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     return str(log_dir / "webhook.log")
+
+
+def _load_type_resolvers() -> dict:
+    resolvers: dict = {}
+    try:
+        from wexample_wex_addon_app.webhook.app_resolver import AppWebhookTypeResolver
+
+        resolvers["app"] = AppWebhookTypeResolver()
+    except ImportError:
+        pass
+    return resolvers

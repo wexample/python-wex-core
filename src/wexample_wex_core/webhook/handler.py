@@ -16,12 +16,6 @@ WEBHOOK_STATUS_ERROR = "error"
 
 
 class ThreadingHTTPServer(ThreadingMixIn, TCPServer):
-    """HTTP server that handles each request in a dedicated thread.
-
-    Uses daemon_threads so the process exits cleanly when the main thread stops.
-    allow_reuse_address avoids "Address already in use" on quick restarts.
-    """
-
     allow_reuse_address = True
     daemon_threads = True
 
@@ -29,16 +23,16 @@ class ThreadingHTTPServer(ThreadingMixIn, TCPServer):
 class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
     """HTTP request handler for incoming webhook calls.
 
-    Subclasses must set class-level attributes before instantiation:
-        wex_executable  : list[str]              — [python_path, main_py_path]
-        log_path        : str                    — absolute path to the rotating log file
-        token_verifier  : Callable[[str], str|None] — given a command, returns its expected token
-        start_time      : float                  — time.monotonic() at server startup
+    Class-level attributes to set before serving:
+        wex_executable : list[str]   — [python_path, main_py_path]
+        log_path       : str         — absolute path to the rotating log file
+        start_time     : float       — time.monotonic() at server startup
+        type_resolvers : dict        — {command_type: WebhookTypeResolver}
     """
 
-    apps_base_path: str = "/var/www"
     log_path: str = ""
     start_time: float = 0.0
+    type_resolvers: dict = {}
     wex_executable: list[str] = []
 
     # ------------------------------------------------------------------ GET
@@ -85,10 +79,23 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
 
             command_type = match.group(1)
             command_path = match.group(2)
-            routing_build_command(command_type, command_path)
+
+            # Resolve command string via resolver or generic routing
+            resolver = type(self).type_resolvers.get(command_type)
+            if resolver is not None:
+                command_str = resolver.build_command(command_path)
+            else:
+                command_str = routing_build_command(command_type, command_path)
+
+            if not command_str:
+                self.send_response(400)
+                self._send_json(
+                    {"status": WEBHOOK_STATUS_ERROR, "error": "CANNOT_BUILD_COMMAND"}
+                )
+                return
 
             # ---- token validation ------------------------------------------
-            if not self._validate_token(self.path):
+            if not self._validate_token(command_type, command_path, command_str):
                 duration_ms = int((time.monotonic() - t0) * 1000)
                 self._log_auth_failure(command_type, command_path)
                 self.send_response(401)
@@ -98,22 +105,15 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 return
 
             # ---- dispatch --------------------------------------------------
+            cwd = resolver.resolve_cwd(command_path) if resolver is not None else None
+
             cmd = self.wex_executable + [
                 "core::webhook/exec",
+                "--command-str",
+                command_str,
                 "--webhook-path",
                 self.path,
             ]
-
-            cwd = None
-            if command_type == "app":
-                from pathlib import Path
-
-                from wexample_wex_core.webhook.routing import routing_parse_app_url
-
-                app_info = routing_parse_app_url(command_path)
-                if app_info:
-                    env_name, app_name, _ = app_info
-                    cwd = str(Path(type(self).apps_base_path) / env_name / app_name)
 
             process = subprocess.Popen(
                 cmd,
@@ -188,7 +188,6 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
 
     # ------------------------------------------------------------------ auth
     def _extract_token(self) -> str | None:
-        """Extract bearer token from Authorization header or ?_token query param."""
         from urllib.parse import parse_qs
 
         auth = self.headers.get("Authorization", "")
@@ -198,6 +197,25 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
         query = parse_qs(urlparse(self.path).query)
         tokens = query.get("_token", [])
         return tokens[0] if tokens else None
+
+    def _validate_token(
+        self, command_type: str, command_path: str, command_str: str
+    ) -> bool:
+        import hmac
+
+        provided = self._extract_token()
+        if not provided:
+            return False
+
+        resolver = type(self).type_resolvers.get(command_type)
+        if resolver is None:
+            return False
+
+        expected = resolver.resolve_token(command_path, command_str)
+        if not expected:
+            return False
+
+        return hmac.compare_digest(expected, provided)
 
     # ------------------------------------------------------------------ logging
     def _get_logger(self) -> logging.Logger:
@@ -246,17 +264,6 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
             entry["error"] = error
         self._get_logger().info(json.dumps(entry))
 
-    def _read_app_token(self, app_path: Path, command: str) -> str | None:
-        """Read the stored token for *command* from the app's local data file."""
-        import yaml
-
-        token_file = app_path / ".wex" / "local" / "webhook_tokens.yml"
-        if not token_file.exists():
-            return None
-        with open(token_file) as f:
-            data = yaml.safe_load(f) or {}
-        return data.get(command)
-
     # ------------------------------------------------------------------ helpers
     def _send_json(self, data: dict) -> None:
         self.send_header("Content-type", "application/json")
@@ -265,53 +272,3 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(data).encode())
         except BrokenPipeError:
             pass
-
-    def _validate_token(self, path: str) -> bool:
-        """Return True if the request carries a valid token.
-
-        Security posture:
-        - No token file / key for the command → deny (401)
-        - Token registered but not provided   → deny (401)
-        - Token provided but wrong            → deny (401)
-        - Token provided and correct          → allow
-        """
-        import hmac
-        import re
-        from pathlib import Path
-        from urllib.parse import urlparse
-
-        from wexample_wex_core.webhook.const import WEBHOOK_ROUTES
-        from wexample_wex_core.webhook.routing import (
-            routing_build_command,
-            routing_parse_app_url,
-        )
-
-        provided = self._extract_token()
-        if not provided:
-            return False
-
-        parsed_url = urlparse(path)
-        match = re.match(WEBHOOK_ROUTES["exec"]["pattern"], parsed_url.path)
-        if not match:
-            return False
-
-        command_type = match.group(1)
-        command_path = match.group(2)
-        command_str = routing_build_command(command_type, command_path)
-        if not command_str:
-            return False
-
-        if command_type == "app":
-            app_info = routing_parse_app_url(command_path)
-            if not app_info:
-                return False
-            env, app_name, _ = app_info
-            app_path = Path(type(self).apps_base_path) / env / app_name
-            expected = self._read_app_token(app_path, command_str)
-        else:
-            return False  # addon/service webhooks not yet supported
-
-        if not expected:
-            return False
-
-        return hmac.compare_digest(expected, provided)
