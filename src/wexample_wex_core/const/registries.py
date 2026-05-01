@@ -18,6 +18,7 @@ class RegistryCommandData(TypedDict):
     path: str
     sudo: bool
     test: str | None
+    webhook: bool
 
 
 RegistryAddonData = dict[str, RegistryCommandData]

@@ -75,6 +75,14 @@ class KernelRegistry(AbstractKernelChild, SerializableMixin, BaseClass):
             if cmd.get("sudo")
         }
 
+    def get_webhook_commands(self) -> dict[str, RegistryCommandData]:
+        """All commands marked with @webhook()."""
+        return {
+            name: cmd
+            for name, cmd in self.get_all_commands().items()
+            if cmd.get("webhook")
+        }
+
     def hydrate(self, data: StructuredData) -> None:
         self._env = data.get("env", self._env)
         self._resolvers = data.get("resolvers", {})

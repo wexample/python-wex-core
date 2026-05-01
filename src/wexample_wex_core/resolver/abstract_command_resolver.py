@@ -256,6 +256,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                 aliases: list[str] = []
                 attachments: dict[str, list] = {"before": [], "after": []}
                 sudo: bool = False
+                webhook: bool = False
 
                 if cmd_file.suffix == ".py":
                     func_name = address.to_function_name()
@@ -272,6 +273,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                                 for pos, items in wrapper.attachments.items()
                             }
                             sudo = wrapper.sudo
+                            webhook = wrapper.webhook
 
                 elif cmd_file.suffix == ".yml":
                     with open(cmd_file) as f:
@@ -282,6 +284,8 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                         dec_args = dec.get("args", {})
                         if dec_name == "sudo":
                             sudo = True
+                        elif dec_name == "webhook":
+                            webhook = True
                         elif dec_name == "alias":
                             aliases.append(
                                 dec_args if isinstance(dec_args, str) else str(dec_args)
@@ -303,6 +307,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                     alias=aliases,
                     attachments=attachments,
                     sudo=sudo,
+                    webhook=webhook,
                 )
 
         return addon_data
