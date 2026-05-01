@@ -14,12 +14,6 @@ class ServiceWebhookTypeResolver:
     def __init__(self, wex_workdir_path: str) -> None:
         self._workdir = Path(wex_workdir_path)
 
-    def _parse(self, command_path: str) -> tuple[str, str] | None:
-        parts = command_path.split("/", 1)
-        if len(parts) < 2:
-            return None
-        return parts[0], parts[1]
-
     def build_command(self, command_path: str) -> str | None:
         parsed = self._parse(command_path)
         if parsed is None:
@@ -32,11 +26,13 @@ class ServiceWebhookTypeResolver:
 
     def resolve_token(self, command_path: str, command_str: str) -> str | None:
         import yaml
-
         from wexample_app.const.globals import WORKDIR_LOCAL_DIR_NAME, WORKDIR_SETUP_DIR
 
         token_file = (
-            self._workdir / WORKDIR_SETUP_DIR / WORKDIR_LOCAL_DIR_NAME / "webhook_tokens_service.yml"
+            self._workdir
+            / WORKDIR_SETUP_DIR
+            / WORKDIR_LOCAL_DIR_NAME
+            / "webhook_tokens_service.yml"
         )
         if not token_file.exists():
             return None
@@ -46,3 +42,9 @@ class ServiceWebhookTypeResolver:
         except Exception:
             return None
         return data.get(command_str)
+
+    def _parse(self, command_path: str) -> tuple[str, str] | None:
+        parts = command_path.split("/", 1)
+        if len(parts) < 2:
+            return None
+        return parts[0], parts[1]

@@ -55,7 +55,9 @@ def _render_metrics() -> str:
         "# TYPE webhook_request_duration_seconds_sum gauge",
     ]
     for ct, total in sorted(dur_sum.items()):
-        lines.append(f'webhook_request_duration_seconds_sum{{command_type="{ct}"}} {total:.6f}')
+        lines.append(
+            f'webhook_request_duration_seconds_sum{{command_type="{ct}"}} {total:.6f}'
+        )
 
     lines += [
         "",
@@ -63,7 +65,9 @@ def _render_metrics() -> str:
         "# TYPE webhook_request_duration_seconds_count counter",
     ]
     for ct, cnt in sorted(dur_count.items()):
-        lines.append(f'webhook_request_duration_seconds_count{{command_type="{ct}"}} {cnt}')
+        lines.append(
+            f'webhook_request_duration_seconds_count{{command_type="{ct}"}} {cnt}'
+        )
 
     return "\n".join(lines) + "\n"
 
@@ -133,7 +137,9 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
             if route_name == "metrics":
                 body = _render_metrics().encode()
                 self.send_response(200)
-                self.send_header("Content-Type", "text/plain; version=0.0.4; charset=utf-8")
+                self.send_header(
+                    "Content-Type", "text/plain; version=0.0.4; charset=utf-8"
+                )
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
                 try:
@@ -167,7 +173,7 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
 
             # ---- token validation ------------------------------------------
             if not self._validate_token(command_type, command_path, command_str):
-                duration_ms = int((time.monotonic() - t0) * 1000)
+                int((time.monotonic() - t0) * 1000)
                 self._log_auth_failure(command_type, command_path)
                 _record_request(command_type, "unauthorized", (time.monotonic() - t0))
                 self.send_response(401)
@@ -296,25 +302,6 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
         tokens = query.get("_token", [])
         return tokens[0] if tokens else None
 
-    def _validate_token(
-        self, command_type: str, command_path: str, command_str: str
-    ) -> bool:
-        import hmac
-
-        provided = self._extract_token()
-        if not provided:
-            return False
-
-        resolver = type(self).type_resolvers.get(command_type)
-        if resolver is None:
-            return False
-
-        expected = resolver.resolve_token(command_path, command_str)
-        if not expected:
-            return False
-
-        return hmac.compare_digest(expected, provided)
-
     # ------------------------------------------------------------------ logging
     def _get_logger(self) -> logging.Logger:
         logger = logging.getLogger("wex-webhook")
@@ -370,3 +357,22 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(data).encode())
         except BrokenPipeError:
             pass
+
+    def _validate_token(
+        self, command_type: str, command_path: str, command_str: str
+    ) -> bool:
+        import hmac
+
+        provided = self._extract_token()
+        if not provided:
+            return False
+
+        resolver = type(self).type_resolvers.get(command_type)
+        if resolver is None:
+            return False
+
+        expected = resolver.resolve_token(command_path, command_str)
+        if not expected:
+            return False
+
+        return hmac.compare_digest(expected, provided)

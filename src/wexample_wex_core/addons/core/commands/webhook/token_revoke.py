@@ -33,7 +33,10 @@ _VALID_TYPES = ("addon", "service")
     default=False,
     description="Revoke tokens for all @webhook commands of this type",
 )
-@command(type=COMMAND_TYPE_ADDON, description="Revoke the webhook token for an addon or service command")
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="Revoke the webhook token for an addon or service command",
+)
 def core__webhook__token_revoke(
     context: ExecutionContext,
     type_name: str,
@@ -54,7 +57,9 @@ def core__webhook__token_revoke(
     namespace = f"webhook_tokens_{type_name}"
 
     if all:
-        webhook_cmds = context.kernel.get_configuration_registry().get_webhook_commands()
+        webhook_cmds = (
+            context.kernel.get_configuration_registry().get_webhook_commands()
+        )
         targets = _filter_by_type(webhook_cmds, type_name)
         if not targets:
             context.io.log(f"No @webhook {type_name} commands found.")
@@ -73,7 +78,11 @@ def core__webhook__token_revoke(
 
 def _filter_by_type(commands: dict, type_name: str) -> list[str]:
     if type_name == "service":
-        return [cmd["command"] for cmd in commands.values() if cmd["command"].startswith("@")]
+        return [
+            cmd["command"]
+            for cmd in commands.values()
+            if cmd["command"].startswith("@")
+        ]
     return [
         cmd["command"]
         for cmd in commands.values()

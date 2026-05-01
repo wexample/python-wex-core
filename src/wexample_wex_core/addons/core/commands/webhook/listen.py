@@ -157,14 +157,6 @@ def _install_sigterm_handler(server: object) -> None:
     signal.signal(signal.SIGTERM, _handler)
 
 
-def _resolve_log_path(context: ExecutionContext) -> str:
-    from pathlib import Path
-
-    log_dir = Path(context.kernel.workdir.get_path()) / "logs"
-    log_dir.mkdir(parents=True, exist_ok=True)
-    return str(log_dir / "webhook.log")
-
-
 def _load_type_resolvers(kernel) -> dict:
     from wexample_wex_core.webhook.addon_resolver import AddonWebhookTypeResolver
     from wexample_wex_core.webhook.service_resolver import ServiceWebhookTypeResolver
@@ -179,3 +171,11 @@ def _load_type_resolvers(kernel) -> dict:
         resolvers.update(addon.get_webhook_resolvers())
 
     return resolvers
+
+
+def _resolve_log_path(context: ExecutionContext) -> str:
+    from pathlib import Path
+
+    log_dir = Path(context.kernel.workdir.get_path()) / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    return str(log_dir / "webhook.log")

@@ -60,5 +60,3 @@ def routing_is_allowed_route(path: str) -> bool:
                 return False
 
     return True
-
-

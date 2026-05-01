@@ -18,7 +18,10 @@ _VALID_TYPES = ("addon", "service")
     required=True,
     description="Webhook type: addon or service",
 )
-@command(type=COMMAND_TYPE_ADDON, description="List all webhook tokens for addon or service commands")
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="List all webhook tokens for addon or service commands",
+)
 def core__webhook__token_list(
     context: ExecutionContext,
     type_name: str,
@@ -34,8 +37,7 @@ def core__webhook__token_list(
         return
 
     rows = [
-        [cmd, f"@yellow{{{token[:8]}}}..."]
-        for cmd, token in sorted(tokens.items())
+        [cmd, f"@yellow{{{token[:8]}}}..."] for cmd, token in sorted(tokens.items())
     ]
 
     context.io.table(data=rows, headers=["Command", "Token (prefix)"])

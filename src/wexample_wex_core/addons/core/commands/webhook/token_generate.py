@@ -41,7 +41,10 @@ _VALID_TYPES = ("addon", "service")
     default=False,
     description="Revoke existing token and generate a new one",
 )
-@command(type=COMMAND_TYPE_ADDON, description="Generate a webhook token for an addon or service command")
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="Generate a webhook token for an addon or service command",
+)
 def core__webhook__token_generate(
     context: ExecutionContext,
     type_name: str,
@@ -63,7 +66,9 @@ def core__webhook__token_generate(
     namespace = _namespace(type_name)
 
     if all:
-        webhook_cmds = context.kernel.get_configuration_registry().get_webhook_commands()
+        webhook_cmds = (
+            context.kernel.get_configuration_registry().get_webhook_commands()
+        )
         targets = _filter_by_type(webhook_cmds, type_name)
         if not targets:
             context.io.log(f"No @webhook {type_name} commands found.")
@@ -75,22 +80,28 @@ def core__webhook__token_generate(
         existing = workdir.get_local_data_value(namespace, cmd)
         if existing:
             if not force:
-                context.io.warning(f"Token already exists for {cmd} — skipping (use --force).")
+                context.io.warning(
+                    f"Token already exists for {cmd} — skipping (use --force)."
+                )
                 continue
             workdir.delete_local_data_value(namespace, cmd)
         token = workdir.rotate_local_token(namespace, cmd)
         context.io.log(f"Token generated for {cmd}:  @yellow{{{token}}}")
 
 
-def _namespace(type_name: str) -> str:
-    return f"webhook_tokens_{type_name}"
-
-
 def _filter_by_type(commands: dict, type_name: str) -> list[str]:
     if type_name == "service":
-        return [cmd["command"] for cmd in commands.values() if cmd["command"].startswith("@")]
+        return [
+            cmd["command"]
+            for cmd in commands.values()
+            if cmd["command"].startswith("@")
+        ]
     return [
         cmd["command"]
         for cmd in commands.values()
         if not cmd["command"].startswith(".") and not cmd["command"].startswith("@")
     ]
+
+
+def _namespace(type_name: str) -> str:
+    return f"webhook_tokens_{type_name}"

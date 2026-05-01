@@ -24,7 +24,10 @@ _VALID_TYPES = ("addon", "service")
     required=True,
     description="Command whose token should be shown, e.g. 'app::info/show'",
 )
-@command(type=COMMAND_TYPE_ADDON, description="Show the webhook token for an addon or service command")
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="Show the webhook token for an addon or service command",
+)
 def core__webhook__token_show(
     context: ExecutionContext,
     type_name: str,
@@ -34,7 +37,9 @@ def core__webhook__token_show(
         context.io.error(f"--type must be one of: {', '.join(_VALID_TYPES)}")
         return
 
-    token = context.kernel.workdir.get_local_data_value(f"webhook_tokens_{type_name}", command_name)
+    token = context.kernel.workdir.get_local_data_value(
+        f"webhook_tokens_{type_name}", command_name
+    )
     if not token:
         context.io.warning(f"No token found for {command_name}.")
         return
