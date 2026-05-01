@@ -69,5 +69,8 @@ class AbstractAddonManager(
     def get_step_guard_classes(self) -> list[type]:
         return []
 
+    def get_local_configurable_keys(self) -> list[dict]:
+        return []
+
     def get_webhook_resolvers(self) -> dict[str, Any]:
         return {}

@@ -35,7 +35,11 @@ def core__env__configure(context: ExecutionContext) -> None:
     updated = dict(current_local)
     changed = False
 
-    for entry in _CONFIGURABLE_KEYS:
+    addon_keys = []
+    for addon in kernel.get_addons().values():
+        addon_keys.extend(addon.get_local_configurable_keys())
+
+    for entry in _CONFIGURABLE_KEYS + addon_keys:
         key = entry["key"]
         current_value = os.environ.get(key) or current_local.get(key)
         if current_value:
