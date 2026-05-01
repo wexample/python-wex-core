@@ -1,6 +1,6 @@
 # wex_core
 
-Version: 19.0.0
+Version: 20.0.0
 
 Wex core
 
