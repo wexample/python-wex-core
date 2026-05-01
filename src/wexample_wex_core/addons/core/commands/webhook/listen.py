@@ -135,9 +135,7 @@ def core__webhook__listen(
 
     _Handler.log_path = log_path
     _Handler.worker_timeout = worker_timeout
-    _Handler.type_resolvers = _load_type_resolvers(
-        wex_workdir_path=str(context.kernel.workdir.get_path())
-    )
+    _Handler.type_resolvers = _load_type_resolvers(context.kernel)
 
     context.io.log(f"Starting webhook daemon on port {port}  |  log: {log_path}")
 
@@ -167,18 +165,17 @@ def _resolve_log_path(context: ExecutionContext) -> str:
     return str(log_dir / "webhook.log")
 
 
-def _load_type_resolvers(wex_workdir_path: str) -> dict:
+def _load_type_resolvers(kernel) -> dict:
     from wexample_wex_core.webhook.addon_resolver import AddonWebhookTypeResolver
     from wexample_wex_core.webhook.service_resolver import ServiceWebhookTypeResolver
 
+    workdir_path = str(kernel.workdir.get_path())
     resolvers: dict = {
-        "addon": AddonWebhookTypeResolver(wex_workdir_path),
-        "service": ServiceWebhookTypeResolver(wex_workdir_path),
+        "addon": AddonWebhookTypeResolver(workdir_path),
+        "service": ServiceWebhookTypeResolver(workdir_path),
     }
-    try:
-        from wexample_wex_addon_app.webhook.app_resolver import AppWebhookTypeResolver
 
-        resolvers["app"] = AppWebhookTypeResolver()
-    except ImportError:
-        pass
+    for addon in kernel.get_addons().values():
+        resolvers.update(addon.get_webhook_resolvers())
+
     return resolvers
