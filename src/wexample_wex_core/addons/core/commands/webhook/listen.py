@@ -51,6 +51,13 @@ if TYPE_CHECKING:
     default=False,
     description="Bind the socket without serving (useful for tests)",
 )
+@option(
+    "worker_timeout",
+    type=int,
+    required=False,
+    default=300,
+    description="Subprocess timeout in seconds for synchronous calls (0 = no limit)",
+)
 @command(type=COMMAND_TYPE_ADDON, description="Start the webhook HTTP daemon")
 def core__webhook__listen(
     context: ExecutionContext,
@@ -58,6 +65,7 @@ def core__webhook__listen(
     asynchronous: bool = False,
     force: bool = False,
     dry_run: bool = False,
+    worker_timeout: int = 300,
 ) -> AbstractResponse | None:
     import psutil
 
@@ -126,6 +134,7 @@ def core__webhook__listen(
         start_time = time.monotonic()
 
     _Handler.log_path = log_path
+    _Handler.worker_timeout = worker_timeout
     _Handler.type_resolvers = _load_type_resolvers(
         wex_workdir_path=str(context.kernel.workdir.get_path())
     )
@@ -134,9 +143,20 @@ def core__webhook__listen(
 
     if not dry_run:
         with ThreadingHTTPServer(("", port), _Handler) as server:
+            _install_sigterm_handler(server)
             server.serve_forever()
 
     return None
+
+
+def _install_sigterm_handler(server: object) -> None:
+    import signal
+    import threading
+
+    def _handler(signum: int, frame: object) -> None:
+        threading.Thread(target=server.shutdown, daemon=True).start()
+
+    signal.signal(signal.SIGTERM, _handler)
 
 
 def _resolve_log_path(context: ExecutionContext) -> str:

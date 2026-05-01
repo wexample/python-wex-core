@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import subprocess
+import threading
 import time
 import traceback
 from http.server import BaseHTTPRequestHandler
@@ -13,6 +14,61 @@ from urllib.parse import urlparse
 WEBHOOK_STATUS_STARTED = "started"
 WEBHOOK_STATUS_COMPLETE = "complete"
 WEBHOOK_STATUS_ERROR = "error"
+WEBHOOK_STATUS_TIMEOUT = "timeout"
+
+# ---- thread-safe metrics storage -------------------------------------------
+_metrics_lock = threading.Lock()
+# key: "{command_type}:{status}" → count
+_counters: dict[str, int] = {}
+# key: command_type → cumulative seconds
+_duration_sum: dict[str, float] = {}
+_duration_count: dict[str, int] = {}
+
+
+def _record_request(command_type: str, status: str, duration_s: float) -> None:
+    key = f"{command_type}:{status}"
+    with _metrics_lock:
+        _counters[key] = _counters.get(key, 0) + 1
+        _duration_sum[command_type] = _duration_sum.get(command_type, 0.0) + duration_s
+        _duration_count[command_type] = _duration_count.get(command_type, 0) + 1
+
+
+def _render_metrics() -> str:
+    lines = [
+        "# HELP webhook_requests_total Total webhook requests by command_type and status",
+        "# TYPE webhook_requests_total counter",
+    ]
+    with _metrics_lock:
+        counters = dict(_counters)
+        dur_sum = dict(_duration_sum)
+        dur_count = dict(_duration_count)
+
+    for key, count in sorted(counters.items()):
+        command_type, status = key.split(":", 1)
+        lines.append(
+            f'webhook_requests_total{{command_type="{command_type}",status="{status}"}} {count}'
+        )
+
+    lines += [
+        "",
+        "# HELP webhook_request_duration_seconds_sum Cumulative request duration in seconds",
+        "# TYPE webhook_request_duration_seconds_sum gauge",
+    ]
+    for ct, total in sorted(dur_sum.items()):
+        lines.append(f'webhook_request_duration_seconds_sum{{command_type="{ct}"}} {total:.6f}')
+
+    lines += [
+        "",
+        "# HELP webhook_request_duration_seconds_count Total number of timed requests",
+        "# TYPE webhook_request_duration_seconds_count counter",
+    ]
+    for ct, cnt in sorted(dur_count.items()):
+        lines.append(f'webhook_request_duration_seconds_count{{command_type="{ct}"}} {cnt}')
+
+    return "\n".join(lines) + "\n"
+
+
+# ----------------------------------------------------------------------------
 
 
 class ThreadingHTTPServer(ThreadingMixIn, TCPServer):
@@ -28,12 +84,14 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
         log_path       : str         — absolute path to the rotating log file
         start_time     : float       — time.monotonic() at server startup
         type_resolvers : dict        — {command_type: WebhookTypeResolver}
+        worker_timeout : int         — subprocess timeout in seconds (0 = no limit)
     """
 
     log_path: str = ""
     start_time: float = 0.0
     type_resolvers: dict = {}
     wex_executable: list[str] = []
+    worker_timeout: int = 300
 
     # ------------------------------------------------------------------ GET
     def do_GET(self) -> None:
@@ -71,6 +129,19 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 )
                 return
 
+            # ---- /metrics (no auth required) --------------------------------
+            if route_name == "metrics":
+                body = _render_metrics().encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/plain; version=0.0.4; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                try:
+                    self.wfile.write(body)
+                except BrokenPipeError:
+                    pass
+                return
+
             # ---- /webhook/{type}/{path} ------------------------------------
             route = WEBHOOK_ROUTES[route_name]
             parsed = urlparse(self.path)
@@ -98,6 +169,7 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
             if not self._validate_token(command_type, command_path, command_str):
                 duration_ms = int((time.monotonic() - t0) * 1000)
                 self._log_auth_failure(command_type, command_path)
+                _record_request(command_type, "unauthorized", (time.monotonic() - t0))
                 self.send_response(401)
                 self._send_json(
                     {"status": WEBHOOK_STATUS_ERROR, "error": "UNAUTHORIZED"}
@@ -123,15 +195,37 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 cwd=cwd,
             )
 
-            duration_ms = int((time.monotonic() - t0) * 1000)
-
             from urllib.parse import parse_qs
 
             query_params = parse_qs(urlparse(self.path).query)
             is_async = route["is_async"] and query_params.get("_async", ["1"])[0] != "0"
 
             if not is_async:
-                stdout, stderr = process.communicate()
+                timeout = type(self).worker_timeout or None
+                try:
+                    stdout, stderr = process.communicate(timeout=timeout)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.communicate()
+                    duration_s = time.monotonic() - t0
+                    _record_request(command_type, WEBHOOK_STATUS_TIMEOUT, duration_s)
+                    self._log_request(
+                        command_type,
+                        command_path,
+                        WEBHOOK_STATUS_TIMEOUT,
+                        int(duration_s * 1000),
+                        pid=process.pid,
+                    )
+                    self.send_response(504)
+                    self._send_json(
+                        {
+                            "status": WEBHOOK_STATUS_TIMEOUT,
+                            "error": f"Command exceeded {timeout}s timeout",
+                            "pid": process.pid,
+                        }
+                    )
+                    return
+
                 try:
                     response_data = json.loads(stdout) if stdout.strip() else {}
                 except json.JSONDecodeError:
@@ -152,11 +246,15 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 if error:
                     output["error"] = error
             else:
+                status = WEBHOOK_STATUS_STARTED
                 output = {
-                    "status": WEBHOOK_STATUS_STARTED,
+                    "status": status,
                     "path": self.path,
                     "pid": process.pid,
                 }
+
+            duration_s = time.monotonic() - t0
+            _record_request(command_type, status, duration_s)
 
             http_status = 200
             if not is_async and output.get("status") == WEBHOOK_STATUS_ERROR:
@@ -166,7 +264,7 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 command_type,
                 command_path,
                 output["status"],
-                duration_ms,
+                int(duration_s * 1000),
                 pid=process.pid,
             )
 
