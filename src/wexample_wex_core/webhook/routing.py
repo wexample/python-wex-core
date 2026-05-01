@@ -5,12 +5,13 @@ from urllib.parse import parse_qs, urlparse
 
 
 def routing_build_command(command_type: str, command_path: str) -> str | None:
-    """Convert URL components to a wex command string.
+    """Convert URL components to a wex command string for generic types.
+
+    Only handles addon and service — app type is delegated to AppWebhookTypeResolver.
 
     Examples:
-        addon / app/info/show              →  app::info/show
-        app   / prod/wex-apt-repo/apt/pub  →  .apt/pub
-        service / nginx/status             →  @nginx::status
+        addon / app/info/show   →  app::info/show
+        service / nginx/status  →  @nginx::status
     """
     if command_type == "addon":
         parts = command_path.split("/")
@@ -19,13 +20,6 @@ def routing_build_command(command_type: str, command_path: str) -> str | None:
         addon = parts[0]
         rest = "/".join(parts[1:])
         return f"{addon}::{rest}"
-
-    if command_type == "app":
-        parsed = routing_parse_app_url(command_path)
-        if parsed is None:
-            return None
-        _, _, local_command = parsed
-        return f".{local_command}"
 
     if command_type == "service":
         parts = command_path.split("/")
@@ -66,14 +60,3 @@ def routing_is_allowed_route(path: str) -> bool:
                 return False
 
     return True
-
-
-def routing_parse_app_url(command_path: str) -> tuple[str, str, str] | None:
-    """Split '{env}/{app_name}/{command}' → (env, app_name, local_command).
-
-    Returns None if the path does not have the expected three-segment structure.
-    """
-    parts = command_path.split("/", 2)
-    if len(parts) < 3:
-        return None
-    return parts[0], parts[1], parts[2]

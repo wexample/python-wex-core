@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 
 # filestate: python-constant-sort
-WEBHOOK_APPS_BASE_PATH: str = "/var/www"
 WEBHOOK_LISTEN_PORT_DEFAULT: int = 6543
 
 WEBHOOK_ROUTES: dict = {
@@ -14,6 +13,10 @@ WEBHOOK_ROUTES: dict = {
     "health": {
         "is_async": False,
         "pattern": r"^/health$",
+    },
+    "metrics": {
+        "is_async": False,
+        "pattern": r"^/metrics$",
     },
 }
 

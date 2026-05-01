@@ -51,6 +51,13 @@ if TYPE_CHECKING:
     default=False,
     description="Bind the socket without serving (useful for tests)",
 )
+@option(
+    "worker_timeout",
+    type=int,
+    required=False,
+    default=300,
+    description="Subprocess timeout in seconds for synchronous calls (0 = no limit)",
+)
 @command(type=COMMAND_TYPE_ADDON, description="Start the webhook HTTP daemon")
 def core__webhook__listen(
     context: ExecutionContext,
@@ -58,6 +65,7 @@ def core__webhook__listen(
     asynchronous: bool = False,
     force: bool = False,
     dry_run: bool = False,
+    worker_timeout: int = 300,
 ) -> AbstractResponse | None:
     import psutil
 
@@ -121,22 +129,48 @@ def core__webhook__listen(
 
     log_path = _resolve_log_path(context)
 
-    from wexample_wex_core.webhook.const import WEBHOOK_APPS_BASE_PATH
-
     class _Handler(WebhookHttpRequestHandler):
         wex_executable = [sys.executable, sys.argv[0]]
         start_time = time.monotonic()
 
     _Handler.log_path = log_path
-    _Handler.apps_base_path = WEBHOOK_APPS_BASE_PATH
+    _Handler.worker_timeout = worker_timeout
+    _Handler.type_resolvers = _load_type_resolvers(context.kernel)
 
     context.io.log(f"Starting webhook daemon on port {port}  |  log: {log_path}")
 
     if not dry_run:
         with ThreadingHTTPServer(("", port), _Handler) as server:
+            _install_sigterm_handler(server)
             server.serve_forever()
 
     return None
+
+
+def _install_sigterm_handler(server: object) -> None:
+    import signal
+    import threading
+
+    def _handler(signum: int, frame: object) -> None:
+        threading.Thread(target=server.shutdown, daemon=True).start()
+
+    signal.signal(signal.SIGTERM, _handler)
+
+
+def _load_type_resolvers(kernel) -> dict:
+    from wexample_wex_core.webhook.addon_resolver import AddonWebhookTypeResolver
+    from wexample_wex_core.webhook.service_resolver import ServiceWebhookTypeResolver
+
+    workdir_path = str(kernel.workdir.get_path())
+    resolvers: dict = {
+        "addon": AddonWebhookTypeResolver(workdir_path),
+        "service": ServiceWebhookTypeResolver(workdir_path),
+    }
+
+    for addon in kernel.get_addons().values():
+        resolvers.update(addon.get_webhook_resolvers())
+
+    return resolvers
 
 
 def _resolve_log_path(context: ExecutionContext) -> str:
