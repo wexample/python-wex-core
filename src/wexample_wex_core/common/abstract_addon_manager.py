@@ -55,6 +55,9 @@ class AbstractAddonManager(
     def get_command_resolver_classes(self) -> list[type[AbstractCommandResolver]]:
         return []
 
+    def get_local_configurable_keys(self) -> list[dict]:
+        return []
+
     def get_middlewares_classes(self) -> list[type[AbstractMiddleware]]:
         return []
 

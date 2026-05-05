@@ -4,6 +4,8 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from wexample_app.const.globals import WORKDIR_SETUP_DIR
+
 from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 if TYPE_CHECKING:
@@ -11,7 +13,6 @@ if TYPE_CHECKING:
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.const.registries import RegistryResolverData
 
-_USER_WEX_DIR = ".wex"
 _COMMANDS_SUBDIR = "commands"
 
 
@@ -124,7 +125,7 @@ class UserCommandResolver(AbstractCommandResolver):
         name = match.group(2).replace("-", "_")
         target = (
             Path.home()
-            / _USER_WEX_DIR
+            / WORKDIR_SETUP_DIR
             / _COMMANDS_SUBDIR
             / group
             / f"{name}.{extension}"
@@ -143,7 +144,7 @@ class UserCommandResolver(AbstractCommandResolver):
     # Path resolution
     # ------------------------------------------------------------------
     def get_base_path(self) -> Path | None:
-        path = Path.home() / _USER_WEX_DIR
+        path = Path.home() / WORKDIR_SETUP_DIR
         return path if path.is_dir() else None
 
     def supports(self, request: CommandRequest) -> object:
