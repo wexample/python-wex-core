@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from wexample_app.const.globals import WORKDIR_SETUP_DIR
+
 from wexample_wex_core.resolver.abstract_command_resolver import AbstractCommandResolver
 
 if TYPE_CHECKING:
