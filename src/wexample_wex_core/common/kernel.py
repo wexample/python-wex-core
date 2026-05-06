@@ -56,6 +56,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=False,
         description="Indicates this process was launched as a subprocess by another wex process",
     )
+    _execution_depth: int = private_field(
+        default=0,
+        description="Tracks nested execute_kernel_command calls; sudo re-exec only allowed at depth 0",
+    )
     _config_arg_v: bool = private_field(
         default=False,
         description="Default verbosity",
@@ -112,26 +116,30 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def execute_kernel_command(self, request: CommandRequest) -> AbstractResponse:
         pass
 
-        self._enforce_sudo_if_needed(request)
-        self._execute_attached(request, "before")
-        response = super().execute_kernel_command(request)
+        self._execution_depth += 1
+        try:
+            self._enforce_sudo_if_needed(request)
+            self._execute_attached(request, "before")
+            response = super().execute_kernel_command(request)
 
-        from wexample_app.response.queued_collection_response import (
-            QueuedCollectionResponse,
-        )
-
-        if isinstance(response, QueuedCollectionResponse):
-            # "after" runs as the last queue step — skipped if the queue stops early.
-            # "always_after" runs in finally_steps — guaranteed regardless of stops.
-            response.content.append(lambda: self._execute_attached(request, "after"))
-            response.finally_steps.append(
-                lambda: self._execute_attached(request, "always_after")
+            from wexample_app.response.queued_collection_response import (
+                QueuedCollectionResponse,
             )
-        else:
-            self._execute_attached(request, "after")
-            self._execute_attached(request, "always_after")
 
-        return response
+            if isinstance(response, QueuedCollectionResponse):
+                # "after" runs as the last queue step — skipped if the queue stops early.
+                # "always_after" runs in finally_steps — guaranteed regardless of stops.
+                response.content.append(lambda: self._execute_attached(request, "after"))
+                response.finally_steps.append(
+                    lambda: self._execute_attached(request, "always_after")
+                )
+            else:
+                self._execute_attached(request, "after")
+                self._execute_attached(request, "always_after")
+
+            return response
+        finally:
+            self._execution_depth -= 1
 
     def get_addons(self) -> dict[str, AbstractAddonManager]:
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
@@ -216,6 +224,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         import sys
 
         if os.geteuid() == 0:
+            return
+
+        if self._execution_depth > 1:
             return
 
         for cmd_data in self._get_live_command_registry_entries():
