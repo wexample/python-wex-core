@@ -77,7 +77,7 @@ class AddonCommandResolver(AbstractCommandResolver):
                 )
                 return " ".join(f"{g}/" for g in groups) or None
             elif second == ":":
-                return COMMAND_SEPARATOR_ADDON
+                return ":"
 
         elif cursor == 2:
             matches = sorted(
