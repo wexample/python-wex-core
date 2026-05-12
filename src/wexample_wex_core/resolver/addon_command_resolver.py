@@ -55,7 +55,7 @@ class AddonCommandResolver(AbstractCommandResolver):
                         if alias.startswith(first) and "::" not in alias:
                             suggestions.append(alias)
             # Unqualified commands: group/name without addon:: prefix
-            if "/" in first and "::" not in first:
+            if first and "::" not in first:
                 unqualified = sorted(
                     {
                         c.split("::")[1]
