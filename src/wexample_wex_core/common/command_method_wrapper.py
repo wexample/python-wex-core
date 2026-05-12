@@ -19,6 +19,10 @@ class CommandMethodWrapper(BaseClass):
         factory=list,
         description="Alternative names to invoke this command",
     )
+    extra: dict = public_field(
+        factory=dict,
+        description="Generic key/value storage for addon-specific metadata",
+    )
     attachments: dict[str, list[dict]] = public_field(
         factory=lambda: {"before": [], "after": [], "always_after": []},
         description="Commands attached before/after this command executes",
