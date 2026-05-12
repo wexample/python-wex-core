@@ -27,9 +27,9 @@ class TestCoreAutocompletesSuggest(AbstractKernelTest):
         assert all("::" not in p for p in parts)
 
     def test_single_match_appends_separator(self, resolver) -> None:
-        # "demo" is unambiguous — should return "demo::"
+        # "demo" is unambiguous — should include "demo::" among suggestions
         result = self._suggest(resolver, "demo", 0)
-        assert result == "demo" + COMMAND_SEPARATOR_ADDON
+        assert "demo" + COMMAND_SEPARATOR_ADDON in result.split()
 
     def test_partial_colon_returns_single_colon(self, resolver) -> None:
         # bash splits "core:" as ["core", ":"] — should return ":" not "::"
@@ -58,3 +58,11 @@ class TestCoreAutocompletesSuggest(AbstractKernelTest):
         result = self._suggest(resolver, "pin", 0)
         parts = result.split()
         assert any("ping/" in p for p in parts)
+
+    def test_single_addon_match_also_suggests_unqualified(self, resolver) -> None:
+        # "de" matches only addon "demo" — should return "demo::" AND "demo/demo"
+        # so the user can choose between addon-prefix style or unqualified shortcut
+        result = self._suggest(resolver, "de", 0)
+        parts = result.split()
+        assert "demo::" in parts
+        assert any("demo/demo" in p for p in parts)
