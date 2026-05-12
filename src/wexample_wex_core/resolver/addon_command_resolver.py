@@ -43,11 +43,11 @@ class AddonCommandResolver(AbstractCommandResolver):
             addon_names = sorted(
                 {c.split("::")[0] for c in all_addon_cmds if "::" in c}
             )
-            suggestions = [
-                a
-                for a in addon_names
-                if a.startswith(first)
-            ]
+            addon_name_matches = [a for a in addon_names if a.startswith(first)]
+            if len(addon_name_matches) == 1:
+                suggestions = [addon_name_matches[0] + COMMAND_SEPARATOR_ADDON]
+            else:
+                suggestions = addon_name_matches
             # Aliases (short forms without addon prefix)
             for cmd in addon_data.values():
                 for cmd_data in cmd.values():
