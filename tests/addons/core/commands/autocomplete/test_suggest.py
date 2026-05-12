@@ -51,3 +51,10 @@ class TestCoreAutocompletesSuggest(AbstractKernelTest):
         # "ping/pong" without addon prefix — should be found across all addons
         result = self._suggest(resolver, "ping/pong", 0)
         assert "ping/pong" in result
+
+    def test_unqualified_prefix_without_slash(self, resolver) -> None:
+        # typing "pin" (no slash) should suggest "ping/hi" and "ping/pong"
+        # i.e. unqualified group/command shortcuts even without "/" in the typed text
+        result = self._suggest(resolver, "pin", 0)
+        parts = result.split()
+        assert any("ping/" in p for p in parts)
