@@ -36,6 +36,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=None,
         description="Force a specific request ID when set by an external process",
     )
+    _config_arg_ignore_missing_command: bool = private_field(
+        default=False,
+        description="Exit silently with code 0 if the command is not found",
+    )
     _config_arg_indentation_level: int | None = private_field(
         default=None,
         description="Prompt messages indentation level",
@@ -52,17 +56,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=False,
         description="Disable verbosity, every log or message, useful to capture structured output",
     )
-    _config_arg_ignore_missing_command: bool = private_field(
-        default=False,
-        description="Exit silently with code 0 if the command is not found",
-    )
     _config_arg_subprocess: bool = private_field(
         default=False,
         description="Indicates this process was launched as a subprocess by another wex process",
-    )
-    _execution_depth: int = private_field(
-        default=0,
-        description="Tracks nested execute_kernel_command calls; sudo re-exec only allowed at depth 0",
     )
     _config_arg_v: bool = private_field(
         default=False,
@@ -75,6 +71,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _config_arg_vvv: bool = private_field(
         default=False,
         description="Maximum verbosity",
+    )
+    _execution_depth: int = private_field(
+        default=0,
+        description="Tracks nested execute_kernel_command calls; sudo re-exec only allowed at depth 0",
     )
     _logger: logging.Logger = private_field(
         description="Python logger for operational/debug messages"
@@ -133,7 +133,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             if isinstance(response, QueuedCollectionResponse):
                 # "after" runs as the last queue step — skipped if the queue stops early.
                 # "always_after" runs in finally_steps — guaranteed regardless of stops.
-                response.content.append(lambda: self._execute_attached(request, "after"))
+                response.content.append(
+                    lambda: self._execute_attached(request, "after")
+                )
                 response.finally_steps.append(
                     lambda: self._execute_attached(request, "always_after")
                 )
@@ -199,6 +201,42 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_step_guard_registry()
 
         return response
+
+    def _auto_detect_env(self) -> None:
+        """Auto-detect missing env vars declared by addons and persist found values.
+
+        Called after _init_addons so addon managers are available. For each key
+        declared in addon.get_local_configurable_keys(), if the value is absent
+        from os.environ, the detect() callable is tried. Found values are set in
+        os.environ, persisted to .wex/local/env.yml, and on_apply() is called.
+        For values already present (loaded by _init_local_env or the system
+        environment), only on_apply() is called to apply side effects (e.g. PATH).
+        """
+        import os
+
+        local_env = self.workdir.get_local_data("env")
+        changed = False
+
+        for addon in self.get_addons().values():
+            for entry in addon.get_local_configurable_keys():
+                key = entry["key"]
+                detect = entry.get("detect")
+                on_apply = entry.get("on_apply")
+
+                value = os.environ.get(key)
+
+                if not value and detect:
+                    value = detect()
+                    if value:
+                        os.environ[key] = value
+                        local_env[key] = value
+                        changed = True
+
+                if value and on_apply:
+                    on_apply(value)
+
+        if changed:
+            self.workdir.set_local_data("env", local_env)
 
     def _build_single_command_request_from_arguments(
         self, arguments: CommandLineArgumentsList
@@ -464,42 +502,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             self._config_arg_indentation_level or self.io.indentation,
             int(self.io.terminal_width / 3),
         )
-
-    def _auto_detect_env(self) -> None:
-        """Auto-detect missing env vars declared by addons and persist found values.
-
-        Called after _init_addons so addon managers are available. For each key
-        declared in addon.get_local_configurable_keys(), if the value is absent
-        from os.environ, the detect() callable is tried. Found values are set in
-        os.environ, persisted to .wex/local/env.yml, and on_apply() is called.
-        For values already present (loaded by _init_local_env or the system
-        environment), only on_apply() is called to apply side effects (e.g. PATH).
-        """
-        import os
-
-        local_env = self.workdir.get_local_data("env")
-        changed = False
-
-        for addon in self.get_addons().values():
-            for entry in addon.get_local_configurable_keys():
-                key = entry["key"]
-                detect = entry.get("detect")
-                on_apply = entry.get("on_apply")
-
-                value = os.environ.get(key)
-
-                if not value and detect:
-                    value = detect()
-                    if value:
-                        os.environ[key] = value
-                        local_env[key] = value
-                        changed = True
-
-                if value and on_apply:
-                    on_apply(value)
-
-        if changed:
-            self.workdir.set_local_data("env", local_env)
 
     def _init_local_env(self) -> None:
         """Load .wex/local/env.yml into os.environ and env_config.
