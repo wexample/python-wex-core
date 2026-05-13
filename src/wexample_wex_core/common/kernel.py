@@ -388,6 +388,13 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 type=bool,
                 description="Indicate this process was launched as a subprocess by another wex process",
             ),
+            Option(
+                name="ignore_missing_command",
+                short_name=False,
+                is_flag=True,
+                type=bool,
+                description="Exit silently with code 0 if the command is not found",
+            ),
         ]
 
     def _get_live_command_registry_entries(self) -> list[dict]:
