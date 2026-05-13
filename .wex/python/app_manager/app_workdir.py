@@ -21,6 +21,12 @@ class AppWorkdir(PythonPackageWorkdir):
             return f"ssh://git@gitlab.wexample.com:4567/wexample-python/{string_to_kebab_case(target.get_project_name())}.git"
 
         raw_value["git"] = {
+            "branches": {
+                "main": {
+                    "aliases": ["master"],
+                    "on_alias_conflict": "merge",
+                }
+            },
             "main_branch": "main",
             "remote": [
                 {

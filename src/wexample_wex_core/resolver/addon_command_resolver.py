@@ -43,17 +43,27 @@ class AddonCommandResolver(AbstractCommandResolver):
             addon_names = sorted(
                 {c.split("::")[0] for c in all_addon_cmds if "::" in c}
             )
-            suggestions = [
-                f"{a}{COMMAND_SEPARATOR_ADDON}"
-                for a in addon_names
-                if a.startswith(first)
-            ]
+            addon_name_matches = [a for a in addon_names if a.startswith(first)]
+            if len(addon_name_matches) == 1:
+                suggestions = [addon_name_matches[0] + COMMAND_SEPARATOR_ADDON]
+            else:
+                suggestions = addon_name_matches
             # Aliases (short forms without addon prefix)
             for cmd in addon_data.values():
                 for cmd_data in cmd.values():
                     for alias in cmd_data.get("alias", []):
                         if alias.startswith(first) and "::" not in alias:
                             suggestions.append(alias)
+            # Unqualified commands: group/name without addon:: prefix
+            if first and "::" not in first:
+                unqualified = sorted(
+                    {
+                        c.split("::")[1]
+                        for c in all_addon_cmds
+                        if "::" in c and c.split("::")[1].startswith(first)
+                    }
+                )
+                suggestions.extend(unqualified)
             return " ".join(suggestions) if suggestions else None
 
         elif cursor == 1:
@@ -67,7 +77,7 @@ class AddonCommandResolver(AbstractCommandResolver):
                 )
                 return " ".join(f"{g}/" for g in groups) or None
             elif second == ":":
-                return COMMAND_SEPARATOR_ADDON
+                return ":"
 
         elif cursor == 2:
             matches = sorted(

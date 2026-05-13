@@ -27,6 +27,10 @@ class CommandMethodWrapper(BaseClass):
         default=None,
         description="Optional human-readable description of the command method",
     )
+    extra: dict = public_field(
+        factory=dict,
+        description="Generic key/value storage for addon-specific metadata",
+    )
     function: AnyCallable = public_field(
         description="Callable object implementing the command method",
     )

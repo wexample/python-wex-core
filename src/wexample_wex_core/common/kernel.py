@@ -36,6 +36,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=None,
         description="Force a specific request ID when set by an external process",
     )
+    _config_arg_ignore_missing_command: bool = private_field(
+        default=False,
+        description="Exit silently with code 0 if the command is not found",
+    )
     _config_arg_indentation_level: int | None = private_field(
         default=None,
         description="Prompt messages indentation level",
@@ -67,6 +71,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     _config_arg_vvv: bool = private_field(
         default=False,
         description="Maximum verbosity",
+    )
+    _execution_depth: int = private_field(
+        default=0,
+        description="Tracks nested execute_kernel_command calls; sudo re-exec only allowed at depth 0",
     )
     _logger: logging.Logger = private_field(
         description="Python logger for operational/debug messages"
@@ -112,26 +120,32 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
     def execute_kernel_command(self, request: CommandRequest) -> AbstractResponse:
         pass
 
-        self._enforce_sudo_if_needed(request)
-        self._execute_attached(request, "before")
-        response = super().execute_kernel_command(request)
+        self._execution_depth += 1
+        try:
+            self._enforce_sudo_if_needed(request)
+            self._execute_attached(request, "before")
+            response = super().execute_kernel_command(request)
 
-        from wexample_app.response.queued_collection_response import (
-            QueuedCollectionResponse,
-        )
-
-        if isinstance(response, QueuedCollectionResponse):
-            # "after" runs as the last queue step — skipped if the queue stops early.
-            # "always_after" runs in finally_steps — guaranteed regardless of stops.
-            response.content.append(lambda: self._execute_attached(request, "after"))
-            response.finally_steps.append(
-                lambda: self._execute_attached(request, "always_after")
+            from wexample_app.response.queued_collection_response import (
+                QueuedCollectionResponse,
             )
-        else:
-            self._execute_attached(request, "after")
-            self._execute_attached(request, "always_after")
 
-        return response
+            if isinstance(response, QueuedCollectionResponse):
+                # "after" runs as the last queue step — skipped if the queue stops early.
+                # "always_after" runs in finally_steps — guaranteed regardless of stops.
+                response.content.append(
+                    lambda: self._execute_attached(request, "after")
+                )
+                response.finally_steps.append(
+                    lambda: self._execute_attached(request, "always_after")
+                )
+            else:
+                self._execute_attached(request, "after")
+                self._execute_attached(request, "always_after")
+
+            return response
+        finally:
+            self._execution_depth -= 1
 
     def get_addons(self) -> dict[str, AbstractAddonManager]:
         from wexample_wex_core.const.registries import REGISTRY_KERNEL_ADDON
@@ -178,6 +192,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_command_line_kernel()
         self._init_logging()
         self._init_addons(addons=addons)
+        self._auto_detect_env()
         self._init_resolvers()
         self._init_runners()
         self._init_middlewares()
@@ -186,6 +201,42 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_step_guard_registry()
 
         return response
+
+    def _auto_detect_env(self) -> None:
+        """Auto-detect missing env vars declared by addons and persist found values.
+
+        Called after _init_addons so addon managers are available. For each key
+        declared in addon.get_local_configurable_keys(), if the value is absent
+        from os.environ, the detect() callable is tried. Found values are set in
+        os.environ, persisted to .wex/local/env.yml, and on_apply() is called.
+        For values already present (loaded by _init_local_env or the system
+        environment), only on_apply() is called to apply side effects (e.g. PATH).
+        """
+        import os
+
+        local_env = self.workdir.get_local_data("env")
+        changed = False
+
+        for addon in self.get_addons().values():
+            for entry in addon.get_local_configurable_keys():
+                key = entry["key"]
+                detect = entry.get("detect")
+                on_apply = entry.get("on_apply")
+
+                value = os.environ.get(key)
+
+                if not value and detect:
+                    value = detect()
+                    if value:
+                        os.environ[key] = value
+                        local_env[key] = value
+                        changed = True
+
+                if value and on_apply:
+                    on_apply(value)
+
+        if changed:
+            self.workdir.set_local_data("env", local_env)
 
     def _build_single_command_request_from_arguments(
         self, arguments: CommandLineArgumentsList
@@ -216,6 +267,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         import sys
 
         if os.geteuid() == 0:
+            return
+
+        if self._execution_depth > 1:
             return
 
         for cmd_data in self._get_live_command_registry_entries():
@@ -376,6 +430,13 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 is_flag=True,
                 type=bool,
                 description="Indicate this process was launched as a subprocess by another wex process",
+            ),
+            Option(
+                name="ignore_missing_command",
+                short_name=False,
+                is_flag=True,
+                type=bool,
+                description="Exit silently with code 0 if the command is not found",
             ),
         ]
 

@@ -8,16 +8,7 @@ from wexample_wex_core.decorator.command import command
 if TYPE_CHECKING:
     from wexample_wex_core.context.execution_context import ExecutionContext
 
-_CONFIGURABLE_KEYS = [
-    {
-        "key": "SSH_AUTH_SOCK",
-        "description": "SSH agent socket — required for git push/pull over SSH",
-        "default_candidates": [
-            "/run/user/1000/keyring/ssh",
-            "/run/user/1000/gnupg/S.gpg-agent.ssh",
-        ],
-    },
-]
+_CONFIGURABLE_KEYS: list[dict] = []
 
 
 @command(
