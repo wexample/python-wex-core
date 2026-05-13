@@ -190,6 +190,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_command_line_kernel()
         self._init_logging()
         self._init_addons(addons=addons)
+        self._auto_detect_env()
         self._init_resolvers()
         self._init_runners()
         self._init_middlewares()
@@ -463,6 +464,42 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             self._config_arg_indentation_level or self.io.indentation,
             int(self.io.terminal_width / 3),
         )
+
+    def _auto_detect_env(self) -> None:
+        """Auto-detect missing env vars declared by addons and persist found values.
+
+        Called after _init_addons so addon managers are available. For each key
+        declared in addon.get_local_configurable_keys(), if the value is absent
+        from os.environ, the detect() callable is tried. Found values are set in
+        os.environ, persisted to .wex/local/env.yml, and on_apply() is called.
+        For values already present (loaded by _init_local_env or the system
+        environment), only on_apply() is called to apply side effects (e.g. PATH).
+        """
+        import os
+
+        local_env = self.workdir.get_local_data("env")
+        changed = False
+
+        for addon in self.get_addons().values():
+            for entry in addon.get_local_configurable_keys():
+                key = entry["key"]
+                detect = entry.get("detect")
+                on_apply = entry.get("on_apply")
+
+                value = os.environ.get(key)
+
+                if not value and detect:
+                    value = detect()
+                    if value:
+                        os.environ[key] = value
+                        local_env[key] = value
+                        changed = True
+
+                if value and on_apply:
+                    on_apply(value)
+
+        if changed:
+            self.workdir.set_local_data("env", local_env)
 
     def _init_local_env(self) -> None:
         """Load .wex/local/env.yml into os.environ and env_config.
