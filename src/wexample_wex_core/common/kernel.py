@@ -52,6 +52,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=False,
         description="Disable verbosity, every log or message, useful to capture structured output",
     )
+    _config_arg_ignore_missing_command: bool = private_field(
+        default=False,
+        description="Exit silently with code 0 if the command is not found",
+    )
     _config_arg_subprocess: bool = private_field(
         default=False,
         description="Indicates this process was launched as a subprocess by another wex process",
