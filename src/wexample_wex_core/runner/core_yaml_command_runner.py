@@ -29,14 +29,16 @@ class CoreYamlCommandRunner(YamlCommandRunner):
     ) -> dict[str, str]:
         import os
 
-        from wexample_app.workdir.mixin.with_env_parameters_mixin import (
-            WithEnvParametersMixin,
+        from wexample_app.workdir.mixin.with_setup_env_parameter_mixin import (
+            WithSetupEnvParameterMixin,
         )
 
         # Lowest priority: .wex/local/env.yml from the call workdir (where wex was invoked)
-        variables: dict[str, str] = WithEnvParametersMixin.get_env_parameters_from_path(
-            kernel.call_workdir.get_path()
-        ).to_dict()
+        variables: dict[str, str] = (
+            WithSetupEnvParameterMixin.get_env_parameters_from_path(
+                kernel.call_workdir.get_path()
+            ).to_dict()
+        )
 
         # Override with process environment variables
         variables.update(os.environ)
