@@ -33,7 +33,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
             WithEnvParametersMixin,
         )
 
-        # Lowest priority: .wex/.env from the call workdir (where wex was invoked)
+        # Lowest priority: .wex/local/env.yml from the call workdir (where wex was invoked)
         variables: dict[str, str] = WithEnvParametersMixin.get_env_parameters_from_path(
             kernel.call_workdir.get_path()
         ).to_dict()
