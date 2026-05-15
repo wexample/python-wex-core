@@ -200,8 +200,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self._init_script_runner_registry()
         self._init_step_guard_registry()
 
-        print()
-
         return response
 
     def _auto_detect_env(self) -> None:
