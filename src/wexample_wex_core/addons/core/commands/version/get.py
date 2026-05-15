@@ -16,5 +16,4 @@ if TYPE_CHECKING:
     description="Returns core version",
 )
 def core__version__get(context: ExecutionContext) -> str:
-    version_file = context.kernel.entrypoint_path.parent / "version.txt"
-    return version_file.read_text().strip()
+    return context.kernel.workdir.get_setup_version()

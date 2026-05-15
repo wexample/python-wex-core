@@ -1,6 +1,6 @@
 # wex_core
 
-Version: 20.2.1
+Version: 20.3.0
 
 Wex core
 
@@ -84,10 +84,10 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 - cattrs: >=23.1.0
 - click: 
 - psutil: >=5.9
-- wexample-app: >=11.2.0
+- wexample-app: >=12.0.0
 - wexample-filestate-git: >=7.0.0
-- wexample-filestate: >=7.1.0
-- wexample-helpers-git: >=6.5.0
+- wexample-filestate: >=7.2.0
+- wexample-helpers-git: >=6.6.0
 
 ## Versioning & Compatibility Policy
 

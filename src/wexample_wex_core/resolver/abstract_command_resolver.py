@@ -40,12 +40,25 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         )
 
     @classmethod
-    def build_command_from_function(cls, command_wrapper: CommandMethodWrapper):
+    def build_command_from_function(
+        cls,
+        command_wrapper: CommandMethodWrapper,
+        args: Kwargs | None = None,
+    ) -> str:
         parts = cls.build_command_parts_from_function_name(
             command_wrapper.function.__name__
         )
 
-        return cls.build_command_from_parts(parts)
+        command = cls.build_command_from_parts(parts)
+
+        if args:
+            from wexample_app.helpers.argument import argument_dict_to_list
+
+            rendered = argument_dict_to_list(command_wrapper.options, args)
+            if rendered:
+                command = f"{command} {' '.join(rendered)}"
+
+        return command
 
     @classmethod
     def build_command_from_parts(cls, parts: StringsList) -> str:
