@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
 from wexample_app.common.abstract_kernel_child import AbstractKernelChild
 from wexample_app.workdir.mixin.with_local_data_mixin import WithLocalDataMixin
@@ -18,10 +18,6 @@ if TYPE_CHECKING:
 
 @base_class
 class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
-    # Class-scoped constant for the tmp shortcut
-    SHORTCUT_REGISTRY: ClassVar[str] = "registry"
-    SHORTCUT_LOGS_ERRORS: ClassVar[str] = "logs_errors"
-
     @classmethod
     def create_from_kernel(
         cls, kernel: Kernel, io: IoManager, **kwargs
@@ -68,7 +64,6 @@ class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
         raw_value["children"].extend(
             [
                 {
-                    "shortcut": CORE_DIR_NAME_TMP,
                     "name": CORE_DIR_NAME_TMP,
                     "type": DiskItemType.DIRECTORY,
                     "should_exist": True,
@@ -85,7 +80,6 @@ class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
                             "children": [
                                 {
                                     "name": CORE_DIR_NAME_LOGS_ERRORS,
-                                    "shortcut": KernelWorkdir.SHORTCUT_LOGS_ERRORS,
                                     "type": DiskItemType.DIRECTORY,
                                     "should_exist": True,
                                 },
@@ -94,7 +88,6 @@ class KernelWorkdir(AbstractKernelChild, WithLocalDataMixin, Workdir):
                         {
                             "class": KernelRegistryFile,
                             "name": CORE_FILE_NAME_REGISTRY,
-                            "shortcut": KernelWorkdir.SHORTCUT_REGISTRY,
                             "type": DiskItemType.FILE,
                             "should_exist": True,
                         },

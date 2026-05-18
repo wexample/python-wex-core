@@ -549,18 +549,11 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self.register_items("middlewares", classes)
 
     def _init_registry(self) -> None:
-        from wexample_wex_core.const.globals import (
-            CORE_DIR_NAME_TMP,
-            CORE_FILE_NAME_REGISTRY,
-        )
+        from wexample_app.const.path import APP_DIR_NAME_TMP
+
         from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
 
-        # Build the registry file directly by path instead of going through
-        # workdir.get_shortcut(), which would force a full option-tree configure
-        # of the kernel workdir at startup (135ms+ for WexWorkdir).
-        registry_path = (
-            self.workdir.get_path() / CORE_DIR_NAME_TMP / CORE_FILE_NAME_REGISTRY
-        )
+        registry_path = self.workdir.get_path() / APP_DIR_NAME_TMP / "registry.json"
         kernel_registry_file = KernelRegistryFile.create_from_path(
             path=registry_path, io=self.io
         )
