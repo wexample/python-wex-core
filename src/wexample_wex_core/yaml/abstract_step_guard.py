@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from wexample_helpers.service.registrable import Registrable
+
     from wexample_wex_core.common.kernel import Kernel
 
 
@@ -28,3 +30,21 @@ class AbstractStepGuard(ABC):
     @abstractmethod
     def should_skip(self, step: dict, kernel: Kernel) -> bool:
         """Return True if the step should be skipped, False to let it run."""
+
+    # ------------------------------------------------------------------
+    # Registrable Protocol
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def get_registry_key(cls) -> str:
+        return cls.__name__
+
+    @classmethod
+    def dependencies(cls) -> list[type[Registrable]]:
+        return []
+
+    def init_sync(self) -> None:
+        return None
+
+    async def init_async(self) -> None:
+        return None

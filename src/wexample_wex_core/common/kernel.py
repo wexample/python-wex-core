@@ -605,10 +605,11 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
         from wexample_wex_core.yaml.step_guard_registry import StepGuardRegistry
 
-        registry = StepGuardRegistry()
+        registry = StepGuardRegistry(container=self)
         for addon in self.get_addons().values():
             for guard_class in cast(
                 AbstractAddonManager, addon
             ).get_step_guard_classes():
-                registry.register(guard_class())
+                registry.register(guard_class)
+        registry.init_all_sync()
         self._step_guard_registry = registry
