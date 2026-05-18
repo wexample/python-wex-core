@@ -113,9 +113,6 @@ def core__webhook__listen(
                 break
 
         if running:
-            from wexample_wex_core.webhook.daemon_marker import marker_set
-
-            marker_set(context.kernel.workdir.get_path(), port)
             context.io.log(f"Webhook daemon started on port {port} (pid {process.pid})")
         else:
             context.io.error(
@@ -143,10 +140,7 @@ def core__webhook__listen(
     context.io.log(f"Starting webhook daemon on port {port}  |  log: {log_path}")
 
     if not dry_run:
-        from wexample_wex_core.webhook.daemon_marker import marker_set
-
         with ThreadingHTTPServer(("", port), _Handler) as server:
-            marker_set(context.kernel.workdir.get_path(), port)
             _install_sigterm_handler(server)
             server.serve_forever()
 

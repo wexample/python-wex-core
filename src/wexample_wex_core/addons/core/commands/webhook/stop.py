@@ -27,13 +27,11 @@ def core__webhook__stop(
     port: int = WEBHOOK_LISTEN_PORT_DEFAULT,
 ) -> None:
     from wexample_wex_core.addons.system.helpers import system_find_process_by_port
-    from wexample_wex_core.webhook.daemon_marker import marker_clear
 
     proc = system_find_process_by_port(port)
 
     if not proc:
         context.io.log(f"No webhook daemon found on port {port}")
-        marker_clear(context.kernel.workdir.get_path())
         return
 
     pid = proc.pid
@@ -48,5 +46,3 @@ def core__webhook__stop(
         context.io.log(f"Daemon force-killed (pid {pid})")
     except psutil.NoSuchProcess:
         context.io.log(f"Process {pid} already gone")
-
-    marker_clear(context.kernel.workdir.get_path())
