@@ -202,7 +202,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
             if runner is None:
                 raise ValueError(
                     f"Unknown YAML script runner: '{runner_name}'. "
-                    f"Available: {list(kernel.script_runner_registry.all().keys())}"
+                    f"Available: {kernel.script_runner_registry.all_keys()}"
                 )
             self._validate_step_keys(step, runner, kernel)
             return runner.run(step, variables, kernel), capture_var
