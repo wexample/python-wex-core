@@ -257,9 +257,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         entrypoint_path: str,
         io: IoManager,
         config: DictConfig | None = None,
+        configure: bool = True,
     ) -> FileStateManager:
         return self._get_workdir_state_manager_class().create_from_kernel(
-            kernel=self, config=config or {}, io=io
+            kernel=self, config=config or {}, io=io, configure=configure
         )
 
     def _enforce_sudo_if_needed(self, request: CommandRequest) -> None:
@@ -548,13 +549,21 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self.register_items("middlewares", classes)
 
     def _init_registry(self) -> None:
-        from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
-        from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
-
-        kernel_registry_file = self.workdir.get_shortcut(
-            KernelWorkdir.SHORTCUT_REGISTRY
+        from wexample_wex_core.const.globals import (
+            CORE_DIR_NAME_TMP,
+            CORE_FILE_NAME_REGISTRY,
         )
-        assert isinstance(kernel_registry_file, KernelRegistryFile)
+        from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
+
+        # Build the registry file directly by path instead of going through
+        # workdir.get_shortcut(), which would force a full option-tree configure
+        # of the kernel workdir at startup (135ms+ for WexWorkdir).
+        registry_path = (
+            self.workdir.get_path() / CORE_DIR_NAME_TMP / CORE_FILE_NAME_REGISTRY
+        )
+        kernel_registry_file = KernelRegistryFile.create_from_path(
+            path=registry_path, io=self.io
+        )
 
         # Registry has zero length.
         if kernel_registry_file.get_local_file().is_empty():
