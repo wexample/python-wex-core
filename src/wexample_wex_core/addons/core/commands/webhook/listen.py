@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     description="Port to listen on",
 )
 @option(
-    "async",
+    "asynchronous",
     type=bool,
     short_name="a",
     is_flag=True,
