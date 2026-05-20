@@ -20,9 +20,8 @@ if TYPE_CHECKING:
     from wexample_app.runner.abstract_command_runner import AbstractCommandRunner
     from wexample_config.const.types import DictConfig
     from wexample_filestate.utils.file_state_manager import FileStateManager
-    from wexample_prompt.common.io_manager import IoManager
-
     from wexample_helpers.service.singleton_registry import SingletonRegistry
+    from wexample_prompt.common.io_manager import IoManager
 
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest

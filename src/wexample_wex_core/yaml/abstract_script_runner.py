@@ -13,6 +13,17 @@ class AbstractScriptRunner(ABC):
     """Executes a single script step from a YAML command definition."""
 
     @classmethod
+    def dependencies(cls) -> list[type[Registrable]]:
+        return []
+
+    # ------------------------------------------------------------------
+    # Registrable Protocol
+    # ------------------------------------------------------------------
+    @classmethod
+    def get_registry_key(cls) -> str:
+        return cls.get_runner_name()
+
+    @classmethod
     @abstractmethod
     def get_runner_name(cls) -> str:
         """Return the runner identifier used in the YAML `runner:` field."""
@@ -28,24 +39,12 @@ class AbstractScriptRunner(ABC):
         """
         return ["ignore_error", "name"]
 
-    @abstractmethod
-    def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
-        """Execute the step and return a response (or None)."""
-
-    # ------------------------------------------------------------------
-    # Registrable Protocol
-    # ------------------------------------------------------------------
-
-    @classmethod
-    def get_registry_key(cls) -> str:
-        return cls.get_runner_name()
-
-    @classmethod
-    def dependencies(cls) -> list[type[Registrable]]:
-        return []
+    async def init_async(self) -> None:
+        return None
 
     def init_sync(self) -> None:
         return None
 
-    async def init_async(self) -> None:
-        return None
+    @abstractmethod
+    def run(self, step: dict, variables: dict[str, str], kernel: Kernel) -> Any:
+        """Execute the step and return a response (or None)."""

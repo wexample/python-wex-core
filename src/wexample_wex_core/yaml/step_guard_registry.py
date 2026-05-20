@@ -7,7 +7,6 @@ from wexample_helpers.service.singleton_registry import SingletonRegistry
 
 if TYPE_CHECKING:
     from wexample_wex_core.common.kernel import Kernel
-    from wexample_wex_core.yaml.abstract_step_guard import AbstractStepGuard
 
 
 @base_class

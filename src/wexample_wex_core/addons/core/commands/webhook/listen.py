@@ -157,7 +157,7 @@ def _install_sigterm_handler(server: object) -> None:
     signal.signal(signal.SIGTERM, _handler)
 
 
-def _load_type_resolvers(kernel) -> "Registry":
+def _load_type_resolvers(kernel) -> Registry:
     from wexample_helpers.service.registry import Registry
 
     from wexample_wex_core.webhook.addon_resolver import AddonWebhookTypeResolver
