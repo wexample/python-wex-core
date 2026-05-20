@@ -13,11 +13,16 @@ if TYPE_CHECKING:
 @alias("rebuild")
 @command(type=COMMAND_TYPE_ADDON)
 def core__registry__build(context: ExecutionContext) -> None:
-    from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
-    from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
+    from wexample_app.const.path import APP_DIR_NAME_TMP
 
-    registry_file = context.kernel.workdir.get_shortcut(KernelWorkdir.SHORTCUT_REGISTRY)
-    assert isinstance(registry_file, KernelRegistryFile)
+    from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
+
+    registry_path = (
+        context.kernel.workdir.get_path() / APP_DIR_NAME_TMP / "registry.json"
+    )
+    registry_file = KernelRegistryFile.create_from_path(
+        path=registry_path, io=context.kernel.io
+    )
 
     registry = registry_file.create_registry_and_save(kernel=context.kernel)
     _write_autocomplete_cache(registry, context)

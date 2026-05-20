@@ -20,13 +20,14 @@ if TYPE_CHECKING:
     from wexample_app.runner.abstract_command_runner import AbstractCommandRunner
     from wexample_config.const.types import DictConfig
     from wexample_filestate.utils.file_state_manager import FileStateManager
+    from wexample_helpers.service.singleton_registry import SingletonRegistry
     from wexample_prompt.common.io_manager import IoManager
 
     from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
     from wexample_wex_core.common.command_request import CommandRequest
     from wexample_wex_core.registry.kernel_registry import KernelRegistry
     from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
-    from wexample_wex_core.yaml.script_runner_registry import ScriptRunnerRegistry
+    from wexample_wex_core.yaml.abstract_script_runner import AbstractScriptRunner
     from wexample_wex_core.yaml.step_guard_registry import StepGuardRegistry
 
 
@@ -80,7 +81,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         description="Python logger for operational/debug messages"
     )
     _registry: KernelRegistry = private_field(description="The configuration registry")
-    _script_runner_registry: ScriptRunnerRegistry = private_field(
+    _script_runner_registry: SingletonRegistry[AbstractScriptRunner] = private_field(
         description="Registry of YAML script runners"
     )
     _step_guard_registry: StepGuardRegistry = private_field(
@@ -92,7 +93,7 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         return self._logger
 
     @property
-    def script_runner_registry(self) -> ScriptRunnerRegistry:
+    def script_runner_registry(self) -> SingletonRegistry[AbstractScriptRunner]:
         return self._script_runner_registry
 
     @property
@@ -257,9 +258,10 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         entrypoint_path: str,
         io: IoManager,
         config: DictConfig | None = None,
+        configure: bool = True,
     ) -> FileStateManager:
         return self._get_workdir_state_manager_class().create_from_kernel(
-            kernel=self, config=config or {}, io=io
+            kernel=self, config=config or {}, io=io, configure=configure
         )
 
     def _enforce_sudo_if_needed(self, request: CommandRequest) -> None:
@@ -548,13 +550,14 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         self.register_items("middlewares", classes)
 
     def _init_registry(self) -> None:
-        from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
-        from wexample_wex_core.workdir.kernel_workdir import KernelWorkdir
+        from wexample_app.const.path import APP_DIR_NAME_TMP
 
-        kernel_registry_file = self.workdir.get_shortcut(
-            KernelWorkdir.SHORTCUT_REGISTRY
+        from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
+
+        registry_path = self.workdir.get_path() / APP_DIR_NAME_TMP / "registry.json"
+        kernel_registry_file = KernelRegistryFile.create_from_path(
+            path=registry_path, io=self.io
         )
-        assert isinstance(kernel_registry_file, KernelRegistryFile)
 
         # Registry has zero length.
         if kernel_registry_file.get_local_file().is_empty():
@@ -575,18 +578,37 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 )
 
     def _init_script_runner_registry(self) -> None:
-        from wexample_wex_core.yaml.script_runner_registry import ScriptRunnerRegistry
+        from wexample_helpers.service.singleton_registry import SingletonRegistry
 
-        self._script_runner_registry = ScriptRunnerRegistry()
+        from wexample_wex_core.yaml.runners.bash_script_runner import BashScriptRunner
+        from wexample_wex_core.yaml.runners.docker_script_runner import (
+            DockerScriptRunner,
+        )
+        from wexample_wex_core.yaml.runners.exec_script_runner import ExecScriptRunner
+        from wexample_wex_core.yaml.runners.python_script_runner import (
+            PythonScriptRunner,
+        )
+
+        registry = SingletonRegistry(container=self)
+        for cls in (
+            BashScriptRunner,
+            DockerScriptRunner,
+            ExecScriptRunner,
+            PythonScriptRunner,
+        ):
+            registry.register(cls)
+        registry.init_all_sync()
+        self._script_runner_registry = registry
 
     def _init_step_guard_registry(self) -> None:
         from wexample_wex_core.common.abstract_addon_manager import AbstractAddonManager
         from wexample_wex_core.yaml.step_guard_registry import StepGuardRegistry
 
-        registry = StepGuardRegistry()
+        registry = StepGuardRegistry(container=self)
         for addon in self.get_addons().values():
             for guard_class in cast(
                 AbstractAddonManager, addon
             ).get_step_guard_classes():
-                registry.register(guard_class())
+                registry.register(guard_class)
+        registry.init_all_sync()
         self._step_guard_registry = registry

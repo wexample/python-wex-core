@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     description="Port to listen on",
 )
 @option(
-    "asynchronous",
+    "async",
     type=bool,
     short_name="a",
     is_flag=True,
@@ -157,20 +157,23 @@ def _install_sigterm_handler(server: object) -> None:
     signal.signal(signal.SIGTERM, _handler)
 
 
-def _load_type_resolvers(kernel) -> dict:
+def _load_type_resolvers(kernel) -> Registry:
+    from wexample_helpers.service.registry import Registry
+
     from wexample_wex_core.webhook.addon_resolver import AddonWebhookTypeResolver
+    from wexample_wex_core.webhook.resolver import WebhookTypeResolver
     from wexample_wex_core.webhook.service_resolver import ServiceWebhookTypeResolver
 
     workdir_path = str(kernel.workdir.get_path())
-    resolvers: dict = {
-        "addon": AddonWebhookTypeResolver(workdir_path),
-        "service": ServiceWebhookTypeResolver(workdir_path),
-    }
+    registry: Registry[WebhookTypeResolver] = Registry()
+    registry.register(AddonWebhookTypeResolver(workdir_path), key="addon")
+    registry.register(ServiceWebhookTypeResolver(workdir_path), key="service")
 
     for addon in kernel.get_addons().values():
-        resolvers.update(addon.get_webhook_resolvers())
+        for key, resolver in addon.get_webhook_resolvers().items():
+            registry.register(resolver, key=key)
 
-    return resolvers
+    return registry
 
 
 def _resolve_log_path(context: ExecutionContext) -> str:

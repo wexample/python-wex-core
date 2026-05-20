@@ -84,16 +84,16 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
     """HTTP request handler for incoming webhook calls.
 
     Class-level attributes to set before serving:
-        wex_executable : list[str]   — [python_path, main_py_path]
-        log_path       : str         — absolute path to the rotating log file
-        start_time     : float       — time.monotonic() at server startup
-        type_resolvers : dict        — {command_type: WebhookTypeResolver}
-        worker_timeout : int         — subprocess timeout in seconds (0 = no limit)
+        wex_executable : list[str]      — [python_path, main_py_path]
+        log_path       : str            — absolute path to the rotating log file
+        start_time     : float          — time.monotonic() at server startup
+        type_resolvers : Registry | None — registry of WebhookTypeResolver by command_type
+        worker_timeout : int            — subprocess timeout in seconds (0 = no limit)
     """
 
     log_path: str = ""
     start_time: float = 0.0
-    type_resolvers: dict = {}
+    type_resolvers: object = None
     wex_executable: list[str] = []
     worker_timeout: int = 300
 
