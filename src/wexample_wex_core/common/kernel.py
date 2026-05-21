@@ -61,10 +61,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=False,
         description="Indicates this process was launched as a subprocess by another wex process",
     )
-    _config_arg_v: bool = private_field(
-        default=False,
-        description="Default verbosity",
-    )
     _config_arg_vv: bool = private_field(
         default=False,
         description="High verbosity",
@@ -239,6 +235,14 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         if changed:
             self.workdir.set_local_data("env", local_env)
 
+    def _build_command_requests_from_arguments(
+        self, arguments: CommandLineArgumentsList
+    ) -> list[CommandRequest]:
+        # Common Unix idiom: `wex --version` / `wex -v` → `wex version`.
+        if arguments and arguments[0] in ("--version", "-v"):
+            arguments = ["version", *arguments[1:]]
+        return super()._build_command_requests_from_arguments(arguments)
+
     def _build_single_command_request_from_arguments(
         self, arguments: CommandLineArgumentsList
     ):
@@ -374,14 +378,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
                 description="Silence all output",
             ),
             Option(
-                name="v",
-                short_name="v",
-                is_flag=True,
-                type=bool,
-                value=VerbosityLevel.MEDIUM,
-                description="Medium verbosity",
-            ),
-            Option(
                 name="vv",
                 short_name="vv",
                 is_flag=True,
@@ -490,9 +486,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         if self._config_arg_quiet:
             self.io.default_context_verbosity = VerbosityLevel.QUIET
             self.io.default_response_verbosity = VerbosityLevel.QUIET
-        elif self._config_arg_v:
-            self.io.default_context_verbosity = VerbosityLevel.DEFAULT
-            self.io.default_response_verbosity = VerbosityLevel.DEFAULT
         elif self._config_arg_vv:
             self.io.default_context_verbosity = VerbosityLevel.HIGH
             self.io.default_response_verbosity = VerbosityLevel.HIGH
