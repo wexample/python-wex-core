@@ -559,8 +559,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             path=registry_path, io=self.io
         )
 
-        # Registry has zero length.
-        if kernel_registry_file.get_local_file().is_empty():
+        # Registry is missing or empty: build from scratch.
+        if kernel_registry_file.get_local_file().is_blank():
             # Create registry and dump in file
             self._registry = kernel_registry_file.create_registry_and_save(kernel=self)
         else:
