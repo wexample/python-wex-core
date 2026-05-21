@@ -1,6 +1,6 @@
 # wex_core
 
-Version: 22.1.0
+Version: 22.2.0
 
 Wex core
 
