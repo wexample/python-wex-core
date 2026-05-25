@@ -6,11 +6,13 @@ from typing import TYPE_CHECKING, cast
 from wexample_app.common.abstract_kernel import AbstractKernel
 from wexample_app.common.mixins.command_line_kernel import CommandLineKernel
 from wexample_app.common.mixins.command_runner_kernel import CommandRunnerKernel
+from wexample_app.common.mixins.verbosity_args_kernel_mixin import (
+    WithVerbosityArgsKernelMixin,
+)
 from wexample_app.const.output import OUTPUT_FORMAT_STR, OUTPUT_TARGET_NONE
 from wexample_app.output.app_none_output_handler import AppNoneOutputHandler
 from wexample_helpers.classes.private_field import private_field
 from wexample_helpers.decorator.base_class import base_class
-from wexample_prompt.enums.verbosity_level import VerbosityLevel
 
 if TYPE_CHECKING:
     from wexample_app.command.option import Option
@@ -32,7 +34,12 @@ if TYPE_CHECKING:
 
 
 @base_class
-class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
+class Kernel(
+    WithVerbosityArgsKernelMixin,
+    CommandRunnerKernel,
+    CommandLineKernel,
+    AbstractKernel,
+):
     _config_arg_force_request_id: str | None = private_field(
         default=None,
         description="Force a specific request ID when set by an external process",
@@ -53,21 +60,9 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
         default=None,
         description="A target where to place the output",
     )
-    _config_arg_quiet: bool = private_field(
-        default=False,
-        description="Disable verbosity, every log or message, useful to capture structured output",
-    )
     _config_arg_subprocess: bool = private_field(
         default=False,
         description="Indicates this process was launched as a subprocess by another wex process",
-    )
-    _config_arg_vv: bool = private_field(
-        default=False,
-        description="High verbosity",
-    )
-    _config_arg_vvv: bool = private_field(
-        default=False,
-        description="Maximum verbosity",
     )
     _execution_depth: int = private_field(
         default=0,
@@ -367,32 +362,8 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
 
     def _get_core_args(self) -> list[Option]:
         from wexample_app.command.option import Option
-        from wexample_prompt.enums.verbosity_level import VerbosityLevel
 
         return super()._get_core_args() + [
-            Option(
-                name="quiet",
-                is_flag=True,
-                type=bool,
-                value=VerbosityLevel.QUIET,
-                description="Silence all output",
-            ),
-            Option(
-                name="vv",
-                short_name="vv",
-                is_flag=True,
-                type=bool,
-                value=VerbosityLevel.HIGH,
-                description="High verbosity",
-            ),
-            Option(
-                name="vvv",
-                short_name="vvv",
-                is_flag=True,
-                type=bool,
-                value=VerbosityLevel.MAXIMUM,
-                description="Maximum verbosity",
-            ),
             Option(
                 name="output_format",
                 short_name=False,
@@ -481,17 +452,6 @@ class Kernel(CommandRunnerKernel, CommandLineKernel, AbstractKernel):
             from wexample_app.const.output import OUTPUT_TARGET_STDOUT
 
             self._config_arg_output_target = [OUTPUT_TARGET_STDOUT]
-
-        # We can then use config.
-        if self._config_arg_quiet:
-            self.io.default_context_verbosity = VerbosityLevel.QUIET
-            self.io.default_response_verbosity = VerbosityLevel.QUIET
-        elif self._config_arg_vv:
-            self.io.default_context_verbosity = VerbosityLevel.HIGH
-            self.io.default_response_verbosity = VerbosityLevel.HIGH
-        elif self._config_arg_vvv:
-            self.io.default_context_verbosity = VerbosityLevel.MAXIMUM
-            self.io.default_response_verbosity = VerbosityLevel.MAXIMUM
 
         self.io.indentation = min(
             self._config_arg_indentation_level or self.io.indentation,
