@@ -33,6 +33,7 @@ def attach(
         from wexample_cli.common.command_method_wrapper import (
             CommandMethodWrapper as CMW,
         )
+
         from wexample_wex_core.resolver.abstract_command_resolver import (
             AbstractCommandResolver,
         )

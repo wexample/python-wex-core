@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import psutil
+from wexample_cli.decorator.command import command
 from wexample_helpers.helpers.file import file_get_human_readable_size
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
-from wexample_cli.decorator.command import command
 
 if TYPE_CHECKING:
     from wexample_cli.context.execution_context import ExecutionContext

@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from urllib.parse import parse_qs, urlparse
 
-from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 from wexample_cli.decorator.command import command
 from wexample_cli.decorator.option import option
 
+from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
+
 if TYPE_CHECKING:
     from wexample_app.response.abstract_response import AbstractResponse
-
     from wexample_cli.context.execution_context import ExecutionContext
 
 

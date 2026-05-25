@@ -14,7 +14,6 @@ from wexample_helpers.decorator.base_class import base_class
 
 if TYPE_CHECKING:
     from wexample_app.resolver.abstract_command_resolver import AbstractCommandResolver
-
     from wexample_cli.middleware.abstract_middleware import AbstractMiddleware
 
 

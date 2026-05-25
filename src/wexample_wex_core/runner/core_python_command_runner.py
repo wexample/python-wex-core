@@ -14,6 +14,7 @@ class CorePythonCommandRunner(PythonCommandRunner):
     def build_runnable_command(self, request: CommandRequest) -> Command | None:
         from wexample_cli.command.extended_command import ExtendedCommand
         from wexample_cli.common.command_method_wrapper import CommandMethodWrapper
+
         from wexample_wex_core.exception.command_function_build_failed_exception import (
             CommandFunctionBuildFailedException,
         )

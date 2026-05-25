@@ -4,11 +4,11 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 import psutil
+from wexample_cli.decorator.command import command
+from wexample_cli.decorator.option import option
 
 from wexample_wex_core.addons.system.helpers import system_find_process_by_port
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
-from wexample_cli.decorator.command import command
-from wexample_cli.decorator.option import option
 
 if TYPE_CHECKING:
     from wexample_cli.context.execution_context import ExecutionContext
