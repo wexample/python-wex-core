@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+    from wexample_cli.common.command_method_wrapper import CommandMethodWrapper
 
 ATTACH_POSITION_BEFORE = "before"
 ATTACH_POSITION_AFTER = "after"
@@ -30,7 +30,7 @@ def attach(
     """
 
     def decorator(wrapper: CommandMethodWrapper) -> CommandMethodWrapper:
-        from wexample_wex_core.common.command_method_wrapper import (
+        from wexample_cli.common.command_method_wrapper import (
             CommandMethodWrapper as CMW,
         )
         from wexample_wex_core.resolver.abstract_command_resolver import (

@@ -116,7 +116,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
             )
 
     def build_runnable_command(self, request: CommandRequest) -> Command | None:
-        from wexample_wex_core.command.extended_command import ExtendedCommand
+        from wexample_cli.command.extended_command import ExtendedCommand
         from wexample_wex_core.yaml.yaml_command_definition import YamlCommandDefinition
 
         path = self.build_command_path(request)
@@ -154,7 +154,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
     # Wrapper construction
     # ------------------------------------------------------------------
     def _build_wrapper(self, definition: YamlCommandDefinition) -> CommandMethodWrapper:
-        from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+        from wexample_cli.common.command_method_wrapper import CommandMethodWrapper
         from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 
         return CommandMethodWrapper(

@@ -4,11 +4,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
-from wexample_wex_core.decorator.command import command
-from wexample_wex_core.decorator.option import option
+from wexample_cli.decorator.command import command
+from wexample_cli.decorator.option import option
 
 if TYPE_CHECKING:
-    from wexample_wex_core.context.execution_context import ExecutionContext
+    from wexample_cli.context.execution_context import ExecutionContext
 
 _TEMPLATES_DIR = Path(__file__).parent / "templates"
 

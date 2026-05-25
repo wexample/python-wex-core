@@ -14,10 +14,10 @@ if TYPE_CHECKING:
     from wexample_helpers.const.types import Kwargs, StringsList, StructuredData
 
     from wexample_wex_core.common.command_address import CommandAddress
-    from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+    from wexample_cli.common.command_method_wrapper import CommandMethodWrapper
     from wexample_wex_core.const.registries import RegistryAddonData
-    from wexample_wex_core.context.execution_context import ExecutionContext
-    from wexample_wex_core.middleware.abstract_middleware import AbstractMiddleware
+    from wexample_cli.context.execution_context import ExecutionContext
+    from wexample_cli.middleware.abstract_middleware import AbstractMiddleware
 
 
 class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
@@ -106,7 +106,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         request: CommandRequest,
         function_kwargs: Kwargs,
     ) -> ExecutionContext:
-        from wexample_wex_core.context.execution_context import ExecutionContext
+        from wexample_cli.context.execution_context import ExecutionContext
 
         return ExecutionContext(
             middleware=middleware,
@@ -229,7 +229,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
         import yaml
 
         from wexample_wex_core.common.command_address import CommandAddress
-        from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+        from wexample_cli.common.command_method_wrapper import CommandMethodWrapper
         from wexample_wex_core.const.registries import RegistryCommandData
 
         addon_data: RegistryAddonData = {}
