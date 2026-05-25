@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from wexample_cli.decorator.command import command
+
 from wexample_wex_core.addons.demo.commands.ping.pong import demo__ping__pong
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 from wexample_wex_core.decorator.attach import ATTACH_POSITION_AFTER, attach
-from wexample_wex_core.decorator.command import command
 
 if TYPE_CHECKING:
     from wexample_app.response.abstract_response import AbstractResponse
-
-    from wexample_wex_core.context.execution_context import ExecutionContext
+    from wexample_cli.context.execution_context import ExecutionContext
 
 
 @attach(position=ATTACH_POSITION_AFTER, command=demo__ping__pong)

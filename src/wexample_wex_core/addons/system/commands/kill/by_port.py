@@ -3,15 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import psutil
+from wexample_cli.decorator.as_sudo import as_sudo
+from wexample_cli.decorator.command import command
+from wexample_cli.decorator.option import option
 
 from wexample_wex_core.addons.system.helpers import system_find_process_by_port
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
-from wexample_wex_core.decorator.as_sudo import as_sudo
-from wexample_wex_core.decorator.command import command
-from wexample_wex_core.decorator.option import option
 
 if TYPE_CHECKING:
-    from wexample_wex_core.context.execution_context import ExecutionContext
+    from wexample_cli.context.execution_context import ExecutionContext
 
 
 @option("port", type=int, short_name="p", required=True, description="Port number")

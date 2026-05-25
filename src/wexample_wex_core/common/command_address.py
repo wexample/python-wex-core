@@ -23,7 +23,7 @@ class CommandAddress:
     @classmethod
     def from_function(cls, function) -> CommandAddress:
         """Build from a command function or CommandMethodWrapper, e.g. ``core__ping__pong``."""
-        from wexample_wex_core.common.command_method_wrapper import CommandMethodWrapper
+        from wexample_cli.common.command_method_wrapper import CommandMethodWrapper
 
         if isinstance(function, CommandMethodWrapper):
             return cls.from_function_name(function.function.__name__)
