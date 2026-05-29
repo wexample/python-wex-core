@@ -34,6 +34,7 @@ class DockerScriptRunner(AbstractScriptRunner):
             "script",
             "file",
             "workdir",
+            "shell",
         ]
 
     @staticmethod
@@ -72,11 +73,12 @@ class DockerScriptRunner(AbstractScriptRunner):
         workdir: str | None = step.get("workdir")
         script = step.get("script")
         file = step.get("file")
+        shell = step.get("shell", "bash")
 
         if script:
-            inner = ["bash", "-c", script]
+            inner = [shell, "-c", script]
         elif file:
-            inner = ["bash", file]
+            inner = [shell, file]
         else:
             return None
 
