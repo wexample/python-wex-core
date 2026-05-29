@@ -21,7 +21,11 @@ class ServiceWebhookTypeResolver:
         service_name, cmd_path = parsed
         return f"@{service_name}::{cmd_path}"
 
-    def resolve_cwd(self, command_path: str) -> str | None:
+    def resolve_cwd(
+        self,
+        command_path: str,
+        query_params: dict[str, list[str]] | None = None,
+    ) -> str | None:
         return None
 
     def resolve_token(self, command_path: str, command_str: str) -> str | None:

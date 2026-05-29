@@ -183,7 +183,14 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 return
 
             # ---- dispatch --------------------------------------------------
-            cwd = resolver.resolve_cwd(command_path) if resolver is not None else None
+            from urllib.parse import parse_qs
+
+            query_params = parse_qs(urlparse(self.path).query)
+            cwd = (
+                resolver.resolve_cwd(command_path, query_params)
+                if resolver is not None
+                else None
+            )
 
             cmd = self.wex_executable + [
                 "core::webhook/exec",
@@ -201,9 +208,6 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 cwd=cwd,
             )
 
-            from urllib.parse import parse_qs
-
-            query_params = parse_qs(urlparse(self.path).query)
             is_async = route["is_async"] and query_params.get("_async", ["1"])[0] != "0"
 
             if not is_async:
