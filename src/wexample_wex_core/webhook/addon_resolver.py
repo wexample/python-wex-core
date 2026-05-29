@@ -21,7 +21,19 @@ class AddonWebhookTypeResolver:
         addon_name, cmd_path = parsed
         return f"{addon_name}::{cmd_path}"
 
-    def resolve_cwd(self, command_path: str) -> str | None:
+    def resolve_cwd(
+        self,
+        command_path: str,
+        query_params: dict[str, list[str]] | None = None,
+    ) -> str | None:
+        # Honor `?app_path=...` so addon commands like `app::release/deploy` run
+        # with cwd set to the target app dir. Without this, `kernel.call_workdir`
+        # falls back to wherever the daemon was started, breaking any service
+        # name resolution that depends on the active app context.
+        if query_params:
+            app_paths = query_params.get("app_path") or []
+            if app_paths:
+                return app_paths[0]
         return None
 
     def resolve_token(self, command_path: str, command_str: str) -> str | None:
