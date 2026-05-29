@@ -1,7 +1,7 @@
 global:
   name: wex_core
   type: app
-  version: 24.1.4
+  version: 24.2.0
 wex:
   migration: 1
-  version: 6.0.90
+  version: 6.0.104
