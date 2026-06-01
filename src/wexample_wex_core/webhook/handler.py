@@ -278,16 +278,54 @@ class WebhookHttpRequestHandler(BaseHTTPRequestHandler):
                 pid=process.pid,
             )
 
-        except Exception as e:
-            self.send_response(500)
-            output = {
-                "status": WEBHOOK_STATUS_ERROR,
-                "error": str(e),
-                "traceback": traceback.format_exc(),
-            }
-            self._get_logger().error(
-                json.dumps({"error": str(e), "tb": traceback.format_exc()})
+        except FileNotFoundError as e:
+            # Typically: Popen cwd points to a missing directory (bad app_path).
+            # Client error, not a server crash.
+            self._get_logger().warning(
+                json.dumps(
+                    {
+                        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                        "ip": self.client_address[0],
+                        "path": self.path,
+                        "status": "not_found",
+                        "error": str(e),
+                    }
+                )
             )
+            self.send_response(404)
+            output = {"status": WEBHOOK_STATUS_ERROR, "error": "NOT_FOUND"}
+
+        except PermissionError as e:
+            self._get_logger().warning(
+                json.dumps(
+                    {
+                        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                        "ip": self.client_address[0],
+                        "path": self.path,
+                        "status": "forbidden",
+                        "error": str(e),
+                    }
+                )
+            )
+            self.send_response(403)
+            output = {"status": WEBHOOK_STATUS_ERROR, "error": "FORBIDDEN"}
+
+        except Exception as e:
+            # Real internal error. Full context in the log, short payload to the client.
+            self._get_logger().error(
+                json.dumps(
+                    {
+                        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                        "ip": self.client_address[0],
+                        "path": self.path,
+                        "status": "internal_error",
+                        "error": str(e),
+                        "tb": traceback.format_exc(),
+                    }
+                )
+            )
+            self.send_response(500)
+            output = {"status": WEBHOOK_STATUS_ERROR, "error": "INTERNAL_ERROR"}
 
         self._send_json(output)
 
