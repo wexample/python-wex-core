@@ -268,10 +268,14 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                 description: str | None = None
                 aliases: list[str] = []
                 attachments: dict[str, list] = {"before": [], "after": []}
+                options: list[dict] = []
+                tags: list[str] = []
                 sudo: bool = False
                 webhook: bool = False
 
                 if cmd_file.suffix == ".py":
+                    from wexample_app.helpers.option import option_to_dict
+
                     func_name = address.to_function_name()
                     spec = importlib.util.spec_from_file_location(func_name, cmd_file)
                     if spec and spec.loader:
@@ -285,6 +289,8 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                                 pos: list(items)
                                 for pos, items in wrapper.attachments.items()
                             }
+                            options = [option_to_dict(opt) for opt in wrapper.options]
+                            tags = list(wrapper.tags)
                             sudo = wrapper.sudo
                             webhook = wrapper.webhook
 
@@ -303,6 +309,8 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                             aliases.append(
                                 dec_args if isinstance(dec_args, str) else str(dec_args)
                             )
+                        elif dec_name == "tags" and isinstance(dec_args, list):
+                            tags = [str(t) for t in dec_args]
                         elif dec_name == "attach" and isinstance(dec_args, dict):
                             position = dec_args.get("position", "after")
                             attachments[position].append(
@@ -319,6 +327,8 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                     description=description,
                     alias=aliases,
                     attachments=attachments,
+                    options=options,
+                    tags=tags,
                     sudo=sudo,
                     webhook=webhook,
                 )
