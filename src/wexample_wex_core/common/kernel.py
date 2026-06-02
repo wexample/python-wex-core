@@ -241,6 +241,13 @@ class Kernel(
     def _build_single_command_request_from_arguments(
         self, arguments: CommandLineArgumentsList
     ):
+        from wexample_app.exception.no_command_provided_exception import (
+            NoCommandProvidedException,
+        )
+
+        if not arguments:
+            raise NoCommandProvidedException()
+
         kwargs = dict(
             kernel=self,
             name=arguments[0],
