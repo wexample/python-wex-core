@@ -15,8 +15,10 @@ class RegistryCommandData(TypedDict):
     attachments: dict[str, list[RegistryAttachment]]
     command: str
     description: str | None
+    options: list[dict]
     path: str
     sudo: bool
+    tags: list[str]
     test: str | None
     webhook: bool
 
