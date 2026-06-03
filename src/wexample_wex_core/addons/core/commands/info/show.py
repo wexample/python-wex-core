@@ -11,12 +11,15 @@ if TYPE_CHECKING:
 
 
 @command(type=COMMAND_TYPE_ADDON)
-def core__info__show(context: ExecutionContext) -> None:
+def core__info__show(context: ExecutionContext):
     import platform
+
+    from wexample_app.response.properties_response import PropertiesResponse
 
     registry = context.kernel.get_configuration_registry()
 
-    context.io.properties(
+    return PropertiesResponse(
+        kernel=context.kernel,
         title="General",
         properties={
             "Location": context.kernel.workdir.get_path(),

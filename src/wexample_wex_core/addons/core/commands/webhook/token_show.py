@@ -33,16 +33,22 @@ def core__webhook__token_show(
     context: ExecutionContext,
     type_name: str,
     command_name: str,
-) -> None:
+):
+    from wexample_app.response.failure_response import FailureResponse
+    from wexample_app.response.warning_response import WarningResponse
+
     if type_name not in _VALID_TYPES:
-        context.io.error(f"--type must be one of: {', '.join(_VALID_TYPES)}")
-        return
+        return FailureResponse(
+            kernel=context.kernel,
+            message=f"--type must be one of: {', '.join(_VALID_TYPES)}",
+        )
 
     token = context.kernel.workdir.get_local_data_value(
         f"webhook_tokens_{type_name}", command_name
     )
     if not token:
-        context.io.warning(f"No token found for {command_name}.")
-        return
+        return WarningResponse(
+            kernel=context.kernel, message=f"No token found for {command_name}."
+        )
 
-    context.io.log(f"{command_name}:  @yellow{{{token}}}")
+    return f"{command_name}:  @yellow{{{token}}}"

@@ -14,12 +14,13 @@ if TYPE_CHECKING:
 @alias("logo")
 @command(type=COMMAND_TYPE_ADDON, description="Show the application logo")
 def core__logo__show(context: ExecutionContext):
-    from wexample_app.response.str_response import StrResponse
+    from wexample_app.response.warning_response import WarningResponse
 
     logo = context.kernel.get_logo()
 
     if logo is None:
-        context.io.warning("No logo defined for this CLI.")
-        return None
+        return WarningResponse(
+            kernel=context.kernel, message="No logo defined for this CLI."
+        )
 
-    return StrResponse(kernel=context.kernel, content=logo)
+    return logo

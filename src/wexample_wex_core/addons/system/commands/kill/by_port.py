@@ -17,18 +17,33 @@ if TYPE_CHECKING:
 @option("port", type=int, short_name="p", required=True, description="Port number")
 @as_sudo()
 @command(type=COMMAND_TYPE_ADDON, description="Kill the process listening on a port")
-def system__kill__by_port(context: ExecutionContext, port: int) -> None:
+def system__kill__by_port(context: ExecutionContext, port: int):
+    from wexample_app.response.failure_response import FailureResponse
+    from wexample_app.response.success_response import SuccessResponse
+    from wexample_app.response.warning_response import WarningResponse
+
     proc = system_find_process_by_port(port)
 
-    if proc:
-        try:
-            proc.terminate()
-            proc.wait(timeout=5)
-            context.io.success(f"Process {proc.pid} on port {port} terminated")
-        except psutil.TimeoutExpired:
-            proc.kill()
-            context.io.success(f"Process {proc.pid} on port {port} killed (force)")
-        except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
-            context.io.error(f"Could not kill process on port {port}: {e}")
-    else:
-        context.io.warning(f"No process found on port {port}")
+    if not proc:
+        return WarningResponse(
+            kernel=context.kernel, message=f"No process found on port {port}"
+        )
+
+    try:
+        proc.terminate()
+        proc.wait(timeout=5)
+        return SuccessResponse(
+            kernel=context.kernel,
+            message=f"Process {proc.pid} on port {port} terminated",
+        )
+    except psutil.TimeoutExpired:
+        proc.kill()
+        return SuccessResponse(
+            kernel=context.kernel,
+            message=f"Process {proc.pid} on port {port} killed (force)",
+        )
+    except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
+        return FailureResponse(
+            kernel=context.kernel,
+            message=f"Could not kill process on port {port}: {e}",
+        )

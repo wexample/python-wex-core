@@ -25,14 +25,15 @@ if TYPE_CHECKING:
 def core__webhook__stop(
     context: ExecutionContext,
     port: int = WEBHOOK_LISTEN_PORT_DEFAULT,
-) -> None:
+):
+    from wexample_app.response.success_response import SuccessResponse
+
     from wexample_wex_core.addons.system.helpers import system_find_process_by_port
 
     proc = system_find_process_by_port(port)
 
     if not proc:
-        context.io.log(f"No webhook daemon found on port {port}")
-        return
+        return f"No webhook daemon found on port {port}"
 
     pid = proc.pid
     context.io.log(f"Stopping webhook daemon on port {port} (pid {pid})...")
@@ -40,9 +41,13 @@ def core__webhook__stop(
     try:
         proc.terminate()
         proc.wait(timeout=5)
-        context.io.log(f"Daemon stopped (pid {pid})")
+        return SuccessResponse(
+            kernel=context.kernel, message=f"Daemon stopped (pid {pid})"
+        )
     except psutil.TimeoutExpired:
         proc.kill()
-        context.io.log(f"Daemon force-killed (pid {pid})")
+        return SuccessResponse(
+            kernel=context.kernel, message=f"Daemon force-killed (pid {pid})"
+        )
     except psutil.NoSuchProcess:
-        context.io.log(f"Process {pid} already gone")
+        return f"Process {pid} already gone"

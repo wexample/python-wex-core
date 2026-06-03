@@ -52,16 +52,24 @@ def core__webhook__token_generate(
     command_name: str | None = None,
     all: bool = False,
     force: bool = False,
-) -> None:
+):
+    from wexample_app.response.failure_response import FailureResponse
+
     if type_name not in _VALID_TYPES:
-        context.io.error(f"--type must be one of: {', '.join(_VALID_TYPES)}")
-        return
+        return FailureResponse(
+            kernel=context.kernel,
+            message=f"--type must be one of: {', '.join(_VALID_TYPES)}",
+        )
     if not command_name and not all:
-        context.io.error("Specify --command-name <cmd> or --all.")
-        return
+        return FailureResponse(
+            kernel=context.kernel,
+            message="Specify --command-name <cmd> or --all.",
+        )
     if command_name and all:
-        context.io.error("--command-name and --all are mutually exclusive.")
-        return
+        return FailureResponse(
+            kernel=context.kernel,
+            message="--command-name and --all are mutually exclusive.",
+        )
 
     workdir = context.kernel.workdir
     namespace = _namespace(type_name)
@@ -72,8 +80,7 @@ def core__webhook__token_generate(
         )
         targets = _filter_by_type(webhook_cmds, type_name)
         if not targets:
-            context.io.log(f"No @webhook {type_name} commands found.")
-            return
+            return f"No @webhook {type_name} commands found."
     else:
         targets = [command_name]
 

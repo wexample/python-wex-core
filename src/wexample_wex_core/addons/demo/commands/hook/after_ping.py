@@ -15,10 +15,8 @@ if TYPE_CHECKING:
 
 @attach(position=ATTACH_POSITION_AFTER, command=demo__ping__pong)
 @command(type=COMMAND_TYPE_ADDON, description="Demo after-hook for demo::ping/pong")
-def demo__hook__after_ping(context: ExecutionContext) -> AbstractResponse:
-    from wexample_app.response.default_response import DefaultResponse
-
+def demo__hook__after_ping(context: ExecutionContext):
     context.kernel.io.log("@attach after demo::ping/pong — hook ran!")
     # Store on kernel so the test can observe the side-effect across module boundaries.
     context.kernel._test_after_ping_ran = True
-    return DefaultResponse(kernel=context.kernel, content="hook ran")
+    return "hook ran"

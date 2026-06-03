@@ -44,12 +44,15 @@ def core__command__create(
     command: str,
     extension: str = "yml",
     force: bool = False,
-) -> None:
-    from wexample_app.response.str_response import StrResponse
+):
+    from wexample_app.response.failure_response import FailureResponse
+    from wexample_app.response.warning_response import WarningResponse
 
     if extension not in ("yml", "py"):
-        context.io.error(f"Unsupported extension '{extension}'. Use 'yml' or 'py'.")
-        return
+        return FailureResponse(
+            kernel=context.kernel,
+            message=f"Unsupported extension '{extension}'. Use 'yml' or 'py'.",
+        )
 
     # group/name without prefix → shorthand for ~group/name
     if "::" not in command and not command.startswith("~"):
@@ -63,17 +66,21 @@ def core__command__create(
             break
 
     if result is None:
-        context.io.error(
-            f"No resolver can create '{command}'. "
-            "Use ~group/name for user commands or addon::group/name for addon commands."
+        return FailureResponse(
+            kernel=context.kernel,
+            message=(
+                f"No resolver can create '{command}'. "
+                "Use ~group/name for user commands or addon::group/name for addon commands."
+            ),
         )
-        return
 
     target, vars = result
 
     if target.exists() and not force:
-        context.io.warning(f"File already exists: {target}  (use --force to overwrite)")
-        return
+        return WarningResponse(
+            kernel=context.kernel,
+            message=f"File already exists: {target}  (use --force to overwrite)",
+        )
 
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(_load_template(vars["_type"], extension).format(**vars))
@@ -87,7 +94,7 @@ def core__command__create(
 
     context.kernel.run_function(core__registry__build)
 
-    return StrResponse(kernel=context.kernel, content=str(target))
+    return str(target)
 
 
 def _load_template(command_type: str, extension: str) -> str:
