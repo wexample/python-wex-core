@@ -40,4 +40,3 @@ def system__own__this(context: ExecutionContext, path: str | None = None) -> Non
 
     context.io.log(f'Setting ownership to "{username}" on: {target}')
     file_chown_recursive(target, uid, gid)
-    context.io.success("Done")
