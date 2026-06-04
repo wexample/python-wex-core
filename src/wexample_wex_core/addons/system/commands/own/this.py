@@ -29,7 +29,9 @@ if TYPE_CHECKING:
     type=COMMAND_TYPE_ADDON,
     description="Make current user owner of a directory recursively",
 )
-def system__own__this(context: ExecutionContext, path: str | None = None):
+def system__own__this(
+    context: ExecutionContext, path: str | None = None
+) -> SuccessResponse:
     import pwd
 
     from wexample_app.response.success_response import SuccessResponse

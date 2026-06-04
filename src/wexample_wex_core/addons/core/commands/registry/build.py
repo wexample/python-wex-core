@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 @alias("rebuild")
 @command(type=COMMAND_TYPE_ADDON)
-def core__registry__build(context: ExecutionContext):
+def core__registry__build(context: ExecutionContext) -> SuccessResponse:
     from wexample_app.const.path import APP_DIR_NAME_TMP
     from wexample_app.response.success_response import SuccessResponse
 

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 @command(type=COMMAND_TYPE_ADDON)
-def core__info__show(context: ExecutionContext):
+def core__info__show(context: ExecutionContext) -> PropertiesResponse:
     import platform
 
     from wexample_app.response.properties_response import PropertiesResponse
