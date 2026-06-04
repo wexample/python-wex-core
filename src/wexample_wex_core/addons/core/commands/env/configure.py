@@ -16,9 +16,11 @@ _CONFIGURABLE_KEYS: list[dict] = []
     type=COMMAND_TYPE_ADDON,
     description="Interactively configure required env vars and persist them to .wex/local/env.yml",
 )
-def core__env__configure(context: ExecutionContext) -> None:
+def core__env__configure(context: ExecutionContext):
     import os
     import pathlib
+
+    from wexample_app.response.success_response import SuccessResponse
 
     kernel = context.kernel
     io = context.io
@@ -60,6 +62,7 @@ def core__env__configure(context: ExecutionContext) -> None:
 
     if changed:
         kernel.workdir.set_local_data("env", updated)
-        io.success(message="Saved to .wex/local/env.yml")
-    else:
-        io.log(message="Nothing to save.")
+        return SuccessResponse(
+            kernel=context.kernel, message="Saved to .wex/local/env.yml"
+        )
+    return "Nothing to save."

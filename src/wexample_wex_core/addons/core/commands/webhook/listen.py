@@ -83,10 +83,12 @@ def core__webhook__listen(
                 existing.kill()
             time.sleep(0.5)
         else:
-            context.io.error(
-                f"Port {port} already in use by pid {existing.pid}. Use --force to kill it."
+            from wexample_app.response.failure_response import FailureResponse
+
+            return FailureResponse(
+                kernel=context.kernel,
+                message=f"Port {port} already in use by pid {existing.pid}. Use --force to kill it.",
             )
-            return None
 
     # ---- async mode: spawn self as background subprocess --------------------
     if asynchronous:
@@ -112,14 +114,18 @@ def core__webhook__listen(
             if running:
                 break
 
-        if running:
-            context.io.log(f"Webhook daemon started on port {port} (pid {process.pid})")
-        else:
-            context.io.error(
-                f"Daemon spawned (pid {process.pid}) but port {port} is not bound yet"
-            )
+        from wexample_app.response.failure_response import FailureResponse
+        from wexample_app.response.success_response import SuccessResponse
 
-        return None
+        if running:
+            return SuccessResponse(
+                kernel=context.kernel,
+                message=f"Webhook daemon started on port {port} (pid {process.pid})",
+            )
+        return FailureResponse(
+            kernel=context.kernel,
+            message=f"Daemon spawned (pid {process.pid}) but port {port} is not bound yet",
+        )
 
     # ---- sync mode: serve in this process (blocking) -----------------------
     from wexample_wex_core.webhook.handler import (

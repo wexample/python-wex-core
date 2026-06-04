@@ -13,8 +13,9 @@ if TYPE_CHECKING:
 
 @alias("rebuild")
 @command(type=COMMAND_TYPE_ADDON)
-def core__registry__build(context: ExecutionContext) -> None:
+def core__registry__build(context: ExecutionContext) -> SuccessResponse:
     from wexample_app.const.path import APP_DIR_NAME_TMP
+    from wexample_app.response.success_response import SuccessResponse
 
     from wexample_wex_core.path.kernel_registry_file import KernelRegistryFile
 
@@ -37,17 +38,20 @@ def core__registry__build(context: ExecutionContext) -> None:
         if cmd.get("test")
     )
 
-    context.io.log(
-        f"Registry built: {len(addon_commands)} addon(s), "
-        f"{total_commands} command(s), "
-        f"{total_with_tests}/{total_commands} with tests"
-    )
-
     for addon_name, commands in sorted(addon_commands.items()):
         context.io.log(f"{addon_name}", indentation=1)
         for cmd_entry in sorted(commands.values(), key=lambda c: c["command"]):
             marker = "✓" if cmd_entry["test"] else "✗"
             context.io.log(f"[{marker}] {cmd_entry['command']}", indentation=2)
+
+    return SuccessResponse(
+        kernel=context.kernel,
+        message=(
+            f"Registry built: {len(addon_commands)} addon(s), "
+            f"{total_commands} command(s), "
+            f"{total_with_tests}/{total_commands} with tests"
+        ),
+    )
 
 
 def _write_autocomplete_cache(registry, context: ExecutionContext) -> None:
