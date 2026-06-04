@@ -48,29 +48,26 @@ class TestTableResponse(AbstractResponseTest):
         )
         assert isinstance(response, TableResponse)
 
-    def test_str_contains_headers_and_cells(self, kernel, capsys) -> None:
-        self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+    def test_str_contains_headers_and_cells(self, kernel) -> None:
+        out = self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
 
         assert "name" in out
         assert "value" in out
         assert "alpha" in out
         assert "beta" in out
 
-    def test_str_empty(self, kernel, capsys) -> None:
-        TableResponse(kernel=kernel, content=[]).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+    def test_str_empty(self, kernel) -> None:
+        out = TableResponse(kernel=kernel, content=[]).get_formatted(OUTPUT_FORMAT_STR)
 
         assert out == "" or out.strip() == ""
 
-    def test_str_with_title(self, kernel, capsys) -> None:
-        TableResponse(
+    def test_str_with_title(self, kernel) -> None:
+        out = TableResponse(
             kernel=kernel,
             headers=["col"],
             content=[["val"]],
             title="My title",
         ).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
 
         assert "My title" in out
         assert "col" in out

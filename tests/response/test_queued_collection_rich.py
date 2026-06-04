@@ -75,16 +75,15 @@ class TestQueuedCollectionRich(AbstractResponseTest):
 
         assert received == ["sub-value"]
 
-    def test_plain_values_render(self, kernel, capsys) -> None:
+    def test_plain_values_render(self, kernel) -> None:
         from wexample_app.response.queued_collection_response import (
             QueuedCollectionResponse,
         )
 
-        QueuedCollectionResponse(
+        out = QueuedCollectionResponse(
             kernel=kernel,
             content=["hello", 42, ["a", "b"], {"key": "val"}],
         ).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
 
         assert "hello" in out
         assert "42" in out
@@ -108,8 +107,8 @@ class TestQueuedCollectionRich(AbstractResponseTest):
 
         assert results == [{"from_a": "yes"}]
 
-    def test_stop_current_step_continues(self, kernel, capsys) -> None:
-        QueuedCollectionResponse(
+    def test_stop_current_step_continues(self, kernel) -> None:
+        out = QueuedCollectionResponse(
             kernel=kernel,
             content=[
                 DictResponse(kernel=kernel, content={"step": "one"}),
@@ -117,13 +116,12 @@ class TestQueuedCollectionRich(AbstractResponseTest):
                 DictResponse(kernel=kernel, content={"step": "three"}),
             ],
         ).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
 
         assert "one" in out
         assert "three" in out
 
-    def test_stop_halts(self, kernel, capsys) -> None:
-        QueuedCollectionResponse(
+    def test_stop_halts(self, kernel) -> None:
+        out = QueuedCollectionResponse(
             kernel=kernel,
             content=[
                 DictResponse(kernel=kernel, content={"step": "one"}),
@@ -131,7 +129,6 @@ class TestQueuedCollectionRich(AbstractResponseTest):
                 DictResponse(kernel=kernel, content={"step": "three"}),
             ],
         ).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
 
         assert "one" in out
         assert "three" not in out

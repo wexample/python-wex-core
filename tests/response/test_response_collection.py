@@ -57,9 +57,8 @@ class TestResponseCollectionResponse(AbstractResponseTest):
         )
         assert isinstance(response, ResponseCollectionResponse)
 
-    def test_str_renders_all_items(self, kernel, capsys) -> None:
-        self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+    def test_str_renders_all_items(self, kernel) -> None:
+        out = self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
 
         assert "color" in out
         assert "red" in out

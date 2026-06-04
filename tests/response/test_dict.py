@@ -40,36 +40,32 @@ class TestDictResponse(AbstractResponseTest):
         )
         assert isinstance(response, DictResponse)
 
-    def test_str_contains_keys_and_values(self, kernel, capsys) -> None:
-        self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+    def test_str_contains_keys_and_values(self, kernel) -> None:
+        out = self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
 
         assert "color" in out
         assert "red" in out
         assert "size" in out
         assert "large" in out
 
-    def test_str_empty(self, kernel, capsys) -> None:
-        DictResponse(kernel=kernel, content={}).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+    def test_str_empty(self, kernel) -> None:
+        out = DictResponse(kernel=kernel, content={}).get_formatted(OUTPUT_FORMAT_STR)
 
         assert out == "" or out.strip() == ""
 
-    def test_str_nested(self, kernel, capsys) -> None:
-        DictResponse(
+    def test_str_nested(self, kernel) -> None:
+        out = DictResponse(
             kernel=kernel, content={"outer": {"inner": "value"}}
         ).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
 
         assert "outer" in out
         assert "inner" in out
         assert "value" in out
 
-    def test_str_with_title(self, kernel, capsys) -> None:
-        DictResponse(
+    def test_str_with_title(self, kernel) -> None:
+        out = DictResponse(
             kernel=kernel, content={"color": "red"}, title="My title"
         ).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
 
         assert "My title" in out
         assert "color" in out

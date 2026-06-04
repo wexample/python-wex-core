@@ -34,7 +34,7 @@ class TestQueuedCollectionResponse(AbstractResponseTest):
     def get_command_arguments(self) -> dict:
         return {"type": "queued"}
 
-    def test_callable_receives_previous_value(self, kernel, capsys) -> None:
+    def test_callable_receives_previous_value(self, kernel) -> None:
         received = []
 
         def step_two(previous_value) -> DictResponse:
@@ -58,7 +58,7 @@ class TestQueuedCollectionResponse(AbstractResponseTest):
         )
         assert isinstance(response, QueuedCollectionResponse)
 
-    def test_stop_current_step_skips_and_continues(self, kernel, capsys) -> None:
+    def test_stop_current_step_skips_and_continues(self, kernel) -> None:
         response = QueuedCollectionResponse(
             kernel=kernel,
             content=[
@@ -67,13 +67,12 @@ class TestQueuedCollectionResponse(AbstractResponseTest):
                 DictResponse(kernel=kernel, content={"step": "three"}),
             ],
         )
-        response.get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+        out = response.get_formatted(OUTPUT_FORMAT_STR)
 
         assert "one" in out
         assert "three" in out
 
-    def test_stop_halts_queue(self, kernel, capsys) -> None:
+    def test_stop_halts_queue(self, kernel) -> None:
         response = QueuedCollectionResponse(
             kernel=kernel,
             content=[
@@ -82,15 +81,13 @@ class TestQueuedCollectionResponse(AbstractResponseTest):
                 DictResponse(kernel=kernel, content={"step": "three"}),
             ],
         )
-        response.get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+        out = response.get_formatted(OUTPUT_FORMAT_STR)
 
         assert "one" in out
         assert "three" not in out
 
-    def test_str_renders_all_steps(self, kernel, capsys) -> None:
-        self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+    def test_str_renders_all_steps(self, kernel) -> None:
+        out = self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
 
         assert "one" in out
         assert "two" in out

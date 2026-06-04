@@ -42,9 +42,8 @@ class AbstractResponseTest(AbstractKernelTest):
         output = self.create_response(kernel).get_formatted(OUTPUT_FORMAT_JSON)
         assert json.loads(output) is not None
 
-    def test_str_format_renders(self, kernel, capsys) -> None:
-        self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+    def test_str_format_renders(self, kernel) -> None:
+        out = self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
         assert out is not None
 
     def test_yaml_format_is_valid(self, kernel) -> None:

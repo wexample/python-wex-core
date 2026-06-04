@@ -40,25 +40,22 @@ class TestListResponse(AbstractResponseTest):
         )
         assert isinstance(response, ListResponse)
 
-    def test_str_contains_items(self, kernel, capsys) -> None:
-        self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+    def test_str_contains_items(self, kernel) -> None:
+        out = self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
 
         assert "alpha" in out
         assert "beta" in out
         assert "gamma" in out
 
-    def test_str_empty(self, kernel, capsys) -> None:
-        ListResponse(kernel=kernel, content=[]).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+    def test_str_empty(self, kernel) -> None:
+        out = ListResponse(kernel=kernel, content=[]).get_formatted(OUTPUT_FORMAT_STR)
 
         assert out == "" or out.strip() == ""
 
-    def test_str_with_title(self, kernel, capsys) -> None:
-        ListResponse(kernel=kernel, content=["alpha"], title="My title").get_formatted(
-            OUTPUT_FORMAT_STR
-        )
-        out = capsys.readouterr().out
+    def test_str_with_title(self, kernel) -> None:
+        out = ListResponse(
+            kernel=kernel, content=["alpha"], title="My title"
+        ).get_formatted(OUTPUT_FORMAT_STR)
 
         assert "My title" in out
         assert "alpha" in out

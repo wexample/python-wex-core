@@ -49,7 +49,7 @@ class TestProgressCollectionResponse(AbstractResponseTest):
             content=[],
         ).get_formatted(OUTPUT_FORMAT_STR)
 
-    def test_nested_progress(self, kernel, capsys) -> None:
+    def test_nested_progress(self, kernel) -> None:
         sub = ProgressCollectionResponse(
             kernel=kernel,
             title="Sub task",
@@ -57,7 +57,7 @@ class TestProgressCollectionResponse(AbstractResponseTest):
                 DictResponse(kernel=kernel, content={"sub": "step"}),
             ],
         )
-        ProgressCollectionResponse(
+        out = ProgressCollectionResponse(
             kernel=kernel,
             title="Main task",
             content=[
@@ -65,9 +65,7 @@ class TestProgressCollectionResponse(AbstractResponseTest):
                 sub,
             ],
         ).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
 
-        # Steps content is captured, progress bar titles go through terminal io
         assert "main" in out
         assert "sub" in out
 
@@ -89,12 +87,12 @@ class TestProgressCollectionResponse(AbstractResponseTest):
 
         assert received == [{"val": "x"}]
 
-    def test_progress_inside_queued(self, kernel, capsys) -> None:
+    def test_progress_inside_queued(self, kernel) -> None:
         from wexample_app.response.queued_collection_response import (
             QueuedCollectionResponse,
         )
 
-        QueuedCollectionResponse(
+        out = QueuedCollectionResponse(
             kernel=kernel,
             content=[
                 DictResponse(kernel=kernel, content={"step": "one"}),
@@ -107,17 +105,16 @@ class TestProgressCollectionResponse(AbstractResponseTest):
                 ),
             ],
         ).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
 
         assert "one" in out
         assert "sub" in out
 
-    def test_queued_inside_progress(self, kernel, capsys) -> None:
+    def test_queued_inside_progress(self, kernel) -> None:
         from wexample_app.response.queued_collection_response import (
             QueuedCollectionResponse,
         )
 
-        ProgressCollectionResponse(
+        out = ProgressCollectionResponse(
             kernel=kernel,
             title="Main progress",
             content=[
@@ -130,14 +127,12 @@ class TestProgressCollectionResponse(AbstractResponseTest):
                 ),
             ],
         ).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
 
         assert "one" in out
         assert "queued" in out
 
-    def test_renders_all_steps(self, kernel, capsys) -> None:
-        self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
+    def test_renders_all_steps(self, kernel) -> None:
+        out = self.create_response(kernel).get_formatted(OUTPUT_FORMAT_STR)
 
         assert "one" in out
         assert "two" in out
@@ -154,8 +149,8 @@ class TestProgressCollectionResponse(AbstractResponseTest):
         )
         assert response.step_labels == ["First step", "Second step"]
 
-    def test_stop_halts(self, kernel, capsys) -> None:
-        ProgressCollectionResponse(
+    def test_stop_halts(self, kernel) -> None:
+        out = ProgressCollectionResponse(
             kernel=kernel,
             title="Stop test",
             content=[
@@ -164,7 +159,6 @@ class TestProgressCollectionResponse(AbstractResponseTest):
                 DictResponse(kernel=kernel, content={"step": "three"}),
             ],
         ).get_formatted(OUTPUT_FORMAT_STR)
-        out = capsys.readouterr().out
 
         assert "one" in out
         assert "three" not in out
