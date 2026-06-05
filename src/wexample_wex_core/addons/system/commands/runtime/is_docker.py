@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from wexample_cli.decorator.command import command
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.system.const.tags import DomainTag
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 
@@ -15,6 +17,14 @@ if TYPE_CHECKING:
 @command(
     type=COMMAND_TYPE_ADDON,
     description="Return true if the current environment is a Docker container",
+    tags=[
+        DomainTag.SYSTEM,
+        EffectTag.IDEMPOTENT,
+        EffectTag.READ_ONLY,
+        AudienceTag.AGENT_SAFE,
+        ScopeTag.HOST,
+        ScopeTag.LOCAL,
+    ],
 )
 def system__runtime__is_docker(context: ExecutionContext) -> bool:
     # Standard Docker indicator

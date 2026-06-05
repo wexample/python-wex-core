@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 
 from wexample_cli.decorator.command import command
 from wexample_cli.decorator.option import option
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.core.const.tags import DomainTag
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 from wexample_wex_core.webhook.const import WEBHOOK_LISTEN_PORT_DEFAULT
@@ -37,6 +39,15 @@ _LOG_TAIL = 20  # last N entries shown by default
 @command(
     type=COMMAND_TYPE_ADDON,
     description="Show webhook daemon status and recent log entries",
+    tags=[
+        DomainTag.CORE,
+        DomainTag.HTTP,
+        DomainTag.WEBHOOK,
+        EffectTag.READ_ONLY,
+        AudienceTag.AGENT_SAFE,
+        ScopeTag.GLOBAL,
+        ScopeTag.LOCAL,
+    ],
 )
 def core__webhook__status(
     context: ExecutionContext,

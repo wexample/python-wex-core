@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from wexample_cli.decorator.command import command
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.core.const.tags import DomainTag
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 
@@ -15,6 +17,14 @@ _CONFIGURABLE_KEYS: list[dict] = []
 @command(
     type=COMMAND_TYPE_ADDON,
     description="Interactively configure required env vars and persist them to .wex/local/env.yml",
+    tags=[
+        DomainTag.CORE,
+        DomainTag.ENV,
+        EffectTag.WRITE,
+        AudienceTag.REQUIRES_CONFIRMATION,
+        ScopeTag.LOCAL,
+        ScopeTag.NO_CONTEXT,
+    ],
 )
 def core__env__configure(context: ExecutionContext):
     import os

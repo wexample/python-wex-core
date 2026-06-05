@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 import psutil
 from wexample_cli.decorator.command import command
 from wexample_cli.decorator.option import option
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.system.const.tags import DomainTag
 
 from wexample_wex_core.addons.system.helpers import system_find_process_by_port
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
@@ -20,6 +22,14 @@ _DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 @command(
     type=COMMAND_TYPE_ADDON,
     description="Return info about the process listening on a port",
+    tags=[
+        DomainTag.PROCESS,
+        DomainTag.SYSTEM,
+        EffectTag.READ_ONLY,
+        AudienceTag.AGENT_SAFE,
+        ScopeTag.HOST,
+        ScopeTag.LOCAL,
+    ],
 )
 def system__process__by_port(context: ExecutionContext, port: int) -> DictResponse:
     from wexample_app.response.dict_response import DictResponse

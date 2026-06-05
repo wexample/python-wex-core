@@ -4,6 +4,8 @@ import shutil
 from typing import TYPE_CHECKING
 
 from wexample_cli.decorator.command import command
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.docker.const.tags import DomainTag
 from wexample_helpers.helpers.shell import shell_run
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
@@ -16,6 +18,15 @@ if TYPE_CHECKING:
 @command(
     type=COMMAND_TYPE_ADDON,
     description="Stop and remove all Docker containers, custom networks, and volumes",
+    tags=[
+        DomainTag.CONTAINER,
+        DomainTag.DOCKER,
+        EffectTag.DESTRUCTIVE,
+        EffectTag.WRITE,
+        AudienceTag.DANGEROUS,
+        ScopeTag.HOST,
+        ScopeTag.LOCAL,
+    ],
 )
 def docker__container__stop_all(context: ExecutionContext) -> DictResponse:
     from wexample_app.response.dict_response import DictResponse

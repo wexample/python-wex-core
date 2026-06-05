@@ -1,4 +1,12 @@
 description: "Demo — env var injection and ignore_error/workdir"
+decorators:
+  - name: tags
+    args:
+      - domain:demo
+      - effect:read-only
+      - audience:agent-safe
+      - audience:dev-tool
+      - scope:no-context
 scripts:
   - runner: bash
     script: echo "User is ${USER}, path is ${PATH_CURRENT}"

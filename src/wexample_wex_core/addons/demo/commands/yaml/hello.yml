@@ -1,4 +1,12 @@
 description: "Demo YAML command — prints a greeting using a bash script"
+decorators:
+  - name: tags
+    args:
+      - domain:demo
+      - effect:read-only
+      - audience:agent-safe
+      - audience:dev-tool
+      - scope:no-context
 options:
   - name: name
     type: str

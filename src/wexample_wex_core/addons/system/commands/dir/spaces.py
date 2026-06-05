@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 
 from wexample_cli.decorator.command import command
 from wexample_cli.decorator.option import option
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.system.const.tags import DomainTag
 from wexample_helpers.helpers.file import (
     file_get_dir_size,
     file_get_human_readable_size,
@@ -28,6 +30,14 @@ if TYPE_CHECKING:
 @command(
     type=COMMAND_TYPE_ADDON,
     description="Return size of entries in a directory, sorted ascending",
+    tags=[
+        DomainTag.FILESYSTEM,
+        DomainTag.SYSTEM,
+        EffectTag.READ_ONLY,
+        AudienceTag.AGENT_SAFE,
+        ScopeTag.HOST,
+        ScopeTag.LOCAL,
+    ],
 )
 def system__dir__spaces(
     context: ExecutionContext, path: str | None = None

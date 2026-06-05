@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 
 import psutil
 from wexample_cli.decorator.command import command
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.system.const.tags import DomainTag
 from wexample_helpers.helpers.file import file_get_human_readable_size
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
@@ -13,7 +15,15 @@ if TYPE_CHECKING:
 
 
 @command(
-    type=COMMAND_TYPE_ADDON, description="Return space usage of current system disks"
+    type=COMMAND_TYPE_ADDON, description="Return space usage of current system disks",
+    tags=[
+        DomainTag.FILESYSTEM,
+        DomainTag.SYSTEM,
+        EffectTag.READ_ONLY,
+        AudienceTag.AGENT_SAFE,
+        ScopeTag.HOST,
+        ScopeTag.LOCAL,
+    ],
 )
 def system__disk__spaces(context: ExecutionContext) -> TableResponse:
     from wexample_app.response.table_response import TableResponse

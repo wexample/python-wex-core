@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 
 from wexample_cli.decorator.command import command
 from wexample_cli.decorator.option import option
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.core.const.tags import DomainTag
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 
@@ -16,6 +18,14 @@ if TYPE_CHECKING:
 @command(
     type=COMMAND_TYPE_ADDON,
     description="Suggest autocomplete options for a partial wex command",
+    tags=[
+        DomainTag.CORE,
+        DomainTag.INTROSPECTION,
+        EffectTag.READ_ONLY,
+        AudienceTag.AGENT_SAFE,
+        ScopeTag.LOCAL,
+        ScopeTag.NO_CONTEXT,
+    ],
 )
 def core__autocomplete__suggest(
     context: ExecutionContext,
