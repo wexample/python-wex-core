@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from wexample_cli.decorator.command import command
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.demo.const.tags import DomainTag
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 
@@ -15,7 +17,15 @@ if TYPE_CHECKING:
 DEMO_COLLECTION_FIRST_VALUE = "first-function-result"
 
 
-@command(type=COMMAND_TYPE_ADDON)
+@command(type=COMMAND_TYPE_ADDON,
+    tags=[
+        DomainTag.DEMO,
+        EffectTag.READ_ONLY,
+        AudienceTag.AGENT_SAFE,
+        AudienceTag.DEV_TOOL,
+        ScopeTag.NO_CONTEXT,
+    ],
+)
 def demo__response__collection(context: ExecutionContext) -> QueuedCollectionResponse:
     from wexample_app.response.dict_response import DictResponse
     from wexample_app.response.list_response import ListResponse

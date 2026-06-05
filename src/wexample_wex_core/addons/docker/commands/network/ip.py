@@ -7,6 +7,8 @@ import subprocess
 from typing import TYPE_CHECKING
 
 from wexample_cli.decorator.command import command
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.docker.const.tags import DomainTag
 from wexample_helpers.helpers.shell import shell_run
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
@@ -17,7 +19,18 @@ if TYPE_CHECKING:
 _DEFAULT_LOCAL_IP = "127.0.1.1"
 
 
-@command(type=COMMAND_TYPE_ADDON, description="Return the current Docker local IP")
+@command(type=COMMAND_TYPE_ADDON, description="Return the current Docker local IP",
+    tags=[
+        DomainTag.CONTAINER,
+        DomainTag.DOCKER,
+        DomainTag.SYSTEM,
+        EffectTag.READ_ONLY,
+        EffectTag.SUBPROCESS_SPAWN,
+        AudienceTag.AGENT_SAFE,
+        ScopeTag.HOST,
+        ScopeTag.LOCAL,
+    ],
+)
 def docker__network__ip(context: ExecutionContext) -> str:
     if platform.system() == "Darwin":
         return "127.0.0.1"

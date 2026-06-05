@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 
 from wexample_cli.decorator.alias import alias
 from wexample_cli.decorator.command import command
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.core.const.tags import DomainTag
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 
@@ -12,7 +14,16 @@ if TYPE_CHECKING:
 
 
 @alias("rebuild")
-@command(type=COMMAND_TYPE_ADDON)
+@command(type=COMMAND_TYPE_ADDON,
+    tags=[
+        DomainTag.CORE,
+        DomainTag.REGISTRY,
+        EffectTag.WRITE,
+        AudienceTag.AGENT_SAFE,
+        ScopeTag.GLOBAL,
+        ScopeTag.LOCAL,
+    ],
+)
 def core__registry__build(context: ExecutionContext) -> SuccessResponse:
     from wexample_app.const.path import APP_DIR_NAME_TMP
     from wexample_app.response.success_response import SuccessResponse

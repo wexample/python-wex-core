@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 from wexample_cli.decorator.alias import alias
 from wexample_cli.decorator.command import command
 from wexample_cli.decorator.option import option
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
+from wexample_wex_core.addons.demo.const.tags import DomainTag
 
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 
@@ -32,7 +34,16 @@ PING_TYPE_TABLE = "table"
     required=True,
     description="Response type to return (bool, dict, function, int, list, null, queued, shell, str, table, collection)",
 )
-@command(type=COMMAND_TYPE_ADDON)
+@command(type=COMMAND_TYPE_ADDON,
+    tags=[
+        DomainTag.DEMO,
+        DomainTag.INTROSPECTION,
+        EffectTag.READ_ONLY,
+        AudienceTag.AGENT_SAFE,
+        AudienceTag.DEV_TOOL,
+        ScopeTag.NO_CONTEXT,
+    ],
+)
 def demo__ping__pong(context: ExecutionContext, type: str) -> AbstractResponse:
     from wexample_app.response.dict_response import DictResponse
     from wexample_app.response.list_response import ListResponse
