@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "wexample-wex-core"
-version = "25.0.0"
+version = "25.1.0"
 description = "Wex core"
 authors = [{name = "weeger", email = "contact@wexample.com"}]
 requires-python = ">=3.10"
@@ -14,10 +14,10 @@ dependencies = [
     "cattrs>=23.1.0",
     "click",
     "psutil>=5.9",
-    "wexample-app>=17.0.0",
-    "wexample-cli>=0.6.0",
-    "wexample-filestate-git>=7.4.0",
-    "wexample-filestate>=11.4.0",
+    "wexample-app>=17.1.0",
+    "wexample-cli>=0.7.0",
+    "wexample-filestate-git>=7.5.0",
+    "wexample-filestate>=11.5.0",
     "wexample-helpers-git>=6.9.0",
 ]
 

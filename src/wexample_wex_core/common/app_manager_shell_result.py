@@ -23,12 +23,7 @@ class AppManagerShellResult(ShellResult):
     )
 
     def __post_init__(self) -> None:
-        path = (
-            self.cwd
-            / APP_PATH_TMP
-            / APP_DIR_NAME_OUTPUT
-            / self.request_id
-        )
+        path = self.cwd / APP_PATH_TMP / APP_DIR_NAME_OUTPUT / self.request_id
 
         # Store output for later usage.
         self.output_json = json_load_if_valid(path=path)

@@ -3,10 +3,10 @@ from __future__ import annotations
 import platform
 from typing import TYPE_CHECKING
 
-from wexample_cli.decorator.command import command
 from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
-from wexample_wex_core.addons.system.const.tags import DomainTag
+from wexample_cli.decorator.command import command
 
+from wexample_wex_core.addons.system.const.tags import DomainTag
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 
 if TYPE_CHECKING:
@@ -18,7 +18,9 @@ OS_NAME_WINDOWS: str = "windows"
 OS_NAME_UNDEFINED: str = "undefined"
 
 
-@command(type=COMMAND_TYPE_ADDON, description="Return the local OS name",
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="Return the local OS name",
     tags=[
         DomainTag.SYSTEM,
         EffectTag.READ_ONLY,

@@ -4,11 +4,11 @@ import json
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
 from wexample_cli.decorator.command import command
 from wexample_cli.decorator.option import option
-from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
-from wexample_wex_core.addons.core.const.tags import DomainTag
 
+from wexample_wex_core.addons.core.const.tags import DomainTag
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 from wexample_wex_core.webhook.const import WEBHOOK_LISTEN_PORT_DEFAULT
 

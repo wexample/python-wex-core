@@ -4,14 +4,14 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
 from wexample_cli.decorator.as_sudo import as_sudo
 from wexample_cli.decorator.command import command
 from wexample_cli.decorator.option import option
-from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
-from wexample_wex_core.addons.system.const.tags import DomainTag
 from wexample_helpers.helpers.file import file_chown_recursive
 from wexample_helpers.helpers.user import user_get_real_username
 
+from wexample_wex_core.addons.system.const.tags import DomainTag
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 
 if TYPE_CHECKING:

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from wexample_cli.decorator.command import command
 from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
-from wexample_wex_core.addons.demo.const.tags import DomainTag
+from wexample_cli.decorator.command import command
 
+from wexample_wex_core.addons.demo.const.tags import DomainTag
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 
 if TYPE_CHECKING:
@@ -17,7 +17,8 @@ if TYPE_CHECKING:
 DEMO_COLLECTION_FIRST_VALUE = "first-function-result"
 
 
-@command(type=COMMAND_TYPE_ADDON,
+@command(
+    type=COMMAND_TYPE_ADDON,
     tags=[
         DomainTag.DEMO,
         EffectTag.READ_ONLY,

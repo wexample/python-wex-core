@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wexample_cli.decorator.command import command
 from wexample_cli.const.tags import AudienceTag, EffectTag, ScopeTag
-from wexample_wex_core.addons.demo.const.tags import DomainTag
+from wexample_cli.decorator.command import command
 
 from wexample_wex_core.addons.demo.commands.ping.pong import demo__ping__pong
+from wexample_wex_core.addons.demo.const.tags import DomainTag
 from wexample_wex_core.const.globals import COMMAND_TYPE_ADDON
 from wexample_wex_core.decorator.attach import ATTACH_POSITION_AFTER, attach
 
@@ -15,7 +15,9 @@ if TYPE_CHECKING:
 
 
 @attach(position=ATTACH_POSITION_AFTER, command=demo__ping__pong)
-@command(type=COMMAND_TYPE_ADDON, description="Demo after-hook for demo::ping/pong",
+@command(
+    type=COMMAND_TYPE_ADDON,
+    description="Demo after-hook for demo::ping/pong",
     tags=[
         DomainTag.DEMO,
         EffectTag.READ_ONLY,
