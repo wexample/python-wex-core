@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from wexample_app.const.globals import APP_PATH_APP_MANAGER
-from wexample_app.const.path import APP_DIR_PATH_RELATIVE_OUTPUT
+from wexample_app.const.globals import APP_PATH_TMP
+from wexample_app.const.path import APP_DIR_NAME_OUTPUT
 from wexample_config.config_value.config_value import ConfigValue
 from wexample_helpers.classes.private_field import private_field
 from wexample_helpers.classes.shell_result import ShellResult
@@ -25,8 +25,8 @@ class AppManagerShellResult(ShellResult):
     def __post_init__(self) -> None:
         path = (
             self.cwd
-            / APP_PATH_APP_MANAGER
-            / APP_DIR_PATH_RELATIVE_OUTPUT
+            / APP_PATH_TMP
+            / APP_DIR_NAME_OUTPUT
             / self.request_id
         )
 

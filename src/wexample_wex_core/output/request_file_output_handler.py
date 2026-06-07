@@ -16,12 +16,12 @@ class RequestFileOutputHandler(AppFileOutputHandler):
     file_path: Path = public_field(default=None, description="Path to the output file")
 
     def _get_file_path(self, request: CommandRequest) -> Path:
-        from wexample_app.const.globals import APP_PATH_APP_MANAGER
-        from wexample_app.const.path import APP_DIR_PATH_RELATIVE_OUTPUT
+        from wexample_app.const.globals import APP_PATH_TMP
+        from wexample_app.const.path import APP_DIR_NAME_OUTPUT
 
         return (
             request.kernel._call_workdir.get_path()
-            / APP_PATH_APP_MANAGER
-            / APP_DIR_PATH_RELATIVE_OUTPUT
+            / APP_PATH_TMP
+            / APP_DIR_NAME_OUTPUT
             / request.request_id
         )
