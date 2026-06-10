@@ -212,7 +212,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
             from wexample_app.exception.app_runtime_exception import AppRuntimeException
 
             raise AppRuntimeException(
-                f"Ambiguous command '{name}' found in multiple addons: {', '.join(matches)}. Use the full form addon::{name}."
+                message=f"Ambiguous command '{name}' found in multiple addons: {', '.join(matches)}. Use the full form addon::{name}."
             )
 
         return None
@@ -254,7 +254,7 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
                     )
 
                     raise AppRuntimeException(
-                        f"Command file uses hyphens in its name: '{cmd_file}'. "
+                        message=f"Command file uses hyphens in its name: '{cmd_file}'. "
                         f"Rename to: '{cmd_file.stem.replace('-', '_')}{cmd_file.suffix}'"
                     )
 

@@ -29,7 +29,7 @@ class CommandRequest(BaseCommandRequest):
             if "_" in self.name:
                 suggested = self.name.replace("_", "-")
                 raise AppRuntimeException(
-                    f"Command names use hyphens not underscores. Did you mean: '{suggested}'?"
+                    message=f"Command names use hyphens not underscores. Did you mean: '{suggested}'?"
                 )
             raise
 

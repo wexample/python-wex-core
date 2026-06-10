@@ -146,7 +146,7 @@ class CoreYamlCommandRunner(YamlCommandRunner):
             from wexample_app.exception.app_runtime_exception import AppRuntimeException
 
             raise AppRuntimeException(
-                f"Command file uses hyphens in its name: '{kebab_path.name}'. "
+                message=f"Command file uses hyphens in its name: '{kebab_path.name}'. "
                 f"Rename to: '{path.name}'"
             )
         return False
