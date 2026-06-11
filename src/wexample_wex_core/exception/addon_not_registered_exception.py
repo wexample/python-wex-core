@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from attrs import Factory
 from wexample_helpers.classes.field import public_field
 from wexample_helpers.decorator.base_class import base_class
 from wexample_helpers.exception.not_allowed_item_exception import (
@@ -21,30 +20,18 @@ class AddonNotRegisteredException(NotAllowedItemException):
     error_code: ClassVar[str] = "ADDON_NOT_REGISTERED"
 
     addon_name: str = public_field(description="Name of the unregistered addon")
-    available_addons: list[str] | None = public_field(
-        default=None,
+    available_addons: list[str] = public_field(
+        factory=list,
         description="List of registered addon names",
     )
     item_type: str = public_field(
         default="addon",
         description="Type of the offending item",
     )
-    item_value: str | None = public_field(
-        default=Factory(lambda self: self.addon_name, takes_self=True),
-        description="Value of the item that is not allowed",
-    )
-    allowed_values: list[str] = public_field(
-        default=Factory(lambda self: self.available_addons or [], takes_self=True),
-        description="List of allowed values for this item type",
-    )
-    message: str = public_field(
-        default=Factory(
-            lambda self: self.format_not_allowed_item_message(
-                item_type=self.item_type,
-                item_value=self.item_value,
-                allowed_values=self.allowed_values,
-            ),
-            takes_self=True,
-        ),
-        description="Human-readable error message",
-    )
+
+    def _build_message(self) -> str:
+        return self.format_not_allowed_item_message(
+            item_type="addon",
+            item_value=self.addon_name,
+            allowed_values=self.available_addons,
+        )

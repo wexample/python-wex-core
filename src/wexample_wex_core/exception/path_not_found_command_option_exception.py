@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from attrs import Factory
 from wexample_helpers.classes.field import public_field
 from wexample_helpers.decorator.base_class import base_class
 
@@ -18,10 +17,6 @@ class PathNotFoundCommandOptionException(AbstractCommandOptionException):
     error_code: ClassVar[str] = "FILE_NOT_FOUND_COMMAND_OPTION"
 
     file_path: str = public_field(description="Path that was not found")
-    message: str = public_field(
-        default=Factory(
-            lambda self: f"File or directory not found, specified in option '{self.option_name}': '{self.file_path}'",
-            takes_self=True,
-        ),
-        description="Human-readable error message",
-    )
+
+    def _build_message(self) -> str:
+        return f"File or directory not found, specified in option '{self.option_name}': '{self.file_path}'"

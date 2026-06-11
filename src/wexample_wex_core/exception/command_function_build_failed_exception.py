@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from attrs import Factory
 from wexample_helpers.classes.field import public_field
 from wexample_helpers.decorator.base_class import base_class
 from wexample_helpers.exception.undefined_exception import UndefinedException
@@ -22,10 +21,6 @@ class CommandFunctionBuildFailedException(UndefinedException):
     command_name: str = public_field(description="Name of the command being built")
     expected_type: str = public_field(description="Expected command function type")
     actual_type: str = public_field(description="Actual type that was produced")
-    message: str = public_field(
-        default=Factory(
-            lambda self: f"Failed to build command function for '{self.command_name}'. Expected type '{self.expected_type}' but got '{self.actual_type}'.",
-            takes_self=True,
-        ),
-        description="Human-readable error message",
-    )
+
+    def _build_message(self) -> str:
+        return f"Failed to build command function for '{self.command_name}'. Expected type '{self.expected_type}' but got '{self.actual_type}'."
