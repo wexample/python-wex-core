@@ -1,26 +1,27 @@
 from __future__ import annotations
 
+from typing import ClassVar
+
+from attrs import Factory
+from wexample_helpers.classes.field import public_field
+from wexample_helpers.decorator.base_class import base_class
+
 from wexample_cli.exception.abstract_command_option_exception import (
     AbstractCommandOptionException,
 )
 
 
+@base_class
 class PathNotFoundCommandOptionException(AbstractCommandOptionException):
     """Exception raised when a file specified in a command option is not found."""
 
-    error_code: str = "FILE_NOT_FOUND_COMMAND_OPTION"
+    error_code: ClassVar[str] = "FILE_NOT_FOUND_COMMAND_OPTION"
 
-    def __init__(
-        self,
-        option_name: str,
-        file_path: str,
-        cause: Exception | None = None,
-        previous: Exception | None = None,
-    ) -> None:
-        super().__init__(
-            option_name=option_name,
-            message=f"File or directory not found, specified in option '{option_name}': '{file_path}'",
-            data={file_path: file_path},
-            cause=cause,
-            previous=previous,
-        )
+    file_path: str = public_field(description="Path that was not found")
+    message: str = public_field(
+        default=Factory(
+            lambda self: f"File or directory not found, specified in option '{self.option_name}': '{self.file_path}'",
+            takes_self=True,
+        ),
+        description="Human-readable error message",
+    )

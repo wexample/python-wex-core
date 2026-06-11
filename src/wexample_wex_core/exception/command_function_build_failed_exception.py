@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+from typing import ClassVar
+
+from attrs import Factory
+from wexample_helpers.classes.field import public_field
+from wexample_helpers.decorator.base_class import base_class
 from wexample_helpers.exception.undefined_exception import UndefinedException
 
 
+@base_class
 class CommandFunctionBuildFailedException(UndefinedException):
     """Exception raised when a command function could not be built correctly.
 
@@ -11,28 +17,15 @@ class CommandFunctionBuildFailedException(UndefinedException):
     declaration or implementation.
     """
 
-    error_code: str = "COMMAND_FUNCTION_BUILD_FAILED"
+    error_code: ClassVar[str] = "COMMAND_FUNCTION_BUILD_FAILED"
 
-    def __init__(
-        self,
-        command_name: str,
-        expected_type: str,
-        actual_type: str,
-        cause: Exception | None = None,
-        previous: Exception | None = None,
-    ) -> None:
-        # Store attributes as instance attributes
-        self.command_name = command_name
-        self.expected_type = expected_type
-        self.actual_type = actual_type
-
-        super().__init__(
-            message=f"Failed to build command function for '{command_name}'. Expected type '{expected_type}' but got '{actual_type}'.",
-            data={
-                "command_name": command_name,
-                "expected_type": expected_type,
-                "actual_type": actual_type,
-            },
-            cause=cause,
-            previous=previous,
-        )
+    command_name: str = public_field(description="Name of the command being built")
+    expected_type: str = public_field(description="Expected command function type")
+    actual_type: str = public_field(description="Actual type that was produced")
+    message: str = public_field(
+        default=Factory(
+            lambda self: f"Failed to build command function for '{self.command_name}'. Expected type '{self.expected_type}' but got '{self.actual_type}'.",
+            takes_self=True,
+        ),
+        description="Human-readable error message",
+    )
