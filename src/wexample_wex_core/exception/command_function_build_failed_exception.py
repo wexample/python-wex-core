@@ -16,11 +16,10 @@ class CommandFunctionBuildFailedException(UndefinedException):
     declaration or implementation.
     """
 
-    error_code: ClassVar[str] = "COMMAND_FUNCTION_BUILD_FAILED"
-
-    command_name: str = public_field(description="Name of the command being built")
-    expected_type: str = public_field(description="Expected command function type")
     actual_type: str = public_field(description="Actual type that was produced")
+    command_name: str = public_field(description="Name of the command being built")
+    error_code: ClassVar[str] = "COMMAND_FUNCTION_BUILD_FAILED"
+    expected_type: str = public_field(description="Expected command function type")
 
     def _build_message(self) -> str:
         return f"Failed to build command function for '{self.command_name}'. Expected type '{self.expected_type}' but got '{self.actual_type}'."

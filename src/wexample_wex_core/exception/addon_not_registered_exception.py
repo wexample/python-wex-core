@@ -17,13 +17,12 @@ class AddonNotRegisteredException(NotAllowedItemException):
     of handling cases where an addon name is not in the list of registered addons.
     """
 
-    error_code: ClassVar[str] = "ADDON_NOT_REGISTERED"
-
     addon_name: str = public_field(description="Name of the unregistered addon")
     available_addons: list[str] = public_field(
         factory=list,
         description="List of registered addon names",
     )
+    error_code: ClassVar[str] = "ADDON_NOT_REGISTERED"
     item_type: str = public_field(
         default="addon",
         description="Type of the offending item",
