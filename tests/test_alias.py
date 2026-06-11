@@ -28,7 +28,7 @@ class TestAlias(AbstractKernelTest):
 
     def test_hi_alias_in_registry(self, kernel) -> None:
         addon_commands = kernel.get_configuration_registry().get_addon_commands()
-        cmd_data = addon_commands["default"]["check/hi"]
+        cmd_data = addon_commands["core"]["ping/hi"]
         assert "hi" in cmd_data["alias"]
 
     def test_hi_alias_resolves(self, kernel) -> None:

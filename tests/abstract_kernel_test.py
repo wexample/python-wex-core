@@ -13,7 +13,8 @@ class AbstractKernelTest:
     def kernel(self, tmp_path) -> Kernel:
         wex_dir = tmp_path / CORE_COMMAND_NAME
         wex_dir.mkdir()
-        (tmp_path / ".env").write_text("APP_ENV=test\n")
+        # The kernel reads its env from a YAML file (.env.yml), not a dotenv.
+        (tmp_path / ".env.yml").write_text("APP_ENV: test\n")
         k = Kernel(entrypoint_path=wex_dir)
         k.setup(addons=[CoreAddonManager, DemoAddonManager])
         return k

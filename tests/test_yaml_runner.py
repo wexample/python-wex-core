@@ -19,7 +19,7 @@ class TestYamlRunner(AbstractKernelTest):
 
         os.environ["WEX_TEST_VAR"] = "hello_env"
         runner = CoreYamlCommandRunner(kernel=kernel)
-        variables = runner._build_variables({}, Path("/tmp/fake.yml"))
+        variables = runner._build_variables({}, Path("/tmp/fake.yml"), kernel)
 
         assert "WEX_TEST_VAR" in variables
         assert variables["WEX_TEST_VAR"] == "hello_env"
@@ -50,7 +50,7 @@ class TestYamlRunner(AbstractKernelTest):
         os.environ["NAME"] = "from_env"
         runner = CoreYamlCommandRunner(kernel=kernel)
         variables = runner._build_variables(
-            {"name": "from_option"}, Path("/tmp/fake.yml")
+            {"name": "from_option"}, Path("/tmp/fake.yml"), kernel
         )
         assert variables["NAME"] == "from_option"
 
