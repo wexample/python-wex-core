@@ -1,6 +1,6 @@
 # wex_core
 
-Version: 26.1.0
+Version: 26.1.1
 
 Wex core
 
@@ -85,7 +85,7 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 - click: 
 - psutil: >=5.9
 - wexample-app: >=18.0.0
-- wexample-cli: >=1.0.0
+- wexample-cli: >=1.1.0
 - wexample-filestate-git: >=7.6.0
 - wexample-filestate: >=12.1.0
 - wexample-helpers-git: >=6.9.0
