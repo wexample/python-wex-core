@@ -304,6 +304,15 @@ class Kernel(
                         request.arguments if attachment.get("pass_args") else {}
                     ),
                 )
+
+                # The resolver owning the command decides whether it applies in
+                # the current execution context (e.g. a service command only
+                # fires when its service is active in the current app).
+                if not attached_request.resolver.is_attachment_active(
+                    request=attached_request
+                ):
+                    continue
+
                 self.execute_kernel_command_and_print(attached_request)
 
     def _get_available_output_handlers(self):

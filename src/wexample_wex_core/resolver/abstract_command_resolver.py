@@ -130,6 +130,16 @@ class AbstractCommandResolver(BaseAbstractCommandResolver, ABC):
     def build_registry_data(self) -> StructuredData:
         pass
 
+    def is_attachment_active(self, request: CommandRequest) -> bool:
+        """Whether an attached (hook) command applies in the current context.
+
+        Called by the kernel before firing a command attached to another one
+        (before/after hooks). Resolvers owning context-dependent commands
+        override this — e.g. service commands only apply when their service is
+        declared by the current app.
+        """
+        return True
+
     def supports(self, request: CommandRequest) -> object:
         # Alias resolution takes priority — checked before direct pattern match.
         registry = self.kernel.get_configuration_registry()
