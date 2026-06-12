@@ -1,16 +1,7 @@
 global:
   name: wex_core
   type: app
-  version: 26.1.1
-test:
-  coverage:
-    last_report:
-      commit_hash: 9f4a99c3f8a91b2bb888eb96c1f3fb8498ab2f84
-      covered: 1094
-      excluded: 195
-      missing: 1700
-      percent: 39.15533285612026
-      total: 2794
+  version: 26.1.2
 wex:
   migration: 1
   version: 6.0.112
